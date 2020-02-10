@@ -1,63 +1,252 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+
 	<meta charset="utf-8">
-	<title>Video Capture Example</title>
-	<link href="js_example_style.css" rel="stylesheet" type="text/css" />
-</head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-<body>
-	<h2>Video Capture Example with Lucas-Kanade Optical Flow</h2>
-	<p>
-		Click <b>Start/Stop</b> button to start or stop the camera capture.<br>
-		The <b>videoInput</b> is a &lt;video&gt; element used as OpenCV.js input.
-		The <b>canvasOutput</b> is a &lt;canvas&gt; element used as OpenCv.js output.<br>
-		To decide the points, we use <b>cv.goodFeaturesToTrack()</b>. We take the first frame, detect some Shi-Tomasi
-		corner points in it, then we iteratively track those points using <b>cv.calcOpticalFlowPyrLK</b>.<br>
-		The code of &lt;textarea&gt; will be executed when video is started.
-		You can modify the code to investigate more.
-	</p>
-	<div>
-		<div class="control"><button id="startAndStop" disabled>Start</button></div>
-	</div>
-	<p class="err" id="errorMessage"></p>
-	<div>
-		<table cellpadding="0" cellspacing="0" width="0" border="0">
-			<tr>
-				<td>
-					<canvas id="canvasOutput" width=1280 height=720></canvas>
-				</td>
-				<td>
-					<video id="videoInput" width=1280 height=720></video>
-				</td>
-				<td></td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>
-					<div class="caption">canvasOutput</div>
-				</td>
-				<td>
-					<div class="caption">videoInput</div>
-				</td>
-				<td></td>
-				<td></td>
-			</tr>
-		</table>
-	</div>
+	<title>Digital Twin</title>
 
-	<div id="hereresult"></div>
+	<!-- Bootstrap Core CSS -->
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
+
+	<!-- jQuery Version 1.11.1 -->
+	<script src="libs/jquery.js"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="libs/bootstrap.min.js"></script>
+
+	<!-- Three script -->
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
+	<!-- Numeric JS -->
+	<!-- <script src="libs/numeric-1.2.6.min.js"></script> -->
+	<!-- flot -->
+	<!-- <script src="libs/jquery.flot.min.js"></script> -->
 
 	<script src="https://webrtc.github.io/adapter/adapter-5.0.4.js" type="text/javascript"></script>
 	<script src="utils.js" type="text/javascript"></script>
+</head>
 
-	<script type="text/javascript">
+<body>
+
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/logo.png"
+							alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Container creates the space -->
+	<div class="container">
+
+		<!-- Row creates horizontal groups of columns -->
+		<div class="row">
+			<div class="col-md-12 text-center">
+				<h2>Digital Twin</h2>
+				<p>Interactive version of the ECMS paper.</p>
+			</div>
+
+			<div>
+				<div class="control"><button id="startAndStop" disabled>Start</button></div>
+			</div>
+			<p class="err" id="errorMessage"></p>
+
+			<div class="row">
+				<div class="col">
+					<canvas id="canvasOutput" style="float:left;width:50%;height=360"></canvas>
+				</div>
+				<div id="3d" class="col-sm-6" style="float:right;width:50%;min-height:600px">
+				</div>
+			</div>
+
+			<!-- <p>x position (free oscillation)</p>
+			<div id="x_motion" style="width:100%;height:200px"></div> -->
+
+			<div class="col">
+				<video id="videoInput" width=320 height=240></video>
+			</div>
+
+			<div id="hereresult"></div>
+		</div>
+
+	</div>
+	</div>
+
+	<script>
+		"use strict";
+
+		var xCenter, yCenter;
+		var resolution = {
+			w: 320,
+			h: 240
+		};
+
+		var m = 30; // kg
+		var k = 20; // N/m
+		var c = 2.9; // (N*s)/m
+		var initX = [1, 0]; // X = [initial position in m, initial velocity in m/s]
+
+		// // x = [xdot, xdotdot]
+		// function freeMotion(t, x) {
+		// 	var F = 0; // N
+		// 	var xdotdot = (F - c * x[1] - k * x[0]) / m;
+		// 	return [x[1], xdotdot];
+		// };
+
+		// var tmax = 100; // s
+		// var sol_free = numeric.dopri(0, tmax, initX, freeMotion);
+		// var x_motion = numeric.rep([sol_free.x.length, 2], 0);
+
+		// for (var i = 0; i < sol_free.x.length; i++) {
+		// 	x_motion[i][0] = sol_free.x[i];
+		// 	x_motion[i][1] = sol_free.y[i][0];
+		// }
+
+		// $.plot("#x_motion", [x_motion], {
+		// 	xaxis: {
+		// 		tickFormatter: function (val, axis) {
+		// 			return val < axis.max ? val.toFixed(2) : "time (s)";
+		// 		}
+		// 	},
+		// 	yaxis: {
+		// 		tickFormatter: function (val, axis) {
+		// 			return val < axis.max ? val.toFixed(2) : "position (m)";
+		// 		},
+		// 	}
+		// });
+
+		var renderer, container, scene, camera, controls;
+
+		//Ready renderer and scene
+		(function () {
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xA9CCE3, 1);
+
+			// get the div that will hold the renderer
+			container = document.getElementById('3d');
+			// add the renderer to the div
+			container.appendChild(renderer.domElement);
+
+			scene = new THREE.Scene();
+
+			//Camera and controls:
+			camera = new THREE.PerspectiveCamera(50);
+			camera.up.set(0, 0, 1);
+			scene.add(camera);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+			//Respond to window resize:
+			function onResize() {
+				renderer.setSize(container.clientWidth, container.clientHeight);
+				camera.aspect = container.clientWidth / container.clientHeight;
+				camera.updateProjectionMatrix();
+			}
+			window.addEventListener("resize", onResize);
+			onResize(); //Ensure the initial setup is good too
+
+			//Add lights:
+			scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+			scene.add(function () {
+				let sun = new THREE.DirectionalLight(0xffffff, 1);
+				sun.position.set(1, 1, 1);
+				return sun;
+			}());
+		})();
+
+		camera.position.set(0, 0, 394);
+		controls.target = new THREE.Vector3(0, 0, 0);
+
+		var geometry = new THREE.BoxGeometry(320, 240, 1);
+		var material = new THREE.MeshBasicMaterial({
+			color: "white"
+		});
+		var background = new THREE.Mesh(geometry, material);
+		scene.add(background);
+
+		var geometry = new THREE.BoxGeometry(54, 113, 1);
+		var material = new THREE.MeshBasicMaterial({
+			color: "blue"
+		});
+		var cube = new THREE.Mesh(geometry, material);
+		cube.position.z = 0.5;
+		scene.add(cube);
+
+		// var geometry = new THREE.BoxGeometry(0.05, 2, 2);
+		// var material = new THREE.MeshBasicMaterial({
+		// 	color: "green"
+		// });
+		// var base = new THREE.Mesh(geometry, material);
+		// base.position.x = -2;
+		// scene.add(base);
+
+		// var geometry = new THREE.CylinderGeometry(0.05, 0.05, 2, 32);
+		// var material = new THREE.MeshBasicMaterial({
+		// 	color: "yellow"
+		// });
+		// var spring = new THREE.Mesh(geometry, material);
+		// spring.position.x = -1;
+		// spring.position.z = 0.25;
+		// spring.rotation.z = Math.PI / 2;
+		// scene.add(spring);
+
+		// var geometry = new THREE.CylinderGeometry(0.05, 0.05, 2, 32);
+		// var material = new THREE.MeshBasicMaterial({
+		// 	color: "red"
+		// });
+		// var damper = new THREE.Mesh(geometry, material);
+		// damper.position.x = -1;
+		// damper.position.z = -0.25;
+		// damper.rotation.z = Math.PI / 2;
+		// scene.add(damper);
+
+		var tprev = 0;
+		var posX = initX;
+
+		var clock = new THREE.Clock();
+		controls.update();
+		animate();
+
+		function animate() {
+			var time = clock.getElapsedTime();
+
+			// if (time - tprev !== 0) {
+			// 	// solve ODE for the time step
+			// 	posX = numeric.dopri(tprev, time, posX, freeMotion).at(time);
+			// 	cube.position.x = posX[0];
+			// 	tprev = time;
+			// }
+
+			// spring.position.x = (cube.position.x + base.position.x) / 2;
+			// spring.scale.y = (cube.position.x - base.position.x) / 2;
+
+			// damper.position.x = (cube.position.x + base.position.x) / 2;
+			// damper.scale.y = (cube.position.x - base.position.x) / 2;
+
+			requestAnimationFrame(animate);
+			renderer.render(scene, camera);
+		}
+
 		let utils = new Utils('errorMessage');
-
-		//utils.loadCode('codeSnippet', 'codeEditor');
-		//var log1 =[];
-		//var log2 =[];
 
 		let streaming = false;
 		let videoInput = document.getElementById('videoInput');
@@ -68,7 +257,7 @@
 		startAndStop.addEventListener('click', () => {
 			if (!streaming) {
 				utils.clearError();
-				utils.startCamera('hd', onVideoStarted, 'videoInput');
+				utils.startCamera('qvga', onVideoStarted, 'videoInput');
 			} else {
 				utils.stopCamera();
 				onVideoStopped();
@@ -82,105 +271,83 @@
 			videoInput.height = videoInput.videoHeight;
 			//utils.executeCode('codeEditor');
 
+
+
 			let video = document.getElementById('videoInput');
 			let cap = new cv.VideoCapture(video);
 
-			// parameters for ShiTomasi corner detection
-			let [maxCorners, qualityLevel, minDistance, blockSize] = [5, 0.3, 7, 7];
-
-			// parameters for lucas kanade optical flow
-			let winSize = new cv.Size(15, 15);
-			let maxLevel = 2;
-			let criteria = new cv.TermCriteria(cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03);
-
-			// create some random colors
-			let color = [];
-			for (let i = 0; i < maxCorners; i++) {
-				color.push(new cv.Scalar(parseInt(Math.random() * 255), parseInt(Math.random() * 255),
-					parseInt(Math.random() * 255), 255));
-			}
-
-			// take first frame and find corners in it
-			let oldFrame = new cv.Mat(video.height, video.width, cv.CV_8UC4);
-			cap.read(oldFrame);
-			let oldGray = new cv.Mat();
-			cv.cvtColor(oldFrame, oldGray, cv.COLOR_RGB2GRAY);
-			let p0 = new cv.Mat();
-			let none = new cv.Mat();
-			cv.goodFeaturesToTrack(oldGray, p0, maxCorners, qualityLevel, minDistance, none, blockSize);
-
-			// Create a mask image for drawing purposes
-			let zeroEle = new cv.Scalar(0, 0, 0, 255);
-			let mask = new cv.Mat(oldFrame.rows, oldFrame.cols, oldFrame.type(), zeroEle);
-
+			// take first frame of the video
 			let frame = new cv.Mat(video.height, video.width, cv.CV_8UC4);
-			let frameGray = new cv.Mat();
-			let p1 = new cv.Mat();
-			let st = new cv.Mat();
-			let err = new cv.Mat();
+			cap.read(frame);
+
+			// hardcode the initial location of window
+			let trackWindow = new cv.Rect(150, 60, 54, 113);
+
+			// set up the ROI for tracking
+			let roi = frame.roi(trackWindow);
+			let hsvRoi = new cv.Mat();
+			cv.cvtColor(roi, hsvRoi, cv.COLOR_RGBA2RGB);
+			cv.cvtColor(hsvRoi, hsvRoi, cv.COLOR_RGB2HSV);
+			let mask = new cv.Mat();
+			let lowScalar = new cv.Scalar(30, 30, 0);
+			let highScalar = new cv.Scalar(180, 180, 180);
+			let low = new cv.Mat(hsvRoi.rows, hsvRoi.cols, hsvRoi.type(), lowScalar);
+			let high = new cv.Mat(hsvRoi.rows, hsvRoi.cols, hsvRoi.type(), highScalar);
+			cv.inRange(hsvRoi, low, high, mask);
+			let roiHist = new cv.Mat();
+			let hsvRoiVec = new cv.MatVector();
+			hsvRoiVec.push_back(hsvRoi);
+			cv.calcHist(hsvRoiVec, [0], mask, roiHist, [180], [0, 180]);
+			cv.normalize(roiHist, roiHist, 0, 255, cv.NORM_MINMAX);
+
+			// delete useless mats.
+			roi.delete(); hsvRoi.delete(); mask.delete(); low.delete(); high.delete(); hsvRoiVec.delete();
+
+			// Setup the termination criteria, either 10 iteration or move by atleast 1 pt
+			let termCrit = new cv.TermCriteria(cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 1);
+
+			let hsv = new cv.Mat(video.height, video.width, cv.CV_8UC3);
+			let dst = new cv.Mat();
+			let hsvVec = new cv.MatVector();
+			hsvVec.push_back(hsv);
 
 			const FPS = 30;
 			function processVideo() {
 				try {
 					if (!streaming) {
 						// clean and stop.
-						frame.delete(); oldGray.delete(); p0.delete(); p1.delete(); err.delete(); mask.delete();
+						frame.delete(); dst.delete(); hsvVec.delete(); roiHist.delete(); hsv.delete();
 						return;
 					}
 					let begin = Date.now();
 
 					// start processing.
 					cap.read(frame);
-					cv.cvtColor(frame, frameGray, cv.COLOR_RGBA2GRAY);
+					cv.cvtColor(frame, hsv, cv.COLOR_RGBA2RGB);
+					cv.cvtColor(hsv, hsv, cv.COLOR_RGB2HSV);
+					cv.calcBackProject(hsvVec, [0], roiHist, dst, [0, 180], 1);
 
-					// calculate optical flow
-					cv.calcOpticalFlowPyrLK(oldGray, frameGray, p0, p1, st, err, winSize, maxLevel, criteria);
+					// Apply meanshift to get the new location
+					// and it also returns number of iterations meanShift took to converge,
+					// which is useless in this demo.
+					[, trackWindow] = cv.meanShift(dst, trackWindow, termCrit);
 
-					// select good points
-					let goodNew = [];
-					let goodOld = [];
-					document.getElementById("hereresult").innerHTML = "";
-					for (let i = 0; i < st.rows; i++) {
-						if (st.data[i] === 1) {
-							goodNew.push(new cv.Point(p1.data32F[i * 2], p1.data32F[i * 2 + 1]));
-							goodOld.push(new cv.Point(p0.data32F[i * 2], p0.data32F[i * 2 + 1]));
-							document.getElementById("hereresult").innerHTML += "Centimeter distance from left upmost corner <br />";
-							document.getElementById("hereresult").innerHTML += "Point " + goodNew.length + ", x: " + JSON.stringify(Math.round(goodNew[goodNew.length - 1].x / 24.19819214 * 100) / 100) + ", y:" + JSON.stringify(Math.round(goodNew[goodNew.length - 1].y / 24.19819214 * 100) / 100) + "<br />";
-							document.getElementById("hereresult").innerHTML += "Pixel distance <br />";
-							document.getElementById("hereresult").innerHTML += "Point " + goodNew.length + ", x: " + JSON.stringify(Math.round(goodNew[goodNew.length - 1].x * 100) / 100) + ", y:" + JSON.stringify(Math.round(goodNew[goodNew.length - 1].y * 100) / 100) + "<br />";
-							//console.log(st.rows, st);
-							//document.getElementById("startAndStop").click();
-						}
-					}
-
-					//console.log(goodNew);
-					//log1.push(goodNew[0]);
-					//log2.push(goodNew[1]);
-
-					// draw the tracks
-					for (let i = 0; i < goodNew.length; i++) {
-						//cv.line(mask, goodNew[i], goodOld[i], color[i], 2);
-						cv.circle(frame, goodNew[i], 5, color[i], -1);
-					}
-					cv.add(frame, mask, frame);
-
+					// Draw it on image
+					let [x, y, w, h] = [trackWindow.x, trackWindow.y, trackWindow.width, trackWindow.height];
+					cv.rectangle(frame, new cv.Point(x, y), new cv.Point(x + w, y + h), [255, 0, 0, 255], 2);
 					cv.imshow('canvasOutput', frame);
 
-					// now update the previous frame and previous points
-					frameGray.copyTo(oldGray);
-					p0.delete(); p0 = null;
-					p0 = new cv.Mat(goodNew.length, 1, cv.CV_32FC2);
-					for (let i = 0; i < goodNew.length; i++) {
-						p0.data32F[i * 2] = goodNew[i].x;
-						p0.data32F[i * 2 + 1] = goodNew[i].y;
-					}
+					// locate object center
+					xCenter = (x + w/2) - resolution.w/2;
+					yCenter = - (y + h/2) + resolution.h/2;
+					cube.position.x = xCenter;
+					cube.position.y = yCenter;
 
 					// schedule the next one.
 					let delay = 1000 / FPS - (Date.now() - begin);
 					setTimeout(processVideo, delay);
 				} catch (err) {
 					utils.printError(err);
-					restartCapture();
 				}
 			};
 
@@ -198,11 +365,8 @@
 			startAndStop.removeAttribute('disabled');
 		});
 
-		function restartCapture() {
-			utils.clearError();
-			utils.startCamera('hd', onVideoStarted, 'videoInput');
-		}
 	</script>
+
 </body>
 
 </html>
