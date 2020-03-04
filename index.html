@@ -23,13 +23,14 @@
 	<!-- Three script -->
 	<script src="libs/three.js"></script>
 	<script src="libs/STLLoader.js"></script>
-	<script src="libs/OrbitControls.js"></script>
-	<!-- Numeric JS -->
-	<!-- <script src="libs/numeric-1.2.6.min.js"></script> -->
-	<!-- flot -->
-	<!-- <script src="libs/jquery.flot.min.js"></script> -->
+	<script src="libs/Mirror.js"></script>
+	<script src="libs/WaterShader.js"></script>
+	<!-- <script src="libs/OrbitControls.js"></script> -->
+	<script src="libs/skybox_from_examples.js"></script>
+	<script src="snippets/Patch_interpolation.js"></script>
+	<script src="snippets/Regular_ocean.js"></script>
 
-	<script src="https://webrtc.github.io/adapter/adapter-5.0.4.js" type="text/javascript"></script>
+	<script src="libs/adapter-5.0.4.js" type="text/javascript"></script>
 	<script src="utils.js" type="text/javascript"></script>
 </head>
 
@@ -72,7 +73,7 @@
 				<div class="col">
 					<canvas id="canvasOutput" style="float:left;width:50%;height:360"></canvas>
 				</div>
-				<div id="3d" class="col-sm-6" style="float:right;width:50%;min-height:600px">
+				<div id="3d" class="col-sm-6" style="float:right;width:50%;min-height:300px">
 				</div>
 			</div>
 
@@ -131,6 +132,7 @@
 		// });
 
 		var renderer, container, scene, camera, controls;
+		var zUpCont, ocean;
 
 		//Ready renderer and scene
 		(function () {
@@ -145,13 +147,47 @@
 			// add the renderer to the div
 			container.appendChild(renderer.domElement);
 
+			//Scene setup:
 			scene = new THREE.Scene();
+			let sun = new THREE.DirectionalLight(0xffffff, 2);
+			sun.position.set(-512, 246, 128);
+			scene.add(sun);
+
+			//Ocean size: aquarium is circa 40 cm on its longer dimension and 20 cm on the shorter
+			let length = 20;
+			let width = 40;
+			let oSize = 40;
+
+			scene.add(new Skybox(width, length));
+
+			//Use Z up from now on:
+			THREE.Object3D.DefaultUp.set(0, 0, 1);
+			zUpCont = new THREE.Group();
+			zUpCont.rotation.x = -0.5 * Math.PI;
+			scene.add(zUpCont);
 
 			//Camera and controls:
-			camera = new THREE.PerspectiveCamera(50);
+			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
 			camera.up.set(0, 0, 1);
 			scene.add(camera);
-			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			//controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+			camera.position.set(0, 0, 50);
+			//controls.target = new THREE.Vector3(0, 0, 0);
+			camera.lookAt(zUpCont.position);
+			zUpCont.add(camera);
+			camera.rotation.z = - Math.PI;
+
+			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+
+			ocean = new Ocean({
+				sunDir: sun.position.clone().normalize(),
+				size: oSize,
+				length: length,
+				width: width,
+				segments: 127,
+			});
+			zUpCont.add(ocean);
 
 			//Respond to window resize:
 			function onResize() {
@@ -161,67 +197,22 @@
 			}
 			window.addEventListener("resize", onResize);
 			onResize(); //Ensure the initial setup is good too
-
-			//Add lights:
-			scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-			scene.add(function () {
-				let sun = new THREE.DirectionalLight(0xffffff, 1);
-				sun.position.set(1, 1, 1);
-				return sun;
-			}());
 		})();
 
-		camera.position.set(0, 0, 394);
-		controls.target = new THREE.Vector3(0, 0, 0);
-
-		var geometry = new THREE.BoxGeometry(320, 240, 1);
+		var geometry = new THREE.BoxGeometry(7, 12.3, 1);
 		var material = new THREE.MeshBasicMaterial({
-			color: "white"
-		});
-		var background = new THREE.Mesh(geometry, material);
-		scene.add(background);
-
-		var geometry = new THREE.BoxGeometry(54, 113, 1);
-		var material = new THREE.MeshBasicMaterial({
-			color: "blue"
+			color: "yellow"
 		});
 		var cube = new THREE.Mesh(geometry, material);
-		cube.position.z = 0.5;
+		cube.rotation.x = Math.PI / 2;
+		cube.rotation.z = Math.PI / 2;
 		scene.add(cube);
-
-		// var geometry = new THREE.BoxGeometry(0.05, 2, 2);
-		// var material = new THREE.MeshBasicMaterial({
-		// 	color: "green"
-		// });
-		// var base = new THREE.Mesh(geometry, material);
-		// base.position.x = -2;
-		// scene.add(base);
-
-		// var geometry = new THREE.CylinderGeometry(0.05, 0.05, 2, 32);
-		// var material = new THREE.MeshBasicMaterial({
-		// 	color: "yellow"
-		// });
-		// var spring = new THREE.Mesh(geometry, material);
-		// spring.position.x = -1;
-		// spring.position.z = 0.25;
-		// spring.rotation.z = Math.PI / 2;
-		// scene.add(spring);
-
-		// var geometry = new THREE.CylinderGeometry(0.05, 0.05, 2, 32);
-		// var material = new THREE.MeshBasicMaterial({
-		// 	color: "red"
-		// });
-		// var damper = new THREE.Mesh(geometry, material);
-		// damper.position.x = -1;
-		// damper.position.z = -0.25;
-		// damper.rotation.z = Math.PI / 2;
-		// scene.add(damper);
 
 		var tprev = 0;
 		var posX = initX;
 
 		var clock = new THREE.Clock();
-		controls.update();
+		//controls.update();
 		animate();
 
 		function animate() {
@@ -239,6 +230,9 @@
 
 			// damper.position.x = (cube.position.x + base.position.x) / 2;
 			// damper.scale.y = (cube.position.x - base.position.x) / 2;
+
+			ocean.update(time);
+			ocean.water.render();
 
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera);
@@ -278,7 +272,7 @@
 			cap.read(frame);
 
 			// hardcode the initial location of window
-			let trackWindow = new cv.Rect(150, 60, 113, 54);
+			let trackWindow = new cv.Rect(150, 120, 113, 54);
 
 			// set up the ROI for tracking
 			let roi = frame.roi(trackWindow);
@@ -346,9 +340,9 @@
 					// locate object center
 					xCenter = (trackBox.center.x/*  + w/2 */) - resolution.w / 2;
 					yCenter = - (trackBox.center.y/*  + h/2 */) + resolution.h / 2;
-					cube.position.x = xCenter;
-					cube.position.y = yCenter;
-					cube.rotation.z = - Math.PI / 180 * trackBox.angle;
+					cube.position.x = xCenter * 40 / resolution.w;
+					cube.position.z = yCenter * 20 / resolution.h;
+					cube.rotation.z = Math.PI / 2 + Math.PI / 180 * (trackBox.angle + 90);
 
 					// schedule the next one.
 					let delay = 1000 / FPS - (Date.now() - begin);
