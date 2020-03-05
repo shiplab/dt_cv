@@ -77,9 +77,6 @@
 				</div>
 			</div>
 
-			<!-- <p>x position (free oscillation)</p>
-			<div id="x_motion" style="width:100%;height:200px"></div> -->
-
 			<video id="videoInput" width=320 height=240></video>
 
 			<div id="hereresult"></div>
@@ -93,43 +90,14 @@
 
 		var xCenter, yCenter;
 		var resolution = {
-			w: 320,
-			h: 240
+			w: 640,
+			h: 480
 		};
 
 		var m = 30; // kg
 		var k = 20; // N/m
 		var c = 2.9; // (N*s)/m
 		var initX = [1, 0]; // X = [initial position in m, initial velocity in m/s]
-
-		// // x = [xdot, xdotdot]
-		// function freeMotion(t, x) {
-		// 	var F = 0; // N
-		// 	var xdotdot = (F - c * x[1] - k * x[0]) / m;
-		// 	return [x[1], xdotdot];
-		// };
-
-		// var tmax = 100; // s
-		// var sol_free = numeric.dopri(0, tmax, initX, freeMotion);
-		// var x_motion = numeric.rep([sol_free.x.length, 2], 0);
-
-		// for (var i = 0; i < sol_free.x.length; i++) {
-		// 	x_motion[i][0] = sol_free.x[i];
-		// 	x_motion[i][1] = sol_free.y[i][0];
-		// }
-
-		// $.plot("#x_motion", [x_motion], {
-		// 	xaxis: {
-		// 		tickFormatter: function (val, axis) {
-		// 			return val < axis.max ? val.toFixed(2) : "time (s)";
-		// 		}
-		// 	},
-		// 	yaxis: {
-		// 		tickFormatter: function (val, axis) {
-		// 			return val < axis.max ? val.toFixed(2) : "position (m)";
-		// 		},
-		// 	}
-		// });
 
 		var renderer, container, scene, camera, controls;
 		var zUpCont, ocean;
@@ -218,19 +186,6 @@
 		function animate() {
 			var time = clock.getElapsedTime();
 
-			// if (time - tprev !== 0) {
-			// 	// solve ODE for the time step
-			// 	posX = numeric.dopri(tprev, time, posX, freeMotion).at(time);
-			// 	cube.position.x = posX[0];
-			// 	tprev = time;
-			// }
-
-			// spring.position.x = (cube.position.x + base.position.x) / 2;
-			// spring.scale.y = (cube.position.x - base.position.x) / 2;
-
-			// damper.position.x = (cube.position.x + base.position.x) / 2;
-			// damper.scale.y = (cube.position.x - base.position.x) / 2;
-
 			ocean.update(time);
 			ocean.water.render();
 
@@ -250,7 +205,7 @@
 		startAndStop.addEventListener('click', () => {
 			if (!streaming) {
 				utils.clearError();
-				utils.startCamera('qvga', onVideoStarted, 'videoInput');
+				utils.startCamera('vga', onVideoStarted, 'videoInput');
 			} else {
 				utils.stopCamera();
 				onVideoStopped();
@@ -262,7 +217,6 @@
 			startAndStop.innerText = 'Stop';
 			videoInput.width = videoInput.videoWidth;
 			videoInput.height = videoInput.videoHeight;
-			//utils.executeCode('codeEditor');
 
 			let video = document.getElementById('videoInput');
 			let cap = new cv.VideoCapture(video);
@@ -272,7 +226,7 @@
 			cap.read(frame);
 
 			// hardcode the initial location of window
-			let trackWindow = new cv.Rect(150, 120, 113, 54);
+			let trackWindow = new cv.Rect(150, 120, 200, 200);
 
 			// set up the ROI for tracking
 			let roi = frame.roi(trackWindow);
@@ -322,13 +276,6 @@
 					// apply camshift to get the new location
 					[trackBox, trackWindow] = cv.CamShift(dst, trackWindow, termCrit);
 
-					console.log("box", trackBox);
-					console.log("window", trackWindow);
-					//trackBox.size.height = 54;
-					//trackBox.size.width = 113;
-					//trackWindow.height = 54;
-					//trackWindow.width = 113;
-
 					// Draw it on image
 					let pts = cv.rotatedRectPoints(trackBox);
 					cv.line(frame, pts[0], pts[1], [255, 0, 0, 255], 3);
@@ -340,7 +287,7 @@
 					// locate object center
 					xCenter = (trackBox.center.x/*  + w/2 */) - resolution.w / 2;
 					yCenter = - (trackBox.center.y/*  + h/2 */) + resolution.h / 2;
-					cube.position.x = xCenter * 40 / resolution.w;
+					cube.position.x = - xCenter * 40 / resolution.w;
 					cube.position.z = yCenter * 20 / resolution.h;
 					cube.rotation.z = Math.PI / 2 + Math.PI / 180 * (trackBox.angle + 90);
 
