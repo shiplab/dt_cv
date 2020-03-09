@@ -25,7 +25,7 @@
 	<script src="libs/STLLoader.js"></script>
 	<script src="libs/Mirror.js"></script>
 	<script src="libs/WaterShader.js"></script>
-	<!-- <script src="libs/OrbitControls.js"></script> -->
+	<script src="libs/OrbitControls.js"></script>
 	<script src="libs/skybox_from_examples.js"></script>
 	<script src="snippets/Patch_interpolation.js"></script>
 	<script src="snippets/Regular_ocean.js"></script>
@@ -41,7 +41,7 @@
 		<div class="container">
 			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
 			<div class="navbar-header">
-				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github page</a>
+				<a class="navbar-brand" href="https://github.com/icarofonseca/dt_cv">Github page</a>
 			</div>
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
@@ -73,7 +73,7 @@
 				<div class="col">
 					<canvas id="canvasOutput" style="float:left;width:50%;height:360"></canvas>
 				</div>
-				<div id="3d" class="col-sm-6" style="float:right;width:50%;min-height:300px">
+				<div id="3d" class="col-sm-6" style="float:right;width:50%;min-height:450px">
 				</div>
 			</div>
 
@@ -108,7 +108,7 @@
 				antialias: true
 			});
 			renderer.setPixelRatio(window.devicePixelRatio);
-			renderer.setClearColor(0xA9CCE3, 1);
+			renderer.setClearColor("white", 1);
 
 			// get the div that will hold the renderer
 			container = document.getElementById('3d');
@@ -138,10 +138,10 @@
 			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
 			camera.up.set(0, 0, 1);
 			scene.add(camera);
-			//controls = new THREE.OrbitControls(camera, renderer.domElement);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 			camera.position.set(0, 0, 50);
-			//controls.target = new THREE.Vector3(0, 0, 0);
+			controls.target = new THREE.Vector3(0, 0, 0);
 			camera.lookAt(zUpCont.position);
 			zUpCont.add(camera);
 			camera.rotation.z = - Math.PI;
@@ -167,20 +167,32 @@
 			onResize(); //Ensure the initial setup is good too
 		})();
 
-		var geometry = new THREE.BoxGeometry(7, 12.3, 1);
 		var material = new THREE.MeshBasicMaterial({
-			color: "yellow"
+			color: "blue"
 		});
-		var cube = new THREE.Mesh(geometry, material);
-		cube.rotation.x = Math.PI / 2;
-		cube.rotation.z = Math.PI / 2;
-		scene.add(cube);
+
+		var prismGeom = new THREE.BoxGeometry(8, 7, 2.5);
+		var prism = new THREE.Mesh(prismGeom, material);
+		prism.rotation.x = Math.PI / 2;
+		prism.position.x = -2.25;
+
+		var cylGeom = new THREE.CylinderGeometry(3.5, 3.5, 2.5, 40);
+		var cylinder = new THREE.Mesh(cylGeom, material);
+		cylinder.position.x = 1.75;
+
+		var boat = new THREE.Group();
+		boat.add(prism);
+		boat.add(cylinder);
+
+		scene.add(boat);
+		//var axisHelper = new THREE.AxisHelper( 5 );
+		//boat.add(axisHelper);
 
 		var tprev = 0;
 		var posX = initX;
 
 		var clock = new THREE.Clock();
-		//controls.update();
+		controls.update();
 		animate();
 
 		function animate() {
@@ -287,9 +299,9 @@
 					// locate object center
 					xCenter = (trackBox.center.x/*  + w/2 */) - resolution.w / 2;
 					yCenter = - (trackBox.center.y/*  + h/2 */) + resolution.h / 2;
-					cube.position.x = - xCenter * 40 / resolution.w;
-					cube.position.z = yCenter * 20 / resolution.h;
-					cube.rotation.z = Math.PI / 2 + Math.PI / 180 * (trackBox.angle + 90);
+					boat.position.x = xCenter * 40 / resolution.w;
+					boat.position.y = yCenter * 20 / resolution.h;
+					boat.rotation.z = - Math.PI / 180 * (trackBox.angle - 90);
 
 					// schedule the next one.
 					let delay = 1000 / FPS - (Date.now() - begin);
