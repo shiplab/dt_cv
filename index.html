@@ -27,6 +27,7 @@
 	<script src="libs/WaterShader.js"></script>
 	<script src="libs/OrbitControls.js"></script>
 	<script src="libs/skybox_from_examples.js"></script>
+	<script src="libs/zingchart.min.js"></script>
 	<script src="snippets/Patch_interpolation.js"></script>
 	<script src="snippets/Regular_ocean.js"></script>
 
@@ -70,14 +71,16 @@
 			<p class="err" id="errorMessage"></p>
 
 			<div class="row">
-				<div class="col">
-					<canvas id="canvasOutput" style="float:left;width:50%;height:360"></canvas>
+				<div class="col-sm-6">
+					<canvas id="canvasOutput" style="width:100%;height:360"></canvas>
 				</div>
-				<div id="3d" class="col-sm-6" style="float:right;width:50%;min-height:450px">
+				<div class="col-sm-6">
+					<div id="3d" style="width:100%;height:450px"></div>
+					<div id="plotBoatMov" style="position:relative; float:left; width:100%; height:150px"></div>
 				</div>
 			</div>
 
-			<video id="videoInput" width=320 height=240></video>
+			<video id="videoInput" width=640 height=480></video>
 
 			<div id="hereresult"></div>
 		</div>
@@ -87,6 +90,11 @@
 
 	<script>
 		"use strict";
+
+		// Calibration
+		// Ship plan, X cm x Z cm
+		// Image: 640 px x 480 px
+		// Threshold: X cm, Z cm, rotY degrees
 
 		var xCenter, yCenter;
 		var resolution = {
@@ -140,7 +148,7 @@
 			scene.add(camera);
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-			camera.position.set(0, 0, 50);
+			camera.position.set(0, -50, 0);
 			controls.target = new THREE.Vector3(0, 0, 0);
 			camera.lookAt(zUpCont.position);
 			zUpCont.add(camera);
@@ -325,6 +333,80 @@
 			startAndStop.removeAttribute('disabled');
 		});
 
+		// movement plots
+		var feedMovPlot = function (callback) {
+			var tick = {};
+			tick.plot0 = boat.position.x;
+			tick.plot1 = boat.position.y;
+			tick.plot2 = boat.rotation.z;
+			callback(JSON.stringify(tick));
+		};
+
+		var myDashboardMooring = {
+			"graphset": [
+				{
+					"type": "line",
+					"height": "100%",
+					"width": "100%",
+					"x": "0%",
+					"y": "0%",
+					"plot": {
+						"aspect": "spline",
+						"marker": { "visible": true },
+					},
+					"series": [{
+						"values": [0],
+						"text": "Surge (cm)"
+					}, {
+						"values": [0],
+						"text": "Heave (cm)"
+					}, {
+						"values": [0],
+						"text": "Pitch (rad)"
+					}],
+					"refresh": {
+						"type": "feed",
+						"transport": "js",
+						"url": "feedMovPlot()",
+						"method": "pull",
+						"interval": 50,
+						"adjust-scale": true
+					},
+					title: {
+						text: "Heave Movement",
+						marginBottom: "0",
+						fontFamily: "Helvetica",
+						fontWeight: "none",
+						fontSize: 12
+					},
+					plotarea: {
+						"margin": "5% 5% 5% 5%",
+					},
+					legend: {
+						"layout": "float",
+						"background-color": "none",
+						"border-width": 0,
+						"shadow": 0,
+						"text-align": "middle",
+						"offsetY": 12.5,
+						"align": "center",
+						"item": {
+							"font-color": "#black",
+							"font-size": "10px"
+						}
+					}
+				}
+			]
+		};
+
+		window.onload = function () {
+			zingchart.render({
+				id: "plotBoatMov",
+				height: "100%",
+				width: "100%",
+				data: myDashboardMooring,
+			});
+		};
 	</script>
 
 </body>
