@@ -36,7 +36,6 @@
 </head>
 
 <body>
-
 	<!-- Navigation -->
 	<nav class="navbar navbar-inverse">
 		<div class="container">
@@ -57,12 +56,11 @@
 
 	<!-- Container creates the space -->
 	<div class="container">
-
 		<!-- Row creates horizontal groups of columns -->
 		<div class="row">
 			<div class="col-md-12 text-center">
 				<h2>Digital Twin</h2>
-				<p>Interactive version of the ECMS paper.</p>
+				<p>Interactive version of the ECMS 2020 paper.</p>
 			</div>
 
 			<div>
@@ -73,6 +71,31 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<canvas id="canvasOutput" style="width:100%;height:360"></canvas>
+					<table style="width:100%">
+						<tr>
+							<th>Calibration</th>
+							<th>Horizontal</th>
+							<th>Vertical</th>
+							<th>Rotational</th>
+						</tr>
+						<tr>
+							<td>Resolution</td>
+							<td id="resHori">640 px</td>
+							<td id="resVert">480 px</td>
+						</tr>
+						<tr>
+							<td>Distance</td>
+							<td id="distHori">40 cm</td>
+							<td id="distVert">30 cm</td>
+						</tr>
+						<tr>
+							<td>Threshold</td>
+							<td id="thresHori">5 cm</td>
+							<td id="thresVert">2 cm</td>
+							<td id="thresRot">10 degrees</td>
+						</tr>
+					</table>
+					<div id="warning" style="color:red;"></div>
 				</div>
 				<div class="col-sm-6">
 					<div id="3d" style="width:100%;height:450px"></div>
@@ -81,8 +104,6 @@
 			</div>
 
 			<video id="videoInput" width=640 height=480></video>
-
-			<div id="hereresult"></div>
 		</div>
 
 	</div>
@@ -90,25 +111,23 @@
 
 	<script>
 		"use strict";
-
-		// Calibration
-		// Ship plan, X cm x Z cm
-		// Image: 640 px x 480 px
-		// Threshold: X cm, Z cm, rotY degrees
-
-		var xCenter, yCenter;
-		var resolution = {
-			w: 640,
-			h: 480
-		};
-
-		var m = 30; // kg
-		var k = 20; // N/m
-		var c = 2.9; // (N*s)/m
-		var initX = [1, 0]; // X = [initial position in m, initial velocity in m/s]
-
+		var xCenter, yCenter, rotDeg;
 		var renderer, container, scene, camera, controls;
 		var zUpCont, ocean;
+
+		var resolution = {
+			w: parseFloat(document.getElementById("resHori").innerHTML),
+			h: parseFloat(document.getElementById("resVert").innerHTML)
+		};
+		var distance = {
+			w: parseFloat(document.getElementById("distHori").innerHTML),
+			h: parseFloat(document.getElementById("distVert").innerHTML)
+		};
+		var threshold = {
+			w: parseFloat(document.getElementById("thresHori").innerHTML),
+			h: parseFloat(document.getElementById("thresVert").innerHTML),
+			r: parseFloat(document.getElementById("thresRot").innerHTML)
+		};
 
 		//Ready renderer and scene
 		(function () {
@@ -196,8 +215,10 @@
 		//var axisHelper = new THREE.AxisHelper( 5 );
 		//boat.add(axisHelper);
 
-		var tprev = 0;
-		var posX = initX;
+		// Motion tracking can be used to estimate velocity.
+		//var initX = [1, 0]; // X = [initial position in m, initial velocity in m/s]
+		//var tprev = 0;
+		//var posX = initX;
 
 		var clock = new THREE.Clock();
 		controls.update();
@@ -307,9 +328,21 @@
 					// locate object center
 					xCenter = (trackBox.center.x/*  + w/2 */) - resolution.w / 2;
 					yCenter = - (trackBox.center.y/*  + h/2 */) + resolution.h / 2;
-					boat.position.x = xCenter * 40 / resolution.w;
-					boat.position.y = yCenter * 20 / resolution.h;
-					boat.rotation.z = - Math.PI / 180 * (trackBox.angle - 90);
+					rotDeg = - (trackBox.angle - 90);
+					boat.position.x = xCenter * distance.w / resolution.w;
+					boat.position.y = yCenter * distance.h / resolution.h;
+					boat.rotation.z = Math.PI / 180 * rotDeg;
+
+					document.getElementById("warning").innerHTML = "";
+					if (boat.position.x < - threshold.w || threshold.w < boat.position.x) {
+						document.getElementById("warning").innerHTML += "Surge position is " + boat.position.x.toFixed(2) + " cm.<br>";
+					}
+					if (boat.position.y < - threshold.h || threshold.h < boat.position.y) {
+						document.getElementById("warning").innerHTML += "Heave position is " + boat.position.y.toFixed(2) + " cm.<br>";
+					}
+					if (rotDeg < - threshold.r || threshold.r < rotDeg) {
+						document.getElementById("warning").innerHTML += "Pitch rotation is " + rotDeg.toFixed(2) + " degrees.<br>";
+					}
 
 					// schedule the next one.
 					let delay = 1000 / FPS - (Date.now() - begin);
@@ -338,7 +371,7 @@
 			var tick = {};
 			tick.plot0 = boat.position.x;
 			tick.plot1 = boat.position.y;
-			tick.plot2 = boat.rotation.z;
+			//tick.plot2 = boat.rotation.z;
 			callback(JSON.stringify(tick));
 		};
 
@@ -360,10 +393,10 @@
 					}, {
 						"values": [0],
 						"text": "Heave (cm)"
-					}, {
-						"values": [0],
-						"text": "Pitch (rad)"
-					}],
+					},/* {
+					// 	"values": [0],
+					// 	"text": "Pitch (rad)"
+					// }*/],
 					"refresh": {
 						"type": "feed",
 						"transport": "js",
@@ -372,15 +405,8 @@
 						"interval": 50,
 						"adjust-scale": true
 					},
-					title: {
-						text: "Heave Movement",
-						marginBottom: "0",
-						fontFamily: "Helvetica",
-						fontWeight: "none",
-						fontSize: 12
-					},
 					plotarea: {
-						"margin": "5% 5% 5% 5%",
+						"margin": "5% 5% 20% 5%",
 					},
 					legend: {
 						"layout": "float",
@@ -408,7 +434,6 @@
 			});
 		};
 	</script>
-
 </body>
 
 </html>
