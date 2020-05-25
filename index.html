@@ -111,7 +111,7 @@
 
 	<script>
 		"use strict";
-		var xCenter, yCenter, rotDeg;
+		var xCenter, zCenter, rotDeg;
 		var renderer, container, scene, camera, controls;
 		var zUpCont, ocean;
 
@@ -152,13 +152,9 @@
 			let length = 20;
 			let width = 40;
 			let oSize = 40;
-
 			scene.add(new Skybox(width, length));
 
-			//Use Z up from now on:
-			THREE.Object3D.DefaultUp.set(0, 0, 1);
 			zUpCont = new THREE.Group();
-			zUpCont.rotation.x = -0.5 * Math.PI;
 			scene.add(zUpCont);
 
 			//Camera and controls:
@@ -183,6 +179,7 @@
 				segments: 127,
 			});
 			zUpCont.add(ocean);
+			scene.rotation.x = -Math.PI/2;
 
 			//Respond to window resize:
 			function onResize() {
@@ -200,11 +197,11 @@
 
 		var prismGeom = new THREE.BoxGeometry(8, 7, 2.5);
 		var prism = new THREE.Mesh(prismGeom, material);
-		prism.rotation.x = Math.PI / 2;
 		prism.position.x = -2.25;
 
 		var cylGeom = new THREE.CylinderGeometry(3.5, 3.5, 2.5, 40);
 		var cylinder = new THREE.Mesh(cylGeom, material);
+		cylinder.rotation.x = Math.PI / 2;
 		cylinder.position.x = 1.75;
 
 		var boat = new THREE.Group();
@@ -327,11 +324,11 @@
 
 					// locate object center
 					xCenter = (trackBox.center.x/*  + w/2 */) - resolution.w / 2;
-					yCenter = - (trackBox.center.y/*  + h/2 */) + resolution.h / 2;
-					rotDeg = - (trackBox.angle - 90);
+					zCenter = - (trackBox.center.y/*  + h/2 */) + resolution.h / 2;
+					rotDeg = trackBox.angle - 90;
 					boat.position.x = xCenter * distance.w / resolution.w;
-					boat.position.y = yCenter * distance.h / resolution.h;
-					boat.rotation.z = Math.PI / 180 * rotDeg;
+					boat.position.z = zCenter * distance.h / resolution.h;
+					boat.rotation.y = Math.PI / 180 * rotDeg;
 
 					document.getElementById("warning").innerHTML = "";
 					if (boat.position.x < - threshold.w || threshold.w < boat.position.x) {
