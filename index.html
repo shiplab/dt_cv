@@ -113,7 +113,7 @@
 		"use strict";
 		var xCenter, zCenter, rotDeg;
 		var renderer, container, scene, camera, controls;
-		var zUpCont, ocean;
+		var zUpCont, boat, ocean;
 
 		var resolution = {
 			w: parseFloat(document.getElementById("resHori").innerHTML),
@@ -179,7 +179,7 @@
 				segments: 127,
 			});
 			zUpCont.add(ocean);
-			scene.rotation.x = -Math.PI/2;
+			scene.rotation.x = -Math.PI / 2;
 
 			//Respond to window resize:
 			function onResize() {
@@ -191,26 +191,17 @@
 			onResize(); //Ensure the initial setup is good too
 		})();
 
-		var material = new THREE.MeshBasicMaterial({
-			color: "blue"
+		var loader = new THREE.STLLoader();
+		loader.load('data/boat.stl', function (geometry) {
+			var material = new THREE.MeshPhongMaterial({ color: "blue", specular: 0x111111, shininess: 200 });
+			boat = new THREE.Mesh(geometry, material);
+			boat.castShadow = true;
+			boat.receiveShadow = true;
+
+			scene.add(boat);
+			//var axisHelper = new THREE.AxisHelper( 5 );
+			//boat.add(axisHelper);
 		});
-
-		var prismGeom = new THREE.BoxGeometry(8, 7, 2.5);
-		var prism = new THREE.Mesh(prismGeom, material);
-		prism.position.x = -2.25;
-
-		var cylGeom = new THREE.CylinderGeometry(3.5, 3.5, 2.5, 40);
-		var cylinder = new THREE.Mesh(cylGeom, material);
-		cylinder.rotation.x = Math.PI / 2;
-		cylinder.position.x = 1.75;
-
-		var boat = new THREE.Group();
-		boat.add(prism);
-		boat.add(cylinder);
-
-		scene.add(boat);
-		//var axisHelper = new THREE.AxisHelper( 5 );
-		//boat.add(axisHelper);
 
 		// Motion tracking can be used to estimate velocity.
 		//var initX = [1, 0]; // X = [initial position in m, initial velocity in m/s]
