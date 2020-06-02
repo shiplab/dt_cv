@@ -64,8 +64,20 @@
 			</div>
 
 			<div>
-				<div class="control"><button id="startAndStop" disabled>Start</button></div>
+				<div class="control">
+					<button id="startAndStop" disabled>Start</button>
+					<!-- <button href="path/to/file.txt" id="download" onclick="downloadFile()">Download</button> -->
+					<button>
+						<a href="path/to/file.txt" id="download" download="example.json" onclick="downloadFile()" style="color: inherit;text-decoration: none;">
+							Download Results
+						</a>
+					</button>
+
+
+				</div>
+
 			</div>
+
 			<p class="err" id="errorMessage"></p>
 
 			<div class="row">
@@ -114,6 +126,25 @@
 		var xCenter, zCenter, rotDeg;
 		var renderer, container, scene, camera, controls;
 		var zUpCont, boat, ocean;
+
+		// Inserting global variable of the exported file @ferrari212
+		var boatObject = {};
+		boatObject.measuredData = {"position": {}, "rotation": {}, "time": []};
+		boatObject.measuredData.position = {"x":[], "z":[]};
+		boatObject.measuredData.rotation = {"y":[]};
+
+		function downloadFile () {
+			//Get the file contents
+			var txtFile = "test.txt";
+			var file = new File([], txtFile);
+			var str = JSON.stringify(boatObject);
+
+			//Save the file contents as a DataURI
+			var dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(str);
+
+			//Write it as the href for the link
+			var link = document.getElementById('download').href = dataUri;
+		}
 
 		var resolution = {
 			w: parseFloat(document.getElementById("resHori").innerHTML),
@@ -371,6 +402,12 @@
 					boat.position.x = xCenter * distance.w / resolution.w;
 					boat.position.z = zCenter * distance.h / resolution.h;
 					boat.rotation.y = Math.PI / 180 * rotDeg;
+
+					// Insert the results in the object @ferrari212
+					boatObject.measuredData.position.x.push(boat.position.x);
+					boatObject.measuredData.position.z.push(boat.position.z);
+					boatObject.measuredData.rotation.y.push(boat.rotation.y);
+					boatObject.measuredData.time.push(clock.getElapsedTime());
 
 					document.getElementById("warning").innerHTML = "";
 					if (boat.position.x < - threshold.w || threshold.w < boat.position.x) {
