@@ -270,7 +270,9 @@ THREE.Mirror.prototype.render = function () {
 		var visible = this.material.visible;
 		this.material.visible = false;
 
-		this.renderer.render( scene, this.mirrorCamera, this.renderTarget, true );
+		this.renderer.setRenderTarget( this.renderTarget );
+		this.renderer.render( scene, this.mirrorCamera );
+		this.renderer.setRenderTarget( null );
 
 		this.material.visible = visible;
 

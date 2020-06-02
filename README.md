@@ -1,5 +1,5 @@
 # dt_cv
-Computer vision tools for creation of digital twin.
+A digital twin of a toy boat based on computer vision. Paper available at https://doi.org/10.7148/2020-0207.
 
 ## References
 Based on the following [OpenCV](https://opencv.org/) examples:
