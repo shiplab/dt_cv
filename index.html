@@ -22,11 +22,11 @@
 
 	<!-- Three script -->
 	<script src="libs/three.js"></script>
-	<script src="libs/STLLoader.js"></script>
+	<script src="libs/GLTFLoader.js"></script>
+	<script src="libs/GLTFExporter.js"></script>
 	<script src="libs/Mirror.js"></script>
 	<script src="libs/WaterShader.js"></script>
 	<script src="libs/OrbitControls.js"></script>
-	<script src="libs/skybox_from_examples.js"></script>
 	<script src="libs/zingchart.min.js"></script>
 	<script src="snippets/Patch_interpolation.js"></script>
 	<script src="snippets/Regular_ocean.js"></script>
@@ -152,22 +152,31 @@
 			let length = 20;
 			let width = 40;
 			let oSize = 40;
-			scene.add(new Skybox(width, length));
+			//scene.add(new Skybox(width, length));
+			var aqGeom = new THREE.BoxBufferGeometry(width, length, length);
+			var aqMaterial = new THREE.MeshBasicMaterial({
+				color: 0xA9CCE3,
+				side: THREE.BackSide/*,
+				depthWrite: false*/
+			});
+			var aquarium = new THREE.Mesh(aqGeom, aqMaterial);
+			scene.add(aquarium);
 
 			zUpCont = new THREE.Group();
 			scene.add(zUpCont);
 
 			//Camera and controls:
 			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
-			camera.up.set(0, 0, 1);
-			scene.add(camera);
+			camera.up.set(0, 1, 0);
+			//scene.add(camera);
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-			camera.position.set(0, -50, 0);
+			camera.position.set(0, 0, 50);
 			controls.target = new THREE.Vector3(0, 0, 0);
 			camera.lookAt(zUpCont.position);
-			zUpCont.add(camera);
-			camera.rotation.z = - Math.PI;
+			//zUpCont.add(camera);
+			//camera.rotation.z = - Math.PI;
+			controls.update();
 
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
@@ -191,17 +200,59 @@
 			onResize(); //Ensure the initial setup is good too
 		})();
 
-		var loader = new THREE.STLLoader();
-		loader.load('data/boat.stl', function (geometry) {
-			var material = new THREE.MeshPhongMaterial({ color: "blue", specular: 0x111111, shininess: 200 });
-			boat = new THREE.Mesh(geometry, material);
-			boat.castShadow = true;
-			boat.receiveShadow = true;
-
+		var loader = new THREE.GLTFLoader();
+		loader.load('data/boat.glb', function (gltf) {
+			boat = gltf.scene;
+			boat.rotation.x = -Math.PI / 2;
 			scene.add(boat);
-			//var axisHelper = new THREE.AxisHelper( 5 );
-			//boat.add(axisHelper);
+			// var axisHelper = new THREE.AxisHelper( 5 );
+			// boat.add(axisHelper);
+
+			// gltf.animations; // Array<THREE.AnimationClip>
+			// gltf.scene; // THREE.Group
+			// gltf.scenes; // Array<THREE.Group>
+			// gltf.cameras; // Array<THREE.Camera>
+			// gltf.asset; // Object
 		});
+
+		function exportGLTF(input) {
+			var gltfExporter = new THREE.GLTFExporter();
+
+			var options = {
+				trs: false,
+				onlyVisible: true,
+				truncateDrawRange: true,
+				binary: false,
+				embedImages: true,
+				forceIndices: false,
+				forcePowerOfTwoTextures: false,
+				maxTextureSize: Infinity // To prevent NaN value
+			};
+			gltfExporter.parse(input, function (result) {
+				if (result instanceof ArrayBuffer) {
+					saveArrayBuffer(result, 'scene.glb');
+				} else {
+					var output = JSON.stringify(result, null, 2);
+					console.log(output);
+					save(new Blob([output], { type: 'text/plain' }), 'scene.gltf');
+				}
+			}, options);
+		}
+
+		var link = document.createElement('a');
+		link.style.display = 'none';
+		document.body.appendChild(link); // Firefox workaround, see #6594
+
+		function saveArrayBuffer(buffer, filename) {
+			save(new Blob([buffer], { type: 'application/octet-stream' }), filename);
+		}
+
+		function save(blob, filename) {
+			link.href = URL.createObjectURL(blob);
+			link.download = filename;
+			link.click();
+			// URL.revokeObjectURL( url ); breaks Firefox...
+		}
 
 		// Motion tracking can be used to estimate velocity.
 		//var initX = [1, 0]; // X = [initial position in m, initial velocity in m/s]
