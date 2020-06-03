@@ -1,0 +1,48 @@
+{
+	"asset": {
+		"assetId1": {
+			"type": "boat",
+			"topology": {
+				"visualization": {
+					"STL": "boat.stl",
+					"glTF": "boat.gltf",
+					"GLB": "boat.glb"
+				},
+				"position": {
+					"x": 0,
+					"y": 0,
+					"z": 0
+				}
+			}
+		}
+	},
+	"analysis": {},
+	"measuredData": {
+		"measuredDataId1": {
+			"description": "Format: Time, Ship motion in the format: vessel pos x, z, vessel rot y.",
+			"logId2": {
+				"readings": "motion_log.json",
+				"versionDate": "2019-12-16T18:31:00Z"
+			}
+		}
+	},
+	"systems": {
+		"structure": {
+			"mainHull": {
+				"description": "High level description of the hull.",
+				"assetById": ["assetId1"],
+				"analysisById": [],
+				"measuredDataById": ["measuredDataId1"]
+			}
+		}
+	},
+	"SFI": {
+		"2": {
+			"group": "Hull.",
+			"description": "High level description of the hull.",
+			"assetById": ["assetId1"],
+			"analysisById": [],
+			"measuredDataById": ["measuredDataId1"]
+		}
+	}
+}
