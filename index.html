@@ -419,7 +419,8 @@
 					boatObject.measuredData.position.x.push(boat.position.x);
 					boatObject.measuredData.position.z.push(boat.position.z);
 					boatObject.measuredData.rotation.y.push(boat.rotation.y);
-					boatObject.measuredData.time.push(clock.getElapsedTime());
+					var date = new Date(begin).toISOString();
+					boatObject.measuredData.time.push(date);
 
 					document.getElementById("warning").innerHTML = "";
 					if (boat.position.x < - threshold.w || threshold.w < boat.position.x) {
