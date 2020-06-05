@@ -60,7 +60,7 @@
 		<div class="row">
 			<div class="col-md-12 text-center">
 				<h2>Digital Twin</h2>
-				<p>Interactive version of the ECMS 2020 paper.</p>
+				<p>Simple digital twin demo based on computer vision. <a href="https://doi.org/10.7148/2020-0207">Read the paper.</a></p>
 			</div>
 
 			<div>
@@ -145,19 +145,6 @@
 			console.log('error');
 		})
 
-		boatObject.measuredData = {
-			"position": {},
-			"rotation": {},
-			"time": []
-		};
-		boatObject.measuredData.position = {
-			"x": [],
-			"z": []
-		};
-		boatObject.measuredData.rotation = {
-			"y": []
-		};
-
 		boatObject.TimeSeriesData = []
 		boatObject.TimeSeriesData[0] = {
 			"DataConfigurationReference": {
@@ -167,7 +154,7 @@
 			"TabularData": [{
 				"NumberOfDataSet": "",
 				"NumberOfDataChannel": "3",
-				"DataChannelID": ["X", "Z", "Rot"],
+				"DataChannelID": ["X", "Z", "RotY"],
 				"DataSet": []
 			}]
 		};
@@ -511,15 +498,8 @@
 						boat.rotation.y = Math.PI / 180 * rotDeg;
 
 						// Insert the results in the object @ferrari212
-						boatObject.measuredData.position.x.push(boat.position.x);
-						boatObject.measuredData.position.z.push(boat.position.z);
-						boatObject.measuredData.rotation.y.push(boat.rotation.y);
 						var date = new Date(begin).toISOString();
-						boatObject.measuredData.time.push(date);
-						//console.log(date);
-					}
-
-					DataSet.push({
+						DataSet.push({
 						"TimeStamp": date,
 						"Value": [
 							boat.position.x.toString(),
@@ -527,7 +507,7 @@
 							boat.rotation.y.toString()
 						],
 					});
-					// console.log(boat.position.x.toString());
+					}
 
 					document.getElementById("warning").innerHTML = "";
 					if (boat.position.x < -threshold.w || threshold.w < boat.position.x) {
