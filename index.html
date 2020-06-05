@@ -168,12 +168,18 @@
 				"DataChannelID": ["X", "Z", "Rot"],
 				"DataSet": []
 			}]
-		}
+		};
+
+		var TabularData = boatObject.TimeSeriesData[0].TabularData[0];
+		var DataSet = TabularData.DataSet;
 
 		function downloadFile() {
 			//Get the file contents
 			var txtFile = "test.txt";
 			var file = new File([], txtFile);
+
+			// Finish boat object
+			TabularData.NumberOfDataSet = DataSet.length.toString();
 			var str = JSON.stringify(boatObject);
 
 			//Save the file contents as a DataURI
@@ -475,6 +481,16 @@
 					boatObject.measuredData.rotation.y.push(boat.rotation.y);
 					var date = new Date(begin).toISOString();
 					boatObject.measuredData.time.push(date);
+
+					DataSet.push({
+						"TimeStamp": date,
+						"Value": [
+							boat.position.x.toString(),
+							boat.position.z.toString(),
+							boat.rotation.y.toString()
+						],
+					});
+					// console.log(boat.position.x.toString());
 
 					document.getElementById("warning").innerHTML = "";
 					if (boat.position.x < -threshold.w || threshold.w < boat.position.x) {
