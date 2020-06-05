@@ -1,0 +1,94 @@
+{
+  "Package": {
+    "Header": {
+      "ShipID": "IMO1234567",
+      "TimeSpan": {
+        "Start": "2016-01-01T12:00:00Z",
+        "End": "2016-01-03T12:00:00Z"
+      },
+      "DateCreated": "2016-01-03T12:00:00Z",
+      "DateModified": "2016-01-03T12:00:00Z",
+      "Author": "Shipboard data server",
+      "SystemConfiguration": [{
+        "ID": "SystemConfiguration",
+        "TimeStamp": "2016-01-03T00:00:00Z"
+      }]
+    },
+    "TimeSeriesData": [{
+      "DataConfigurationReference": {
+        "ID": "DataChannelList.xml",
+        "TimeStamp": "2016-01-03T00:00:00Z"
+      },
+      "TabularData": [{
+        "NumberOfDataSet": "2",
+        "NumberOfDataChannel": "2",
+        "DataChannelID": ["X", "Time"],
+        "DataSet": [{
+          "TimeStamp": "2016-01-03T00:00:00Z",
+          "Value": ["100", "200"]
+        }, {
+          "TimeStamp": "2016-01-03T12:00:00Z",
+          "Value": ["100", "200"]
+        }, {
+          "TimeStamp": "2016-01-04T00:00:00Z",
+          "Value": ["100", "200"]
+        }]
+      }, {
+        "NumberOfDataSet": "3",
+        "NumberOfDataChannel": "1",
+        "DataChannelID": ["0110"],
+        "DataSet": [{
+          "TimeStamp": "2016-01-03T00:00:00Z",
+          "Value": ["100"]
+        }, {
+          "TimeStamp": "2016-01-03T06:00:00Z",
+          "Value": ["150"]
+        }, {
+          "TimeStamp": "2016-01-03T12:00:00Z",
+          "Value": ["200"]
+        }]
+      }],
+      "EventData": {
+        "NumberOfDataSet": "3",
+        "DataSet": [{
+          "TimeStamp": "2016-01-03T00:00:00Z",
+          "DataChannelID": "0011",
+          "Value": "HIGH"
+        }, {
+          "TimeStamp": "2016-01-03T12:00:00Z",
+          "DataChannelID": "0021",
+          "Value": "HIGH"
+        }, {
+          "TimeStamp": "2016-01-04T00:00:00Z",
+          "DataChannelID": "0011",
+          "Value": "NORMAL"
+        }]
+      }
+    }, {
+      "DataConfigurationReference": {
+        "ID": "DataChannelList.xml",
+        "TimeStamp": "2016-01-04T00:00:00Z"
+      },
+      "TabularData": [{
+        "NumberOfDataSet": "1",
+        "NumberOfDataChannel": "2",
+        "NumberOfDataSet": ["0010", "0020"],
+        "DataSet": [{
+          "TimeStamp": "2016-01-04T00:00:00Z",
+          "Value": ["101", "210"]
+        }]
+      }, {
+        "NumberOfDataSet": "2",
+        "NumberOfDataChannel": "1",
+        "DataChannelID": ["0110"],
+        "DataSet": [{
+          "TimeStamp": "2016-01-04T00:00:00Z",
+          "Value": ["100.8"]
+        }, {
+          "TimeStamp": "2016-01-04T00:00:00Z",
+          "Value": ["101.0"]
+        }]
+      }]
+    }]
+  }
+}

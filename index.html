@@ -46,8 +46,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/logo.png"
-							alt="Shiplab logo" style="height:150%">
+					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/logo.png" alt="Shiplab logo" style="height:150%">
 					</a>
 				</div>
 			</div>
@@ -68,8 +67,7 @@
 					<button id="startAndStop" disabled>Start</button>
 					<!-- <button href="path/to/file.txt" id="download" onclick="downloadFile()">Download</button> -->
 					<button>
-						<a href="path/to/file.txt" id="download" download="example.json" onclick="downloadFile()"
-							style="color: inherit;text-decoration: none;">
+						<a href="path/to/file.txt" id="download" download="example.json" onclick="downloadFile()" style="color: inherit;text-decoration: none;">
 							Download Results
 						</a>
 					</button>
@@ -130,9 +128,47 @@
 
 		// Inserting global variable of the exported file @ferrari212
 		var boatObject = {};
-		boatObject.measuredData = { "position": {}, "rotation": {}, "time": [] };
-		boatObject.measuredData.position = { "x": [], "z": [] };
-		boatObject.measuredData.rotation = { "y": [] };
+		var lenghObject;
+
+		let jsondata;
+		fetch("data/time_series_ISO.json").then(
+			function(u) {
+				return u.json();
+			}
+		).then(
+			function(json) {
+				jsondata = json;
+			}
+		).catch(error => {
+			console.log('error');
+		})
+
+		boatObject.measuredData = {
+			"position": {},
+			"rotation": {},
+			"time": []
+		};
+		boatObject.measuredData.position = {
+			"x": [],
+			"z": []
+		};
+		boatObject.measuredData.rotation = {
+			"y": []
+		};
+
+		boatObject.TimeSeriesData = []
+		boatObject.TimeSeriesData[0] = {
+			"DataConfigurationReference": {
+				"ID": "DataChannelList.xml",
+				"TimeStamp": "2016-01-03T00:00:00Z"
+			},
+			"TabularData": [{
+				"NumberOfDataSet": "",
+				"NumberOfDataChannel": "3",
+				"DataChannelID": ["X", "Z", "Rot"],
+				"DataSet": []
+			}]
+		}
 
 		function downloadFile() {
 			//Get the file contents
@@ -170,7 +206,7 @@
 			// import binary glTF file
 			var boatPath = "data/" + schema.asset.assetId1.topology.visualization.GLB;
 			var loader = new THREE.GLTFLoader();
-			loader.load(boatPath, function (gltf) {
+			loader.load(boatPath, function(gltf) {
 				boat = gltf.scene;
 				boat.children["0"].geometry.rotateX(Math.PI / 2);
 				boat.position.x = schema.asset.assetId1.topology.position.x;
@@ -189,7 +225,7 @@
 		}
 
 		//Ready renderer and scene
-		(function () {
+		(function() {
 			renderer = new THREE.WebGLRenderer({
 				antialias: true
 			});
@@ -215,8 +251,9 @@
 			var aqGeom = new THREE.BoxBufferGeometry(width, length, length);
 			var aqMaterial = new THREE.MeshBasicMaterial({
 				color: 0xA9CCE3,
-				side: THREE.BackSide/*,
-				depthWrite: false*/
+				side: THREE.BackSide
+				/*,
+								depthWrite: false*/
 			});
 			var aquarium = new THREE.Mesh(aqGeom, aqMaterial);
 			scene.add(aquarium);
@@ -246,7 +283,7 @@
 				segments: 127,
 			});
 			zUpCont.add(ocean);
-			scene.rotation.x = - Math.PI / 2;
+			scene.rotation.x = -Math.PI / 2;
 
 			//Respond to window resize:
 			function onResize() {
@@ -271,13 +308,15 @@
 				forcePowerOfTwoTextures: false,
 				maxTextureSize: Infinity // To prevent NaN value
 			};
-			gltfExporter.parse(input, function (result) {
+			gltfExporter.parse(input, function(result) {
 				if (result instanceof ArrayBuffer) {
 					saveArrayBuffer(result, 'scene.glb');
 				} else {
 					var output = JSON.stringify(result, null, 2);
 					console.log(output);
-					save(new Blob([output], { type: 'text/plain' }), 'scene.gltf');
+					save(new Blob([output], {
+						type: 'text/plain'
+					}), 'scene.gltf');
 				}
 			}, options);
 		}
@@ -287,7 +326,9 @@
 		document.body.appendChild(link); // Firefox workaround, see #6594
 
 		function saveArrayBuffer(buffer, filename) {
-			save(new Blob([buffer], { type: 'application/octet-stream' }), filename);
+			save(new Blob([buffer], {
+				type: 'application/octet-stream'
+			}), filename);
 		}
 
 		function save(blob, filename) {
@@ -341,6 +382,9 @@
 			videoInput.width = videoInput.videoWidth;
 			videoInput.height = videoInput.videoHeight;
 
+			// Insert tabular data
+			boatObject.TimeSeriesData.push({})
+
 			let video = document.getElementById('videoInput');
 			let cap = new cv.VideoCapture(video);
 
@@ -369,7 +413,12 @@
 			cv.normalize(roiHist, roiHist, 0, 255, cv.NORM_MINMAX);
 
 			// delete useless mats.
-			roi.delete(); hsvRoi.delete(); mask.delete(); low.delete(); high.delete(); hsvRoiVec.delete();
+			roi.delete();
+			hsvRoi.delete();
+			mask.delete();
+			low.delete();
+			high.delete();
+			hsvRoiVec.delete();
 
 			// Setup the termination criteria, either 10 iteration or move by atleast 1 pt
 			let termCrit = new cv.TermCriteria(cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 1);
@@ -381,11 +430,16 @@
 			let trackBox = null;
 
 			const FPS = 30;
+
 			function processVideo() {
 				try {
 					if (!streaming) {
 						// clean and stop.
-						frame.delete(); dst.delete(); hsvVec.delete(); roiHist.delete(); hsv.delete();
+						frame.delete();
+						dst.delete();
+						hsvVec.delete();
+						roiHist.delete();
+						hsv.delete();
 						return;
 					}
 					let begin = Date.now();
@@ -408,8 +462,8 @@
 					cv.imshow('canvasOutput', frame);
 
 					// locate object center
-					xCenter = (trackBox.center.x/*  + w/2 */) - resolution.w / 2;
-					zCenter = - (trackBox.center.y/*  + h/2 */) + resolution.h / 2;
+					xCenter = (trackBox.center.x /*  + w/2 */ ) - resolution.w / 2;
+					zCenter = -(trackBox.center.y /*  + h/2 */ ) + resolution.h / 2;
 					rotDeg = trackBox.angle - 90;
 					boat.position.x = xCenter * distance.w / resolution.w;
 					boat.position.z = zCenter * distance.h / resolution.h;
@@ -422,13 +476,13 @@
 					boatObject.measuredData.time.push(clock.getElapsedTime());
 
 					document.getElementById("warning").innerHTML = "";
-					if (boat.position.x < - threshold.w || threshold.w < boat.position.x) {
+					if (boat.position.x < -threshold.w || threshold.w < boat.position.x) {
 						document.getElementById("warning").innerHTML += "Surge position is " + boat.position.x.toFixed(2) + " cm.<br>";
 					}
-					if (boat.position.y < - threshold.h || threshold.h < boat.position.y) {
+					if (boat.position.y < -threshold.h || threshold.h < boat.position.y) {
 						document.getElementById("warning").innerHTML += "Heave position is " + boat.position.y.toFixed(2) + " cm.<br>";
 					}
-					if (rotDeg < - threshold.r || threshold.r < rotDeg) {
+					if (rotDeg < -threshold.r || threshold.r < rotDeg) {
 						document.getElementById("warning").innerHTML += "Pitch rotation is " + rotDeg.toFixed(2) + " degrees.<br>";
 					}
 
@@ -455,7 +509,7 @@
 		});
 
 		// movement plots
-		var feedMovPlot = function (callback) {
+		var feedMovPlot = function(callback) {
 			var tick = {};
 			tick.plot0 = boat.position.x;
 			tick.plot1 = boat.position.y;
@@ -464,56 +518,58 @@
 		};
 
 		var myDashboardMooring = {
-			"graphset": [
-				{
-					"type": "line",
-					"height": "100%",
-					"width": "100%",
-					"x": "0%",
-					"y": "0%",
-					"plot": {
-						"aspect": "spline",
-						"marker": { "visible": true },
+			"graphset": [{
+				"type": "line",
+				"height": "100%",
+				"width": "100%",
+				"x": "0%",
+				"y": "0%",
+				"plot": {
+					"aspect": "spline",
+					"marker": {
+						"visible": true
 					},
-					"series": [{
+				},
+				"series": [{
 						"values": [0],
 						"text": "Surge (cm)"
 					}, {
 						"values": [0],
 						"text": "Heave (cm)"
-					},/* {
-					// 	"values": [0],
-					// 	"text": "Pitch (rad)"
-					// }*/],
-					"refresh": {
-						"type": "feed",
-						"transport": "js",
-						"url": "feedMovPlot()",
-						"method": "pull",
-						"interval": 50,
-						"adjust-scale": true
 					},
-					plotarea: {
-						"margin": "5% 5% 20% 5%",
-					},
-					legend: {
-						"layout": "float",
-						"background-color": "none",
-						"border-width": 0,
-						"shadow": 0,
-						"text-align": "middle",
-						"offsetY": 12.5,
-						"align": "center",
-						"item": {
-							"font-color": "#black",
-							"font-size": "10px"
-						}
+					/* {
+										// 	"values": [0],
+										// 	"text": "Pitch (rad)"
+										// }*/
+				],
+				"refresh": {
+					"type": "feed",
+					"transport": "js",
+					"url": "feedMovPlot()",
+					"method": "pull",
+					"interval": 50,
+					"adjust-scale": true
+				},
+				plotarea: {
+					"margin": "5% 5% 20% 5%",
+				},
+				legend: {
+					"layout": "float",
+					"background-color": "none",
+					"border-width": 0,
+					"shadow": 0,
+					"text-align": "middle",
+					"offsetY": 12.5,
+					"align": "center",
+					"item": {
+						"font-color": "#black",
+						"font-size": "10px"
 					}
 				}
-			]
+			}]
 		};
 
-		window.onload = function () {
+		window.onload = function() {
 			zingchart.render({
 				id: "plotBoatMov",
 				height: "100%",
