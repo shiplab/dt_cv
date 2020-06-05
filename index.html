@@ -65,8 +65,8 @@
 
 			<div>
 				<div class="control">
-					<button id="startAndStop" disabled>Start</button>
-					<!-- <button href="path/to/file.txt" id="download" onclick="downloadFile()">Download</button> -->
+					<button id="startAndStop" disabled>Capture</button>
+					<button id="playDemo" disabled>Play Demo</button>
 					<button>
 						<a href="path/to/file.txt" id="download" download="example.json" onclick="downloadFile()"
 							style="color: inherit;text-decoration: none;">
@@ -302,16 +302,25 @@
 		//var tprev = 0;
 		//var posX = initX;
 
-		var clock = new THREE.Clock();
 		controls.update();
+		var clock = new THREE.Clock();
+		var aniMode = "still";
 		animate();
-
 		function animate() {
-			var time = clock.getElapsedTime();
-
-			ocean.update(time);
+			if (aniMode === "still") {
+				// animate a still scene
+				ocean.update(0);
+			} else if (aniMode === "capture") {
+				// animate a scene from captured video
+				var time = clock.getElapsedTime();
+				ocean.update(time);
+			} else if (aniMode === "demo") {
+				// animate a scene from stored data
+				var time = clock.getElapsedTime();
+				ocean.update(time);
+				boat.position.x += 0.1;
+			}
 			ocean.water.render();
-
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera);
 		}
@@ -329,10 +338,33 @@
 			if (!streaming) {
 				utils.clearError();
 				utils.startCamera('vga', onVideoStarted, 'videoInput');
+				aniMode = "capture";
+				playDemo.disabled = true;
 			} else {
 				utils.stopCamera();
 				onVideoStopped();
+				aniMode = "still";
+				playDemo.disabled = false;
 			}
+		});
+
+		let playDemo = document.getElementById('playDemo');
+		playDemo.addEventListener('click', () => {
+			if (!streaming) {
+				utils.clearError();
+				videoInput.play().then(() => {
+					onVideoStarted();
+				});
+				aniMode = "demo";
+				startAndStop.disabled = true;
+			} else {
+				videoInput.pause();
+				videoInput.currentTime = 0;
+				onVideoStopped();
+				aniMode = "still";
+				startAndStop.disabled = false;
+			}
+		// 	playDemo.innerText = 'Stop Demo';
 		});
 
 		function onVideoStarted() {
@@ -421,6 +453,7 @@
 					boatObject.measuredData.rotation.y.push(boat.rotation.y);
 					var date = new Date(begin).toISOString();
 					boatObject.measuredData.time.push(date);
+					console.log(date);
 
 					document.getElementById("warning").innerHTML = "";
 					if (boat.position.x < - threshold.w || threshold.w < boat.position.x) {
@@ -448,12 +481,20 @@
 		function onVideoStopped() {
 			streaming = false;
 			canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
-			startAndStop.innerText = 'Start';
+			startAndStop.innerText = 'Capture';
 		}
 
 		utils.loadOpenCv(() => {
 			startAndStop.removeAttribute('disabled');
+			playDemo.disabled = false;
 		});
+
+		// utils.loadOpenCv(() => {
+		// 	videoInput.addEventListener('canplay', () => {
+		// 		startAndStop.removeAttribute('disabled');
+		// 	});
+		// 	videoInput.src = "data/cup.mp4";
+		// });
 
 		// movement plots
 		var feedMovPlot = function (callback) {
