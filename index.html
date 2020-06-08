@@ -60,7 +60,8 @@
 		<div class="row">
 			<div class="col-md-12 text-center">
 				<h2>Digital Twin</h2>
-				<p>Simple digital twin demo based on computer vision. <a href="https://doi.org/10.7148/2020-0207">Read the paper.</a></p>
+				<p>Simple digital twin demo based on computer vision. <a href="https://doi.org/10.7148/2020-0207">Read
+						the paper.</a></p>
 			</div>
 
 			<div>
@@ -132,29 +133,17 @@
 		var boatObject = {};
 		var lenghObject;
 
-		let jsondata;
-		fetch("data/time_series_ISO.json").then(
-			function (u) {
-				return u.json();
-			}
-		).then(
-			function (json) {
-				jsondata = json;
-			}
-		).catch(error => {
-			console.log('error');
-		})
-
+		let TimeStamp = new Date().toISOString();
 		boatObject.TimeSeriesData = []
 		boatObject.TimeSeriesData[0] = {
 			"DataConfigurationReference": {
-				"ID": "DataChannelList.xml",
-				"TimeStamp": "2016-01-03T00:00:00Z"
+				"ID": "DataChannelList",
+				"TimeStamp": TimeStamp
 			},
 			"TabularData": [{
 				"NumberOfDataSet": "",
 				"NumberOfDataChannel": "3",
-				"DataChannelID": ["X", "Z", "RotY"],
+				"DataChannelID": ["PosX", "PosZ", "RotY"],
 				"DataSet": []
 			}]
 		};
@@ -218,6 +207,12 @@
 				// gltf.asset; // Object
 			});
 		}
+
+		// import sensor data for demo
+		var demoData;
+		new THREE.FileLoader().load("data/demo_time_series.json", function (contents) {
+			demoData = JSON.parse(contents);
+		});
 
 		//Ready renderer and scene
 		(function () {
@@ -341,6 +336,7 @@
 		controls.update();
 		var clock = new THREE.Clock();
 		var aniMode = "still";
+		var demoCounter = 0;
 		animate();
 		function animate() {
 			if (aniMode === "still") {
@@ -354,7 +350,10 @@
 				// animate a scene from stored data
 				var time = clock.getElapsedTime();
 				ocean.update(time);
-				boat.position.x += 0.1;
+				boat.position.x = parseFloat(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[demoCounter].Value["0"]);
+				boat.position.z = parseFloat(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[demoCounter].Value["1"]);
+				boat.rotation.y = parseFloat(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[demoCounter].Value["2"]);
+				demoCounter++;
 			}
 			ocean.water.render();
 			requestAnimationFrame(animate);
@@ -390,9 +389,9 @@
 				videoInput.src = "data/cup.mp4";
 				utils.clearError();
 				videoInput.play().then(() => {
+					aniMode = "demo";
 					onVideoStarted();
 				});
-				aniMode = "demo";
 				startAndStop.disabled = true;
 			} else {
 				videoInput.pause();
@@ -405,12 +404,13 @@
 
 		function onVideoStarted() {
 			streaming = true;
-			startAndStop.innerText = 'Stop';
+			if (aniMode === "capture") {
+				startAndStop.innerText = "Stop";
+			} else if (aniMode === "demo") {
+				playDemo.innerText = "Stop";
+			}
 			videoInput.width = videoInput.videoWidth;
 			videoInput.height = videoInput.videoHeight;
-
-			// Insert tabular data
-			boatObject.TimeSeriesData.push({})
 
 			let video = document.getElementById('videoInput');
 			let cap = new cv.VideoCapture(video);
@@ -500,13 +500,13 @@
 						// Insert the results in the object @ferrari212
 						var date = new Date(begin).toISOString();
 						DataSet.push({
-						"TimeStamp": date,
-						"Value": [
-							boat.position.x.toString(),
-							boat.position.z.toString(),
-							boat.rotation.y.toString()
-						],
-					});
+							"TimeStamp": date,
+							"Value": [
+								boat.position.x.toString(),
+								boat.position.z.toString(),
+								boat.rotation.y.toString()
+							],
+						});
 					}
 
 					document.getElementById("warning").innerHTML = "";
