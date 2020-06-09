@@ -88,24 +88,26 @@
 					<table style="width:100%">
 						<tr>
 							<th>Calibration</th>
-							<th>Horizontal</th>
-							<th>Vertical</th>
-							<th>Rotational</th>
+							<th>Resolution</th>
+							<th>Distance</th>
+							<th>Threshold</th>
 						</tr>
 						<tr>
-							<td>Resolution</td>
+							<td>Horizontal</td>
 							<td id="resHori">640 px</td>
-							<td id="resVert">480 px</td>
-						</tr>
-						<tr>
-							<td>Distance</td>
-							<td id="distHori">40 cm</td>
-							<td id="distVert">30 cm</td>
-						</tr>
-						<tr>
-							<td>Threshold</td>
+							<td id="resVert">40 cm</td>
 							<td id="thresHori">5 cm</td>
+						</tr>
+						<tr>
+							<td>Vertical</td>
+							<td id="distHori">480 px</td>
+							<td id="distVert">30 cm</td>
 							<td id="thresVert">2 cm</td>
+						</tr>
+						<tr>
+							<td>Rotational</td>
+							<td></td>
+							<td></td>
 							<td id="thresRot">10 degrees</td>
 						</tr>
 					</table>
@@ -237,7 +239,8 @@
 						markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].TimeStamp);
 					} catch {
 						// in such case, step back with the marker
-						return demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker - 1].Value;
+						this.marker--;
+						return demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].Value;
 					}
 				}
 				return demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].Value;
