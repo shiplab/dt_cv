@@ -209,10 +209,40 @@
 		}
 
 		// import sensor data for demo
-		var demoData;
+		var demoData, readFind;
 		new THREE.FileLoader().load("data/demo_time_series.json", function (contents) {
 			demoData = JSON.parse(contents);
+			readFind = new readingFinder(demoData);
 		});
+
+		function readingFinder(demoData) {
+			this.numReadings = demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet.length;
+			this.startTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet["0"].TimeStamp);
+			this.finishTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.numReadings - 1].TimeStamp);
+			this.demoDuration = this.finishTime - this.startTime;
+			this.marker = 0;
+			this.completedLoops = 0;
+			this.findReading = function (elapsedDemoTime) {
+				var elapsedLoopTime = elapsedDemoTime - this.completedLoops * this.demoDuration;
+				if (elapsedLoopTime > this.demoDuration) {
+					this.completedLoops++;
+					elapsedLoopTime = elapsedDemoTime - this.completedLoops * this.demoDuration;
+					this.marker = 0;
+				}
+				var markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].TimeStamp);
+				while (markerTime - this.startTime < elapsedLoopTime) {
+					this.marker++;
+					try {
+						// the following command may cause an error if the marker tries to access a reading after the demo running time
+						markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].TimeStamp);
+					} catch {
+						// in such case, step back with the marker
+						return demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker - 1].Value;
+					}
+				}
+				return demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].Value;
+			}
+		};
 
 		//Ready renderer and scene
 		(function () {
@@ -298,12 +328,12 @@
 				forcePowerOfTwoTextures: false,
 				maxTextureSize: Infinity // To prevent NaN value
 			};
+
 			gltfExporter.parse(input, function (result) {
 				if (result instanceof ArrayBuffer) {
 					saveArrayBuffer(result, 'scene.glb');
 				} else {
 					var output = JSON.stringify(result, null, 2);
-					console.log(output);
 					save(new Blob([output], {
 						type: 'text/plain'
 					}), 'scene.gltf');
@@ -353,7 +383,7 @@
 
 				ocean.update(elapsedDemoTime);
 
-				var framePos = readingFinder.findReading(1000 * elapsedDemoTime);
+				var framePos = readFind.findReading(1000 * elapsedDemoTime);
 				checkThreshold(parseFloat(framePos["0"]), parseFloat(framePos["1"]), 180 / Math.PI * parseFloat(framePos["2"]));
 				boat.position.x = framePos["0"];
 				boat.position.z = framePos["1"];
@@ -363,29 +393,6 @@
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera);
 		}
-
-		var readingFinder = {
-			findReading(elapsedDemoTime) {
-				var numReadings = demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet.length;
-				var startTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet["0"].TimeStamp);
-				var finishTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[numReadings - 1].TimeStamp);
-				var demoDuration = finishTime - startTime;
-				var elapsedLoopTime = elapsedDemoTime - this.completedLoops * demoDuration;
-				if (elapsedLoopTime > demoDuration) {
-					this.completedLoops++;
-					elapsedLoopTime = elapsedDemoTime - this.completedLoops * demoDuration;
-					this.marker = 0;
-				}
-				var markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].TimeStamp);
-				while (markerTime - startTime < elapsedLoopTime) {
-					this.marker++;
-					markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].TimeStamp);
-				}
-				return demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].Value;
-			},
-			marker: 0,
-			completedLoops: 0
-		};
 
 		let utils = new Utils('errorMessage');
 
@@ -434,8 +441,8 @@
 		function onDemoStarted() {
 			streaming = true;
 			playDemo.innerText = "Stop";
-			readingFinder.marker = 0;
-			readingFinder.completedLoops = 0;
+			readFind.marker = 0;
+			readFind.completedLoops = 0;
 			demoStartTime = clock.getElapsedTime();
 			aniMode = "demo";
 
