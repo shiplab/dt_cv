@@ -336,7 +336,7 @@
 		controls.update();
 		var clock = new THREE.Clock();
 		var aniMode = "still";
-		var demoCounter = 0;
+		var demoStartTime;
 		animate();
 		function animate() {
 			if (aniMode === "still") {
@@ -349,15 +349,29 @@
 			} else if (aniMode === "demo") {
 				// animate a scene from stored data
 				var time = clock.getElapsedTime();
-				ocean.update(time);
-				boat.position.x = parseFloat(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[demoCounter].Value["0"]);
-				boat.position.z = parseFloat(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[demoCounter].Value["1"]);
-				boat.rotation.y = parseFloat(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[demoCounter].Value["2"]);
-				demoCounter++;
+				ocean.update(time - demoStartTime);
+
+				var framePos = findReading(1000 * time);
+				boat.position.x = framePos["0"];
+				boat.position.z = framePos["1"];
+				boat.rotation.y = framePos["2"];
 			}
 			ocean.water.render();
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera);
+		}
+
+		var marker = 0;
+		function findReading(elapsedTime) {
+			console.log(marker);
+			var startTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet["0"].TimeStamp);
+			var markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[marker].TimeStamp);
+			console.log(elapsedTime, markerTime - startTime);
+			while (markerTime - startTime < elapsedTime) {
+				marker++;
+				markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[marker].TimeStamp);
+			}
+			return demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[marker].Value;
 		}
 
 		let utils = new Utils('errorMessage');
@@ -373,7 +387,6 @@
 			if (!streaming) {
 				utils.clearError();
 				utils.startCamera('vga', onVideoStarted, 'videoInput');
-				aniMode = "capture";
 				playDemo.disabled = true;
 			} else {
 				utils.stopCamera();
@@ -389,8 +402,7 @@
 				videoInput.src = "data/cup.mp4";
 				utils.clearError();
 				videoInput.play().then(() => {
-					aniMode = "demo";
-					onVideoStarted();
+					onDemoStarted();
 				});
 				startAndStop.disabled = true;
 			} else {
@@ -402,13 +414,53 @@
 			}
 		});
 
+		function onDemoStarted() {
+			streaming = true;
+			aniMode = "demo";
+			playDemo.innerText = "Stop";
+			demoStartTime = clock.getElapsedTime();
+
+			videoInput.width = videoInput.videoWidth;
+			videoInput.height = videoInput.videoHeight;
+
+			let video = document.getElementById('videoInput');
+			let cap = new cv.VideoCapture(video);
+
+			// take first frame of the video
+			let frame = new cv.Mat(video.height, video.width, cv.CV_8UC4);
+			cap.read(frame);
+
+			const FPS = 30;
+
+			function replayVideo() {
+				try {
+					if (!streaming) {
+						// clean and stop.
+						frame.delete();
+						return;
+					}
+					let begin = Date.now();
+
+					// start processing.
+					cap.read(frame);
+					cv.imshow("canvasOutput", frame);
+
+					// schedule the next one.
+					let delay = 1000 / FPS - (Date.now() - begin);
+					setTimeout(replayVideo, delay);
+				} catch (err) {
+					utils.printError(err);
+				}
+			};
+			// schedule the first one.
+			setTimeout(replayVideo, 0);
+		}
+
 		function onVideoStarted() {
 			streaming = true;
-			if (aniMode === "capture") {
-				startAndStop.innerText = "Stop";
-			} else if (aniMode === "demo") {
-				playDemo.innerText = "Stop";
-			}
+			aniMode = "capture";
+			startAndStop.innerText = "Stop";
+
 			videoInput.width = videoInput.videoWidth;
 			videoInput.height = videoInput.videoHeight;
 
@@ -488,26 +540,24 @@
 					cv.line(frame, pts[3], pts[0], [255, 0, 0, 255], 3);
 					cv.imshow('canvasOutput', frame);
 
-					if (aniMode === "capture") {
-						// locate object center
-						xCenter = (trackBox.center.x /*  + w/2 */) - resolution.w / 2;
-						zCenter = -(trackBox.center.y /*  + h/2 */) + resolution.h / 2;
-						rotDeg = trackBox.angle - 90;
-						boat.position.x = xCenter * distance.w / resolution.w;
-						boat.position.z = zCenter * distance.h / resolution.h;
-						boat.rotation.y = Math.PI / 180 * rotDeg;
+					// locate object center
+					xCenter = (trackBox.center.x /*  + w/2 */) - resolution.w / 2;
+					zCenter = -(trackBox.center.y /*  + h/2 */) + resolution.h / 2;
+					rotDeg = trackBox.angle - 90;
+					boat.position.x = xCenter * distance.w / resolution.w;
+					boat.position.z = zCenter * distance.h / resolution.h;
+					boat.rotation.y = Math.PI / 180 * rotDeg;
 
-						// Insert the results in the object @ferrari212
-						var date = new Date(begin).toISOString();
-						DataSet.push({
-							"TimeStamp": date,
-							"Value": [
-								boat.position.x.toString(),
-								boat.position.z.toString(),
-								boat.rotation.y.toString()
-							],
-						});
-					}
+					// Insert the results in the object @ferrari212
+					var date = new Date(begin).toISOString();
+					DataSet.push({
+						"TimeStamp": date,
+						"Value": [
+							boat.position.x.toString(),
+							boat.position.z.toString(),
+							boat.rotation.y.toString()
+						],
+					});
 
 					document.getElementById("warning").innerHTML = "";
 					if (boat.position.x < -threshold.w || threshold.w < boat.position.x) {
@@ -527,7 +577,6 @@
 					utils.printError(err);
 				}
 			};
-
 			// schedule the first one.
 			setTimeout(processVideo, 0);
 		}
