@@ -212,7 +212,7 @@
 
 		// import sensor data for demo
 		var demoData, readFind;
-		new THREE.FileLoader().load("data/demo_time_series.json", function (contents) {
+		new THREE.FileLoader().load("data/time_series_ISO.json", function (contents) {
 			demoData = JSON.parse(contents);
 			readFind = new readingFinder(demoData);
 		});
