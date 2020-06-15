@@ -95,13 +95,13 @@
 						<tr>
 							<td>Horizontal</td>
 							<td id="resHori">640 px</td>
-							<td id="distHori">40 cm</td>
+							<td id="distHori">29.1 cm</td>
 							<td id="thresHori">5 cm</td>
 						</tr>
 						<tr>
 							<td>Vertical</td>
 							<td id="resVert">480 px</td>
-							<td id="distVert">30 cm</td>
+							<td id="distVert">21.8 cm</td>
 							<td id="thresVert">2 cm</td>
 						</tr>
 						<tr>
@@ -389,7 +389,8 @@
 				var framePos = readFind.findReading(1000 * elapsedDemoTime);
 				checkThreshold(parseFloat(framePos["0"]), parseFloat(framePos["1"]), 180 / Math.PI * parseFloat(framePos["2"]));
 				boat.position.x = framePos["0"];
-				boat.position.z = framePos["1"];
+				boat.position.x = 100 * framePos["0"];
+				boat.position.z = 100 * framePos["1"];
 				boat.rotation.y = framePos["2"];
 			}
 			ocean.water.render();
@@ -424,7 +425,7 @@
 		let playDemo = document.getElementById('playDemo');
 		playDemo.addEventListener('click', () => {
 			if (!streaming) {
-				videoInput.src = "data/cup.mp4";
+				videoInput.src = "data/demo.mp4";
 				utils.clearError();
 				videoInput.play().then(() => {
 					onDemoStarted();
@@ -579,13 +580,16 @@
 
 					checkThreshold(boat.position.x, boat.position.z, rotDeg);
 
+					let surgeMeters = boat.position.x / 100;
+					let heaveMeters = boat.position.z / 100;
+
 					// Insert the results in the object @ferrari212
-					var date = new Date(begin).toISOString();
+					let date = new Date(begin).toISOString();
 					DataSet.push({
 						"TimeStamp": date,
 						"Value": [
-							boat.position.x.toString(),
-							boat.position.z.toString(),
+							surgeMeters.toString(),
+							heaveMeters.toString(),
 							boat.rotation.y.toString()
 						],
 					});
