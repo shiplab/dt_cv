@@ -1,0 +1,104 @@
+{
+  "Package": {
+    "Header": {
+      "ShipID": "IM01234567",
+      "DataChannelListID": {
+        "ID": "DataChannelList",
+        "TimeStamp": "2020-06-08T10:06:39.876Z"
+      },
+      "Author": "Felipe Ferrari",
+      "DateCreated": "2020-06-07T08:08:00.588Z",
+      "nr:CustomHeaderElement": "Motion tracking in 3 DOF"
+    },
+    "DataChannelList": {
+      "DataChannel": [{
+        "DataChannelID": {
+          "LocalID": "/Naming_Rule/ME/Air Cooler 1/CFW/OUT/Temp",
+          "ShortID": "0010",
+          "NameObject": {
+            "NamingRule": "Naming_Rule",
+            "nr:CustomNameObject": "Vender specific NameObject"
+          }
+        },
+        "Property": {
+          "DataChannel Type": {
+            "Type": "Inst",
+            "UpdateCycle": "0.05"
+          },
+          "Format": {
+            "Type": "Decimal"
+          },
+          "Range": {
+            "High": "0.05",
+            "Low": "-0.05"
+          },
+          "Unit": {
+            "UnitSymbol": "m",
+            "QuantityName": "Surge Displacement"
+          },
+          "Name": "M/E #1 Air Cooler CFW OUT Temp",
+          "Remarks": "Variable update cycle",
+          "nr:CustomProperty Element": "Vender specific Property"
+        }
+      }, {
+        "DataChannelID": {
+          "LocalID": "/Naming_Rule/ME/Air Cooler 1/CFW/Out/Press",
+          "ShortID": "0020",
+          "NameObject": {
+            "NamingRule": "Naming_Rule",
+            "nr:CustomNameObject": "Vender specific NameObject"
+          }
+        },
+        "Property": {
+          "DataChannel Type": {
+            "Type": "Inst",
+            "UpdateCycle": "0.05"
+          },
+          "Format": {
+            "Type": "Decimal"
+          },
+          "Range": {
+            "High": "0.02",
+            "Low": "-0.02"
+          },
+          "Unit": {
+            "UnitSymbol": "m",
+            "QuantityName": "Heave Displacement"
+          },
+          "Name": " M/E #1 Air Cooler CFW OUT Average Temp",
+          "Remarks": "Variable update cycle",
+          "nr:CustomPropertyElement": "Vender specific Propert"
+        }
+      }, {
+        "DataChannelID": {
+          "LocalID": "/Naming_Rule/ME/Air Cooler 1/CFW/Out/Press",
+          "ShortID": "0020",
+          "NameObject": {
+            "NamingRule": "Naming_Rule",
+            "nr:CustomNameObject": "Vender specific NameObject"
+          }
+        },
+        "Property": {
+          "DataChannel Type": {
+            "Type": "Inst",
+            "UpdateCycle": "0.05"
+          },
+          "Format": {
+            "Type": "Decimal"
+          },
+          "Range": {
+            "High": "0.09",
+            "Low": "-0.09"
+          },
+          "Unit": {
+            "UnitSymbol": "rad",
+            "QuantityName": "Pitch Angle"
+          },
+          "Name": " M/E #1 Air Cooler CFW OUT Average Temp",
+          "Remarks": "Variable update cycle",
+          "nr:CustomPropertyElement": "Vender specific Propert"
+        }
+      }]
+    }
+  }
+}
