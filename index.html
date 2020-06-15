@@ -388,7 +388,6 @@
 
 				var framePos = readFind.findReading(1000 * elapsedDemoTime);
 				checkThreshold(parseFloat(framePos["0"]), parseFloat(framePos["1"]), 180 / Math.PI * parseFloat(framePos["2"]));
-				boat.position.x = framePos["0"];
 				boat.position.x = 100 * framePos["0"];
 				boat.position.z = 100 * framePos["1"];
 				boat.rotation.y = framePos["2"];
