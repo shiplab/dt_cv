@@ -18,12 +18,9 @@
 	},
 	"analysis": {},
 	"measuredData": {
-		"measuredDataId1": {
-			"description": "Format: Time, Ship motion in the format: vessel pos x, z, vessel rot y.",
-			"logId2": {
-				"readings": "motion_log.json",
-				"versionDate": "2019-12-16T18:31:00Z"
-			}
+		"MotionTracking": {
+			"DataChannel": "DataChannel.json",
+			"TimeSeries": "TimeSeries.json"
 		}
 	},
 	"systems": {
