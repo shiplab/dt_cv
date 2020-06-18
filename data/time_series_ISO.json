@@ -19,7 +19,7 @@
     "TimeSeriesData": [
       {
         "DataConfigurationReference": {
-          "ID": "DataChannelList",
+          "ID": "MotionTracking",
           "TimeStamp": "2020-06-15T11:13:30.020Z"
         },
         "TabularData": [
