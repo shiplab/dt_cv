@@ -208,7 +208,7 @@
 		// import package data
 		var dataChannels;
 		var threshold = {};
-		new THREE.FileLoader().load("data/data_channel.json", function (contents) {
+		new THREE.FileLoader().load("data/DataChannel.json", function (contents) {
 			dataChannels = JSON.parse(contents);
 			// fill threshold object and table
 			threshold.w = dataChannels.Package.DataChannelList.DataChannel["0"].Property.Range.High;
@@ -221,7 +221,7 @@
 
 		// import sensor data for demo
 		var demoData, readFind;
-		new THREE.FileLoader().load("data/time_series_ISO.json", function (contents) {
+		new THREE.FileLoader().load("data/TimeSeries.json", function (contents) {
 			demoData = JSON.parse(contents);
 			readFind = new readingFinder(demoData);
 		});

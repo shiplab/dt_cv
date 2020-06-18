@@ -23,13 +23,13 @@
 			"TimeSeries": "TimeSeries.json"
 		}
 	},
-	"systems": {
+	"VIS": {
 		"structure": {
 			"mainHull": {
 				"description": "High level description of the hull.",
 				"assetById": ["assetId1"],
 				"analysisById": [],
-				"measuredDataById": ["measuredDataId1"]
+				"measuredDataById": ["MotionTracking"]
 			}
 		}
 	},
@@ -39,7 +39,7 @@
 			"description": "High level description of the hull.",
 			"assetById": ["assetId1"],
 			"analysisById": [],
-			"measuredDataById": ["measuredDataId1"]
+			"measuredDataById": ["MotionTracking"]
 		}
 	}
 }
