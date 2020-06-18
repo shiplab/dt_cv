@@ -179,8 +179,9 @@
 		};
 
 		// import digital twin JSON schema
+		var dataChannels, demoData, readFind;
+		var threshold = {};
 		new THREE.FileLoader().load("data/schema.json", useSchema);
-
 		function useSchema(contents) {
 			schema = JSON.parse(contents);
 
@@ -203,28 +204,27 @@
 				// gltf.cameras; // Array<THREE.Camera>
 				// gltf.asset; // Object
 			});
+
+			// import data channel
+			var channelPath = "data/" + schema.measuredData.MotionTracking.DataChannel;
+			new THREE.FileLoader().load(channelPath, function (contents) {
+				dataChannels = JSON.parse(contents);
+				// fill threshold object and table
+				threshold.w = dataChannels.Package.DataChannelList.DataChannel["0"].Property.Range.High;
+				threshold.h = dataChannels.Package.DataChannelList.DataChannel["1"].Property.Range.High;
+				threshold.r = 180 / Math.PI * dataChannels.Package.DataChannelList.DataChannel["2"].Property.Range.High;
+				document.getElementById("thresHori").innerHTML = threshold.w + " m";
+				document.getElementById("thresVert").innerHTML = threshold.h + " m";
+				document.getElementById("thresRot").innerHTML = parseInt(threshold.r) + " degrees";
+			});
+
+			// import time series for demo
+			var seriesPath = "data/" + schema.measuredData.MotionTracking.TimeSeries;
+			new THREE.FileLoader().load(seriesPath, function (contents) {
+				demoData = JSON.parse(contents);
+				readFind = new readingFinder(demoData);
+			});
 		}
-
-		// import package data
-		var dataChannels;
-		var threshold = {};
-		new THREE.FileLoader().load("data/DataChannel.json", function (contents) {
-			dataChannels = JSON.parse(contents);
-			// fill threshold object and table
-			threshold.w = dataChannels.Package.DataChannelList.DataChannel["0"].Property.Range.High;
-			threshold.h = dataChannels.Package.DataChannelList.DataChannel["1"].Property.Range.High;
-			threshold.r = 180 / Math.PI * dataChannels.Package.DataChannelList.DataChannel["2"].Property.Range.High;
-			document.getElementById("thresHori").innerHTML = threshold.w + " m";
-			document.getElementById("thresVert").innerHTML = threshold.h + " m";
-			document.getElementById("thresRot").innerHTML = parseInt(threshold.r) + " degrees";
-		});
-
-		// import sensor data for demo
-		var demoData, readFind;
-		new THREE.FileLoader().load("data/TimeSeries.json", function (contents) {
-			demoData = JSON.parse(contents);
-			readFind = new readingFinder(demoData);
-		});
 
 		function readingFinder(demoData) {
 			this.numReadings = demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet.length;
