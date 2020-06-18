@@ -583,8 +583,8 @@
 					xCenter = (trackBox.center.x /*  + w/2 */) - resolution.w / 2;
 					zCenter = -(trackBox.center.y /*  + h/2 */) + resolution.h / 2;
 					rotDeg = trackBox.angle - 90;
-					boat.position.x = xCenter * distance.w / resolution.w;
-					boat.position.z = zCenter * distance.h / resolution.h;
+					boat.position.x = xCenter * 100 * distance.w / resolution.w;
+					boat.position.z = zCenter * 100 * distance.h / resolution.h;
 					boat.rotation.y = Math.PI / 180 * rotDeg;
 
 					checkThreshold(boat.position.x, boat.position.z, rotDeg);
