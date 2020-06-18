@@ -95,20 +95,20 @@
 						<tr>
 							<td>Horizontal</td>
 							<td id="resHori">640 px</td>
-							<td id="resVert">40 cm</td>
-							<td id="thresHori">5 cm</td>
+							<td id="distHori">0.291 m</td>
+							<td id="thresHori"></td>
 						</tr>
 						<tr>
 							<td>Vertical</td>
-							<td id="distHori">480 px</td>
-							<td id="distVert">30 cm</td>
-							<td id="thresVert">2 cm</td>
+							<td id="resVert">480 px</td>
+							<td id="distVert">0.218 m</td>
+							<td id="thresVert"></td>
 						</tr>
 						<tr>
 							<td>Rotational</td>
 							<td></td>
 							<td></td>
-							<td id="thresRot">10 degrees</td>
+							<td id="thresRot"></td>
 						</tr>
 					</table>
 					<div id="warning" style="color:red;"></div>
@@ -177,11 +177,6 @@
 			w: parseFloat(document.getElementById("distHori").innerHTML),
 			h: parseFloat(document.getElementById("distVert").innerHTML)
 		};
-		var threshold = {
-			w: parseFloat(document.getElementById("thresHori").innerHTML),
-			h: parseFloat(document.getElementById("thresVert").innerHTML),
-			r: parseFloat(document.getElementById("thresRot").innerHTML)
-		};
 
 		// import digital twin JSON schema
 		new THREE.FileLoader().load("data/schema.json", useSchema);
@@ -210,9 +205,23 @@
 			});
 		}
 
+		// import package data
+		var dataChannels;
+		var threshold = {};
+		new THREE.FileLoader().load("data/data_channel.json", function (contents) {
+			dataChannels = JSON.parse(contents);
+			// fill threshold object and table
+			threshold.w = dataChannels.Package.DataChannelList.DataChannel["0"].Property.Range.High;
+			threshold.h = dataChannels.Package.DataChannelList.DataChannel["1"].Property.Range.High;
+			threshold.r = 180 / Math.PI * dataChannels.Package.DataChannelList.DataChannel["2"].Property.Range.High;
+			document.getElementById("thresHori").innerHTML = threshold.w + " m";
+			document.getElementById("thresVert").innerHTML = threshold.h + " m";
+			document.getElementById("thresRot").innerHTML = parseInt(threshold.r) + " degrees";
+		});
+
 		// import sensor data for demo
 		var demoData, readFind;
-		new THREE.FileLoader().load("data/demo_time_series.json", function (contents) {
+		new THREE.FileLoader().load("data/time_series_ISO.json", function (contents) {
 			demoData = JSON.parse(contents);
 			readFind = new readingFinder(demoData);
 		});
@@ -388,8 +397,8 @@
 
 				var framePos = readFind.findReading(1000 * elapsedDemoTime);
 				checkThreshold(parseFloat(framePos["0"]), parseFloat(framePos["1"]), 180 / Math.PI * parseFloat(framePos["2"]));
-				boat.position.x = framePos["0"];
-				boat.position.z = framePos["1"];
+				boat.position.x = 100 * framePos["0"];
+				boat.position.z = 100 * framePos["1"];
 				boat.rotation.y = framePos["2"];
 			}
 			ocean.water.render();
@@ -424,7 +433,7 @@
 		let playDemo = document.getElementById('playDemo');
 		playDemo.addEventListener('click', () => {
 			if (!streaming) {
-				videoInput.src = "data/cup.mp4";
+				videoInput.src = "data/demo.mp4";
 				utils.clearError();
 				videoInput.play().then(() => {
 					onDemoStarted();
@@ -453,6 +462,7 @@
 			videoInput.height = videoInput.videoHeight;
 
 			let video = document.getElementById('videoInput');
+			readFind.demoDuration = 1000 * video.duration;
 			let cap = new cv.VideoCapture(video);
 
 			// take first frame of the video
@@ -579,13 +589,16 @@
 
 					checkThreshold(boat.position.x, boat.position.z, rotDeg);
 
+					let surgeMeters = boat.position.x / 100;
+					let heaveMeters = boat.position.z / 100;
+
 					// Insert the results in the object @ferrari212
-					var date = new Date(begin).toISOString();
+					let date = new Date(begin).toISOString();
 					DataSet.push({
 						"TimeStamp": date,
 						"Value": [
-							boat.position.x.toString(),
-							boat.position.z.toString(),
+							surgeMeters.toString(),
+							heaveMeters.toString(),
 							boat.rotation.y.toString()
 						],
 					});

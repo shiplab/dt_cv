@@ -1,0 +1,113 @@
+{
+  "Package": {
+    "Header": {
+      "ShipID": "IM01234567",
+      "DataChannelListID": {
+        "ID": "DataChannelList",
+        "TimeStamp": "2020-06-08T10:06:39.876Z"
+      },
+      "Author": "Felipe Ferrari",
+      "DateCreated": "2020-06-07T08:08:00.588Z",
+      "nr:CustomHeaderElement": "Motion tracking in 3 DOF"
+    },
+    "DataChannelList": {
+      "DataChannel": [{
+        "DataChannelID": {
+          "LocalID": "/dnv_vis/452+I101/ShipSurge+d(m)",
+          "ShortID": "0001",
+          "NameObject": {
+            "NamingRule": "dnv_vis",
+            "dv:FunctionLeaf": "452 Position reference system",
+            "dv:Component": "I101 Control and monitoring system",
+            "dv:Suffix": "ShipSurge",
+            "dv:UoM": "d Distance",
+            "dv:Quantity": "m meters"
+          }
+        },
+        "Property": {
+          "DataChannel Type": {
+            "Type": "Inst",
+            "UpdateCycle": "0.05"
+          },
+          "Format": {
+            "Type": "Decimal"
+          },
+          "Range": {
+            "High": "0.05",
+            "Low": "-0.05"
+          },
+          "Unit": {
+            "UnitSymbol": "m",
+            "QuantityName": "Surge Displacement"
+          },
+          "Name": "Ship Surge Displacement",
+          "Remarks": "Update cycle may vary"
+        }
+      }, {
+        "DataChannelID": {
+          "LocalID": "/dnv_vis/453+I101/ShipHeave+d(m)",
+          "ShortID": "0002",
+          "NameObject": {
+            "NamingRule": "dnv_vis",
+            "dv:FunctionLeaf": "453 Vertical reference system",
+            "dv:Component": "I101 Control and monitoring system",
+            "dv:Suffix": "ShipHeave",
+            "dv:UoM": "d Distance",
+            "dv:Quantity": "m meters"
+          }
+        },
+        "Property": {
+          "DataChannel Type": {
+            "Type": "Inst",
+            "UpdateCycle": "0.05"
+          },
+          "Format": {
+            "Type": "Decimal"
+          },
+          "Range": {
+            "High": "0.02",
+            "Low": "-0.02"
+          },
+          "Unit": {
+            "UnitSymbol": "m",
+            "QuantityName": "Heave Displacement"
+          },
+          "Name": "Ship Heave Displacement",
+          "Remarks": "Update cycle may vary"
+        }
+      }, {
+        "DataChannelID": {
+          "LocalID": "/dnv_vis/453+I101/ShipPitch+phi(m)",
+          "ShortID": "0003",
+          "NameObject": {
+            "NamingRule": "dnv_vis",
+            "dv:FunctionLeaf": "453 Vertical reference system",
+            "dv:Component": "I101 Control and monitoring system",
+            "dv:Suffix": "ShipPitch",
+            "dv:UoM": "phi Angular measure",
+            "dv:Quantity": "rad radians"
+          }
+        },
+        "Property": {
+          "DataChannel Type": {
+            "Type": "Inst",
+            "UpdateCycle": "0.05"
+          },
+          "Format": {
+            "Type": "Decimal"
+          },
+          "Range": {
+            "High": "0.09",
+            "Low": "-0.09"
+          },
+          "Unit": {
+            "UnitSymbol": "rad",
+            "QuantityName": "Pitch Angle"
+          },
+          "Name": "Ship Pitch Displacement",
+          "Remarks": "Update cycle may vary"
+        }
+      }]
+    }
+  }
+}
