@@ -3,7 +3,7 @@
     "Header": {
       "ShipID": "IM01234567",
       "DataChannelListID": {
-        "ID": "DataChannelList",
+        "ID": "MotionTracking",
         "TimeStamp": "2020-06-08T10:06:39.876Z"
       },
       "Author": "Felipe Ferrari",
@@ -14,7 +14,7 @@
       "DataChannel": [{
         "DataChannelID": {
           "LocalID": "/dnv_vis/452+I101/ShipSurge+d(m)",
-          "ShortID": "0001",
+          "ShortID": "PosX",
           "NameObject": {
             "NamingRule": "dnv_vis",
             "dv:FunctionLeaf": "452 Position reference system",
@@ -46,7 +46,7 @@
       }, {
         "DataChannelID": {
           "LocalID": "/dnv_vis/453+I101/ShipHeave+d(m)",
-          "ShortID": "0002",
+          "ShortID": "PosZ",
           "NameObject": {
             "NamingRule": "dnv_vis",
             "dv:FunctionLeaf": "453 Vertical reference system",
@@ -78,7 +78,7 @@
       }, {
         "DataChannelID": {
           "LocalID": "/dnv_vis/453+I101/ShipPitch+phi(m)",
-          "ShortID": "0003",
+          "ShortID": "RotY",
           "NameObject": {
             "NamingRule": "dnv_vis",
             "dv:FunctionLeaf": "453 Vertical reference system",
