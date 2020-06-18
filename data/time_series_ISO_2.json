@@ -1,0 +1,113 @@
+{
+  "Package": {
+    "Header": {
+      "ShipID": "IM01234567",
+      "DataChannelListID": {
+        "ID": "DataChannel List. xml",
+        "TimeStamp": "2016-01-01T00:00:00Z"
+      },
+      "Author": "Author 1",
+      "DateCreated": "2015-12-01T00:00:00Z",
+      "nr:CustomHeaderElement": "Vender specific headers"
+    },
+    "DataChannelList": {
+      "DataChannel": [{
+        "DataChannelID": {
+          "LocalID": "/Naming_Rule/ME/Air Cooler 1/CFW/OUT/Temp",
+          "ShortID": "0010",
+          "NameObject": {
+            "NamingRule": "Naming_Rule",
+            "nr:CustomNameObject": "Vender specific NameObject"
+          }
+        },
+        "Property": {
+          "DataChannel Type": {
+            "Type": "Inst",
+            "UpdateCycle": "1"
+          },
+          "Format": {
+            "Type": "Decimal",
+            "Restriction": {
+              "FractionDigits": "1",
+              "Max Inclusive": "200.0",
+              "Min Inclusive": "-150.0"
+            }
+          },
+          "Range": {
+            "High": "150.0",
+            "Low": "0.0",
+          },
+          "Unit": {
+            "UnitSymbol": "C",
+            "QuantityName": "Temperature"
+          },
+          "Name": "M/E #1 Air Cooler CFW OUT Temp",
+          "Remarks": " Location: ECR, Manufacturer: AAA Company, Type: TYPE-AAA",
+          "nr:CustomProperty Element": "Vender specific Property"
+        }
+      }, {
+        "DataChannelID": {
+          "LocalID": "/Naming_Rule/ME/Air Cooler 1/CFW/Out/Press",
+          "ShortID": "0020",
+          "NameObject": {
+            "NamingRule": "Naming_Rule",
+            "nr:CustomNameObject": "Vender specific NameObject"
+          }
+        },
+        "Property": {
+          "DataChannel Type": {
+            "Type": "Average",
+            "UpdateCycle": "60",
+            "CalculationPeriod": "3600"
+          },
+          "Format": {
+            "Type": "Integer",
+            "Restriction": {
+              "FractionDigits": "1",
+              "MaxInclusive": "200.0",
+              "MinInclusive": "-150.0"
+            }
+          },
+          "Range": {
+            "High": "150.0",
+            "Low": "0.0"
+          },
+          "Unit": {
+            "UnitSymbol": "°C",
+            "QuantityName": "Temp"
+          },
+          "Name": " M/E #1 Air Cooler CFW OUT Average Temp",
+          "Remarks": " Location: ECR, Manufacturer: AAA Company, Type: TYPE-AAA",
+          "nr:CustomPropertyElement": "Vender specific Propert"
+        }
+      }, {
+        "DataChannelID": {
+          "LocalID": "/Naming Rule/ME/Air Cooler1/CFW/Out/Temp/Alarm",
+          "ShortID": "0011",
+          "NameObject": {
+            "NamingRule": "Naming_Rule",
+            "nr: CustomNameObject": "Vender specific NameObject"
+          }
+        },
+        "Property": {
+          "DataChannel Type": {
+            "Type": "Alarm"
+          },
+          "Format": {
+            "Type": "String",
+            "Restriction": {
+              "Enumeration": [
+                "High",
+                "Low",
+                "Normal"
+              ]
+            }
+          },
+          "Name": " M/E #1 Air Cooler CFW OUT Temp Status ",
+          "Remarks": " Location: ECR, Manufacturer: AAA Company, Type : TYPE-AAA",
+          "nr: CustomPropertyElement": "Vender specific Property"
+        }
+      }]
+    }
+  }
+}
