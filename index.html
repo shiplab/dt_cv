@@ -434,7 +434,7 @@
 		let playStream = document.getElementById('playStream');
 		playStream.addEventListener('click', () => {
 			if (!streaming) {
-				videoInput.src = "http://192.168.1.153:8081";
+				videoInput.src = "http://10.24.90.156:8081";
 				videoInput.crossOrigin = "Anonymous";
 				utils.clearError();
 				videoInput.play().then(() => {
@@ -446,7 +446,7 @@
 			} else {
 				videoInput.pause();
 				videoInput.currentTime = 0;
-				onStreamStarted();
+				onStreamStopped();
 				aniMode = "still";
 				startAndStop.disabled = false;
 				playDemo.disabled = false;
@@ -668,7 +668,6 @@
 
 					// apply camshift to get the new location
 					[trackBox, trackWindow] = cv.CamShift(dst, trackWindow, termCrit);
-					console.log(trackBox);
 
 					// Draw it on image
 					let pts = cv.rotatedRectPoints(trackBox);
