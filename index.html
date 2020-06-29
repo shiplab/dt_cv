@@ -150,15 +150,13 @@
 		};
 
 		var TabularData = boatObject.TimeSeriesData[0].TabularData[0];
-		var DataSet = TabularData.DataSet;
-
 		function downloadFile() {
 			//Get the file contents
 			var txtFile = "test.txt";
 			var file = new File([], txtFile);
 
 			// Finish boat object
-			TabularData.NumberOfDataSet = DataSet.length.toString();
+			TabularData.NumberOfDataSet = TabularData.DataSet.length.toString();
 			var str = JSON.stringify(boatObject);
 
 			//Save the file contents as a DataURI
@@ -417,6 +415,7 @@
 		startAndStop.addEventListener('click', () => {
 			if (!streaming) {
 				utils.clearError();
+				TabularData.DataSet = [];
 				utils.startCamera('vga', onVideoStarted, 'videoInput');
 				playStream.disabled = true;
 				playDemo.disabled = true;
@@ -437,6 +436,7 @@
 				videoInput.src = "http://10.24.90.156:8081";
 				videoInput.crossOrigin = "Anonymous";
 				utils.clearError();
+				TabularData.DataSet = [];
 				videoInput.play().then(() => {
 					onStreamStarted();
 				});
@@ -573,13 +573,13 @@
 
 					// Insert the results in the object @ferrari212
 					let date = new Date(begin).toISOString();
-					DataSet.push({
+					TabularData.DataSet.push({
 						"TimeStamp": date,
 						"Value": [
 							surgeMeters.toString(),
 							heaveMeters.toString(),
 							boat.rotation.y.toString()
-						],
+						]
 					});
 
 					// schedule the next one.
@@ -692,13 +692,13 @@
 
 					// Insert the results in the object @ferrari212
 					let date = new Date(begin).toISOString();
-					DataSet.push({
+					TabularData.DataSet.push({
 						"TimeStamp": date,
 						"Value": [
 							surgeMeters.toString(),
 							heaveMeters.toString(),
 							boat.rotation.y.toString()
-						],
+						]
 					});
 
 					// schedule the next one.
