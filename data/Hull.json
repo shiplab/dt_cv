@@ -1,0 +1,18 @@
+{
+  "Package": {
+    "Remarks": "High level description of the hull.",
+    "Author": "Ícaro Fonseca",
+    "Topology": {
+      "Visualization": {
+        "STL": "hull.stl",
+        "glTF": "hull.gltf",
+        "GLB": "hull.glb"
+      },
+      "Position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    }
+  }
+}

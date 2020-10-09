@@ -1,45 +1,32 @@
 {
-	"asset": {
-		"assetId1": {
-			"type": "boat",
-			"topology": {
-				"visualization": {
-					"STL": "boat.stl",
-					"glTF": "boat.gltf",
-					"GLB": "boat.glb"
-				},
-				"position": {
-					"x": 0,
-					"y": 0,
-					"z": 0
-				}
-			}
-		}
-	},
-	"analysis": {},
-	"measuredData": {
-		"MotionTracking": {
-			"DataChannel": "DataChannel.json",
-			"TimeSeries": "TimeSeries.json"
-		}
-	},
-	"VIS": {
-		"structure": {
-			"mainHull": {
-				"description": "High level description of the hull.",
-				"assetById": ["assetId1"],
-				"analysisById": [],
-				"measuredDataById": ["MotionTracking"]
-			}
-		}
-	},
-	"SFI": {
-		"2": {
-			"group": "Hull.",
-			"description": "High level description of the hull.",
-			"assetById": ["assetId1"],
-			"analysisById": [],
-			"measuredDataById": ["MotionTracking"]
-		}
-	}
+  "Asset": {
+    "Representation": {
+      "Hull": "Hull.json"
+    },
+    "MeasuredStates": {
+      "MotionTracking": {
+        "DataChannel": "MotionTrackingChannel.json",
+        "TimeSeries": "DemoLog.json"
+      }
+    }
+  },
+  "Behaviour": {
+    "MotionMonitoring": "../index.html"
+  },
+  "Environment": {},
+  "Taxonomies": {
+    "VIS": {
+      "Structure": {
+        "MainHull": {
+          "AssetById": [
+            "assetId1"
+          ],
+          "AnalysisById": [],
+          "MeasuredDataById": [
+            "MotionTrackingConf.json"
+          ]
+        }
+      }
+    }
+  }
 }

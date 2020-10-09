@@ -3,23 +3,23 @@
     "Header": {
       "ShipID": "IMO1234567",
       "TimeSpan": {
-        "Start": "2016-01-01T12:00:00Z",
-        "End": "2016-01-03T12:00:00Z"
+        "Start": "2020-06-15T11:13:30.020Z",
+        "End": "2020-06-15T11:13:51.177Z"
       },
       "DateCreated": "2020-06-08T08:08:00.588Z",
       "DateModified": "2020-06-08T08:08:00.588Z",
-      "Author": "Felipe Ferrari",
+      "Author": "Camshift algorithm",
       "SystemConfiguration": [
         {
-          "ID": "MotionTrackingConfiguration",
-          "TimeStamp": "2020-06-08T08:08:00.588Z"
+          "ID": "index.html",
+          "TimeStamp": "2020-05-08T08:08:00.588Z"
         }
       ]
     },
     "TimeSeriesData": [
       {
         "DataConfigurationReference": {
-          "ID": "MotionTracking",
+          "ID": "MotionTrackingChannel.json",
           "TimeStamp": "2020-06-15T11:13:30.020Z"
         },
         "TabularData": [

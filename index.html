@@ -138,7 +138,7 @@
 		boatObject.TimeSeriesData = []
 		boatObject.TimeSeriesData[0] = {
 			"DataConfigurationReference": {
-				"ID": "DataChannelList",
+				"ID": "MotionTrackingChannel.json",
 				"TimeStamp": TimeStamp
 			},
 			"TabularData": [{
@@ -178,32 +178,35 @@
 		// import digital twin JSON schema
 		var dataChannels, demoData, readFind;
 		var threshold = {};
-		new THREE.FileLoader().load("data/schema.json", useSchema);
+		new THREE.FileLoader().load("data/Schema.json", useSchema);
 		function useSchema(contents) {
 			schema = JSON.parse(contents);
 
 			// import binary glTF file
-			var boatPath = "data/" + schema.asset.assetId1.topology.visualization.GLB;
-			var loader = new THREE.GLTFLoader();
-			loader.load(boatPath, function (gltf) {
-				boat = gltf.scene;
-				boat.children["0"].geometry.rotateX(Math.PI / 2);
-				boat.position.x = schema.asset.assetId1.topology.position.x;
-				boat.position.y = schema.asset.assetId1.topology.position.y;
-				boat.position.z = schema.asset.assetId1.topology.position.z;
-				scene.add(boat);
-				// var axisHelper = new THREE.AxisHelper( 5 );
-				// boat.add(axisHelper);
-
-				// gltf.animations; // Array<THREE.AnimationClip>
-				// gltf.scene; // THREE.Group
-				// gltf.scenes; // Array<THREE.Group>
-				// gltf.cameras; // Array<THREE.Camera>
-				// gltf.asset; // Object
+			var hullPath = "data/" + schema.Asset.Representation.Hull;
+			new THREE.FileLoader().load(hullPath, function (contents) {
+				var hullSchema = JSON.parse(contents);
+				var hull3D = "data/" + hullSchema.Package.Topology.Visualization.GLB;
+				var loader = new THREE.GLTFLoader();
+				loader.load(hull3D, function (gltf) {
+					boat = gltf.scene;
+					boat.children["0"].geometry.rotateX(Math.PI / 2);
+					boat.position.x = hullSchema.Package.Topology.Position.x;
+					boat.position.y = hullSchema.Package.Topology.Position.y;
+					boat.position.z = hullSchema.Package.Topology.Position.z;
+					scene.add(boat);
+					// var axisHelper = new THREE.AxisHelper( 5 );
+					// boat.add(axisHelper);
+					// gltf.animations; // Array<THREE.AnimationClip>
+					// gltf.scene; // THREE.Group
+					// gltf.scenes; // Array<THREE.Group>
+					// gltf.cameras; // Array<THREE.Camera>
+					// gltf.asset; // Object
+				});
 			});
 
 			// import data channel
-			var channelPath = "data/" + schema.measuredData.MotionTracking.DataChannel;
+			var channelPath = "data/" + schema.Asset.MeasuredStates.MotionTracking.DataChannel;
 			new THREE.FileLoader().load(channelPath, function (contents) {
 				dataChannels = JSON.parse(contents);
 				// fill threshold object and table
@@ -216,7 +219,7 @@
 			});
 
 			// import time series for demo
-			var seriesPath = "data/" + schema.measuredData.MotionTracking.TimeSeries;
+			var seriesPath = "data/" + schema.Asset.MeasuredStates.MotionTracking.TimeSeries;
 			new THREE.FileLoader().load(seriesPath, function (contents) {
 				demoData = JSON.parse(contents);
 				readFind = new readingFinder(demoData);
