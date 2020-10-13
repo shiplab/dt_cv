@@ -1,0 +1,15 @@
+{
+  "VIS": {
+    "Structure": {
+      "MainHull": {
+        "AssetById": [
+          "assetId1"
+        ],
+        "AnalysisById": [],
+        "MeasuredDataById": [
+          "MotionTrackingConf.json"
+        ]
+      }
+    }
+  }
+}
