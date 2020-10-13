@@ -17,11 +17,11 @@
           "ShortID": "PosX",
           "NameObject": {
             "NamingRule": "dnv_vis",
-            "vis:FunctionLeaf": "452 Position reference system",
-            "vis:Component": "I101 Control and monitoring system",
-            "vis:Suffix": "ShipSurge",
-            "vis:UoM": "d Distance",
-            "vis:Quantity": "m meters"
+            "dv:FunctionLeaf": "452 Position reference system",
+            "dv:Component": "I101 Control and monitoring system",
+            "dv:Suffix": "ShipSurge",
+            "dv:UoM": "d Distance",
+            "dv:Quantity": "m meters"
           }
         },
         "Property": {
@@ -49,11 +49,11 @@
           "ShortID": "PosZ",
           "NameObject": {
             "NamingRule": "dnv_vis",
-            "vis:FunctionLeaf": "453 Vertical reference system",
-            "vis:Component": "I101 Control and monitoring system",
-            "vis:Suffix": "ShipHeave",
-            "vis:UoM": "d Distance",
-            "vis:Quantity": "m meters"
+            "dv:FunctionLeaf": "453 Vertical reference system",
+            "dv:Component": "I101 Control and monitoring system",
+            "dv:Suffix": "ShipHeave",
+            "dv:UoM": "d Distance",
+            "dv:Quantity": "m meters"
           }
         },
         "Property": {
@@ -81,11 +81,11 @@
           "ShortID": "RotY",
           "NameObject": {
             "NamingRule": "dnv_vis",
-            "vis:FunctionLeaf": "453 Vertical reference system",
-            "vis:Component": "I101 Control and monitoring system",
-            "vis:Suffix": "ShipPitch",
-            "vis:UoM": "phi Angular measure",
-            "vis:Quantity": "rad radians"
+            "dv:FunctionLeaf": "453 Vertical reference system",
+            "dv:Component": "I101 Control and monitoring system",
+            "dv:Suffix": "ShipPitch",
+            "dv:UoM": "phi Angular measure",
+            "dv:Quantity": "rad radians"
           }
         },
         "Property": {
