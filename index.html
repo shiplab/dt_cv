@@ -186,7 +186,7 @@
 			var hullPath = "data/" + schema.Asset.Representation.Hull;
 			new THREE.FileLoader().load(hullPath, function (contents) {
 				var hullSchema = JSON.parse(contents);
-				var hull3D = "data/" + hullSchema.Package.Topology.Visualization.GLB;
+				var hull3D = "data/3D/" + hullSchema.Package.Topology.Visualization.GLB;
 				var loader = new THREE.GLTFLoader();
 				loader.load(hull3D, function (gltf) {
 					boat = gltf.scene;
