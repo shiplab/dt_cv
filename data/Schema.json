@@ -8,43 +8,6 @@
         "DataChannel": "MotionTrackingChannel.json",
         "TimeSeries": "DemoLog.json"
       }
-    },
-    "DataChannelList": {
-      "DataChannel": [{
-        "DataChannelID": {
-          "LocalID": "../",
-          "ShortID": "0010",
-          "NameObject": {
-            "NamingRule": "Naming_Rule",
-            "nr:CustomNameObject": "Vender Specific NameObject"
-          }
-        },
-        "Property":{
-          "DataChannelType":{
-            "Type": "Inst",
-            "UpdateCycle": "1"
-          },
-          "Format": {
-            "Type": "Decimal",
-            "Restriction": {
-              "FractionDigits": "1",
-              "MaxInclusive": "200.0",
-              "MinIclusive": "-150.0"
-            }
-          },
-          "Range": {
-            "High": "150.0",
-            "Low": "0.0"
-          },
-          "Unit": {
-            "UnitSymbol": "C",
-            "QuantityName": "Temperature"
-          },
-          "Name": "M/E #1 Air Cooler CFW OUT Temp",
-          "Remarks": "Location: ECR, Manufacturer: AAA Company, Type: TYPE-AAA",
-          "nr:CustomPropertyElement": "Vender specific Property"
-        }
-      }]
     }
   },
   "Behaviour": {
@@ -52,18 +15,6 @@
   },
   "Environment": {},
   "Taxonomies": {
-    "DV": {
-      "Structure": {
-        "MainHull": {
-          "AssetById": [
-            "assetId1"
-          ],
-          "AnalysisById": [],
-          "MeasuredDataById": [
-            "MotionTrackingConf.json"
-          ]
-        }
-      }
-    }
+    "VIS": "VIS.json"
   }
 }
