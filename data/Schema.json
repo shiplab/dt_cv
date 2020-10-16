@@ -1,12 +1,13 @@
 {
   "Asset": {
     "Representation": {
+      "ShipSpecification": "VesselSpecification.json",
       "Hull": "Hull.json"
     },
     "MeasuredStates": {
       "MotionTracking": {
         "DataChannel": "MotionTrackingChannel.json",
-        "TimeSeries": "DemoLog.json"
+        "TimeSeries": ["DemoLog.json"]
       }
     }
   },

@@ -1,11 +1,74 @@
 {
-  "VIS": {
-    "Structure": {
-      "MainHull": {
-        "AssetById": ["Hull.json"],
-        "AnalysisById": [],
-        "MeasuredDataById": ["MotionTrackingConf.json"]
-      }
+  "VIS": [
+    {
+      "ID": "000",
+      "CommonName": "Vessel general",
+      "Children": [
+        {
+          "ID": "070",
+          "CommonName": "Technical information",
+          "Children": [
+            {
+              "ID": "071",
+              "CommonName": "Vessel specification",
+              "Path": {
+                "Asset": ["VesselSpecification.json"],
+                "MeasuredStates": []
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ID": "100",
+      "CommonName": "Main structure",
+      "Children": [
+        {
+          "ID": "110",
+          "CommonName": "Ship structure",
+          "Children": [
+            {
+              "ID": "111",
+              "CommonName": "Ship hull structure",
+              "Path": {
+                "Asset": ["Hull.json"],
+                "MeasuredStates": []
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ID": "400",
+      "CommonName": "Propulsion and steering arrangements",
+      "Children": [
+        {
+          "ID": "450",
+          "CommonName": "Position keeping systems",
+          "Children": [
+            {
+              "ID": "450",
+              "CommonName": "Position reference system",
+              "Component": "I101 Control and monitoring system",
+              "Path": {
+                "Asset": [],
+                "MeasuredStates": ["MotionTrackingChannel.json"]
+              }
+            },
+            {
+              "ID": "453",
+              "CommonName": "Position reference system",
+              "Component": "I101 Control and monitoring system",
+              "Path": {
+                "Asset": [],
+                "MeasuredStates": ["MotionTrackingChannel.json"]
+              }
+            }
+          ]
+        }
+      ]
     }
-  }
+  ]
 }

@@ -1,0 +1,28 @@
+{
+  "Package": {
+    "Remarks": "This is an initial draft of what a ship specification template would be.",
+    "Author": "Ícaro Fonseca",
+    "ShipID": "IM01234567",
+    "LOA": 0.0,
+    "LWL": 0.0,
+    "BOA": 0.0,
+    "Depth": 0.0,
+    "DesignDraft": 0.0,
+    "DesignSpeed": 0.0,
+    "WeightDistribution": {
+      "Lightweight": 0,
+      "LCG": 0.0,
+      "VCG": 0.0
+    },
+    "AssetID": {
+      "LocalID": "/dnv_vis/071",
+      "ShortID": "VesselSpecification.json",
+      "NameObject": {
+        "NamingRule": "dnv_vis",
+        "vis:0_FunctionGroup": "000 Vessel general",
+        "vis:1_FunctionGroup": "070 Technical information",
+        "vis:2_FunctionLeaf": "071 Vessel specification"
+      }
+    }
+  }
+}
