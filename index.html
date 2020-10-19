@@ -60,8 +60,7 @@
 		<div class="row">
 			<div class="col-md-12 text-center">
 				<h2>Digital Twin</h2>
-				<p>Simple digital twin demo based on computer vision. <a href="https://doi.org/10.7148/2020-0207">Read
-						the paper.</a></p>
+				<p>Simple motion monitoring application based on open standards.</a></p>
 			</div>
 
 			<div>
@@ -126,17 +125,15 @@
 
 	<script>
 		"use strict";
-		var schema, xCenter, zCenter, rotDeg;
+		var schema, vis, xCenter, zCenter, rotDeg;
 		var renderer, container, scene, camera, controls;
-		var zUpCont, boat, ocean;
+		var zUpCont, boat3D, ocean;
 
-		// Inserting global variable of the exported file @ferrari212
-		var boatObject = {};
-		var lenghObject;
-
+		// insert global variable of the exported file @ferrari212
+		var demoObject = {};
 		let TimeStamp = new Date().toISOString();
-		boatObject.TimeSeriesData = []
-		boatObject.TimeSeriesData[0] = {
+		demoObject.TimeSeriesData = []
+		demoObject.TimeSeriesData[0] = {
 			"DataConfigurationReference": {
 				"ID": "MotionTrackingChannel.json",
 				"TimeStamp": TimeStamp
@@ -149,19 +146,17 @@
 			}]
 		};
 
-		var TabularData = boatObject.TimeSeriesData[0].TabularData[0];
+		// download coordinate positions read by the app
+		var TabularData = demoObject.TimeSeriesData[0].TabularData[0];
 		function downloadFile() {
 			//Get the file contents
 			var txtFile = "test.txt";
 			var file = new File([], txtFile);
-
 			// Finish boat object
 			TabularData.NumberOfDataSet = TabularData.DataSet.length.toString();
-			var str = JSON.stringify(boatObject);
-
+			var str = JSON.stringify(demoObject);
 			//Save the file contents as a DataURI
 			var dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(str);
-
 			//Write it as the href for the link
 			var link = document.getElementById('download').href = dataUri;
 		}
@@ -178,35 +173,15 @@
 		// import digital twin JSON schema
 		var dataChannels, demoData, readFind;
 		var threshold = {};
-		new THREE.FileLoader().load("data/Schema.json", useSchema);
+		new THREE.FileLoader().load("data/VIS.json", useSchema);
 		function useSchema(contents) {
-			schema = JSON.parse(contents);
-
-			// import binary glTF file
-			var hullPath = "data/" + schema.Asset.Representation.Hull;
-			new THREE.FileLoader().load(hullPath, function (contents) {
-				var hullSchema = JSON.parse(contents);
-				var hull3D = "data/3D/" + hullSchema.Package.Topology.Visualization.GLB;
-				var loader = new THREE.GLTFLoader();
-				loader.load(hull3D, function (gltf) {
-					boat = gltf.scene;
-					boat.children["0"].geometry.rotateX(Math.PI / 2);
-					boat.position.x = hullSchema.Package.Topology.Position.x;
-					boat.position.y = hullSchema.Package.Topology.Position.y;
-					boat.position.z = hullSchema.Package.Topology.Position.z;
-					scene.add(boat);
-					// var axisHelper = new THREE.AxisHelper( 5 );
-					// boat.add(axisHelper);
-					// gltf.animations; // Array<THREE.AnimationClip>
-					// gltf.scene; // THREE.Group
-					// gltf.scenes; // Array<THREE.Group>
-					// gltf.cameras; // Array<THREE.Camera>
-					// gltf.asset; // Object
-				});
-			});
-
+			vis = JSON.parse(contents).VIS;
+			// search through asset representation importing glTF files
+			for (let prop in vis) {
+				search3D(vis[prop])
+			}
 			// import data channel
-			var channelPath = "data/" + schema.Asset.MeasuredStates.MotionTracking.DataChannel;
+			var channelPath = "data/" + vis[2].Children[0].Children[0].Path.MeasuredStates[0].DataChannel;
 			new THREE.FileLoader().load(channelPath, function (contents) {
 				dataChannels = JSON.parse(contents);
 				// fill threshold object and table
@@ -217,15 +192,48 @@
 				document.getElementById("thresVert").innerHTML = threshold.h + " m";
 				document.getElementById("thresRot").innerHTML = parseInt(threshold.r) + " degrees";
 			});
-
 			// import time series for demo
-			var seriesPath = "data/" + schema.Asset.MeasuredStates.MotionTracking.TimeSeries;
+			var seriesPath = "data/" + vis[2].Children[0].Children[0].Path.MeasuredStates[0].TimeSeries;
 			new THREE.FileLoader().load(seriesPath, function (contents) {
 				demoData = JSON.parse(contents);
 				readFind = new readingFinder(demoData);
 			});
 		}
 
+		function search3D(element) {
+			if (typeof element.Children === "undefined") {
+				for (let i = 0; i < element.Path.Asset.length; i++) {
+					new THREE.FileLoader().load("data/" + element.Path.Asset, function (contents) {
+						let assetPackage = JSON.parse(contents).Package;
+						if (typeof assetPackage.Topology !== "undefined") {
+							let data3D = "data/3D/" + assetPackage.Topology.Visualization.GLB;
+							let loader = new THREE.GLTFLoader();
+							loader.load(data3D, function (gltf) {
+								boat3D = gltf.scene;
+								boat3D.children["0"].geometry.rotateX(Math.PI / 2);
+								boat3D.position.x = assetPackage.Topology.Position.x;
+								boat3D.position.y = assetPackage.Topology.Position.y;
+								boat3D.position.z = assetPackage.Topology.Position.z;
+								scene.add(boat3D);
+								// var axisHelper = new THREE.AxisHelper( 5 );
+								// boat3D.add(axisHelper);
+								// gltf.animations; // Array<THREE.AnimationClip>
+								// gltf.scene; // THREE.Group
+								// gltf.scenes; // Array<THREE.Group>
+								// gltf.cameras; // Array<THREE.Camera>
+								// gltf.asset; // Object
+							});
+						}
+					});
+				}
+			} else {
+				for (let i = 0; i < element.Children.length; i++) {
+					search3D(element.Children[i]);
+				}
+			}
+		}
+
+		// sync visualization with video in demo mode
 		function readingFinder(demoData) {
 			this.numReadings = demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet.length;
 			this.startTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet["0"].TimeStamp);
@@ -285,7 +293,7 @@
 				color: 0xA9CCE3,
 				side: THREE.BackSide
 				/*,
-								depthWrite: false*/
+				depthWrite: false*/
 			});
 			var aquarium = new THREE.Mesh(aqGeom, aqMaterial);
 			scene.add(aquarium);
@@ -317,17 +325,18 @@
 			zUpCont.add(ocean);
 			scene.rotation.x = -Math.PI / 2;
 
-			//Respond to window resize:
+			// respond to window resize:
 			function onResize() {
 				renderer.setSize(container.clientWidth, container.clientHeight);
 				camera.aspect = container.clientWidth / container.clientHeight;
 				camera.updateProjectionMatrix();
 			}
 			window.addEventListener("resize", onResize);
-			onResize(); //Ensure the initial setup is good too
+			onResize(); // ensure the initial setup is good too
 		})();
 
-		function exportGLTF(input) {
+		// GLTF exporter only for reference
+		/*function exportGLTF(input) {
 			var gltfExporter = new THREE.GLTFExporter();
 
 			var options = {
@@ -338,7 +347,7 @@
 				embedImages: true,
 				forceIndices: false,
 				forcePowerOfTwoTextures: false,
-				maxTextureSize: Infinity // To prevent NaN value
+				maxTextureSize: Infinity // to prevent NaN value
 			};
 
 			gltfExporter.parse(input, function (result) {
@@ -370,10 +379,10 @@
 			// URL.revokeObjectURL( url ); breaks Firefox...
 		}
 
-		// Motion tracking can be used to estimate velocity.
-		//var initX = [1, 0]; // X = [initial position in m, initial velocity in m/s]
-		//var tprev = 0;
-		//var posX = initX;
+		// motion tracking could be used to estimate velocity
+		var initX = [1, 0]; // X = [initial position in m, initial velocity in m/s]
+		var tprev = 0;
+		var posX = initX;*/
 
 		controls.update();
 		var clock = new THREE.Clock();
@@ -397,9 +406,9 @@
 
 				var framePos = readFind.findReading(1000 * elapsedDemoTime);
 				checkThreshold(parseFloat(framePos["0"]), parseFloat(framePos["1"]), 180 / Math.PI * parseFloat(framePos["2"]));
-				boat.position.x = 100 * framePos["0"];
-				boat.position.z = 100 * framePos["1"];
-				boat.rotation.y = framePos["2"];
+				boat3D.position.x = 100 * framePos["0"];
+				boat3D.position.z = 100 * framePos["1"];
+				boat3D.rotation.y = framePos["2"];
 			}
 			ocean.water.render();
 			requestAnimationFrame(animate);
@@ -407,7 +416,6 @@
 		}
 
 		let utils = new Utils('errorMessage');
-
 		let streaming = false;
 		let videoInput = document.getElementById('videoInput');
 		document.getElementById("videoInput").style.display = "none";
@@ -565,14 +573,14 @@
 					xCenter = (trackBox.center.x /*  + w/2 */) - resolution.w / 2;
 					zCenter = -(trackBox.center.y /*  + h/2 */) + resolution.h / 2;
 					rotDeg = trackBox.angle - 90;
-					boat.position.x = xCenter * 100 * distance.w / resolution.w;
-					boat.position.z = zCenter * 100 * distance.h / resolution.h;
-					boat.rotation.y = Math.PI / 180 * rotDeg;
+					boat3D.position.x = xCenter * 100 * distance.w / resolution.w;
+					boat3D.position.z = zCenter * 100 * distance.h / resolution.h;
+					boat3D.rotation.y = Math.PI / 180 * rotDeg;
 
-					checkThreshold(boat.position.x, boat.position.z, rotDeg);
+					checkThreshold(boat3D.position.x, boat3D.position.z, rotDeg);
 
-					let surgeMeters = boat.position.x / 100;
-					let heaveMeters = boat.position.z / 100;
+					let surgeMeters = boat3D.position.x / 100;
+					let heaveMeters = boat3D.position.z / 100;
 
 					// Insert the results in the object @ferrari212
 					let date = new Date(begin).toISOString();
@@ -581,7 +589,7 @@
 						"Value": [
 							surgeMeters.toString(),
 							heaveMeters.toString(),
-							boat.rotation.y.toString()
+							boat3D.rotation.y.toString()
 						]
 					});
 
@@ -684,14 +692,14 @@
 					xCenter = (trackBox.center.x /*  + w/2 */) - resolution.w / 2;
 					zCenter = -(trackBox.center.y /*  + h/2 */) + resolution.h / 2;
 					rotDeg = trackBox.angle - 90;
-					boat.position.x = xCenter * 100 * distance.w / resolution.w;
-					boat.position.z = zCenter * 100 * distance.h / resolution.h;
-					boat.rotation.y = Math.PI / 180 * rotDeg;
+					boat3D.position.x = xCenter * 100 * distance.w / resolution.w;
+					boat3D.position.z = zCenter * 100 * distance.h / resolution.h;
+					boat3D.rotation.y = Math.PI / 180 * rotDeg;
 
-					checkThreshold(boat.position.x, boat.position.z, rotDeg);
+					checkThreshold(boat3D.position.x, boat3D.position.z, rotDeg);
 
-					let surgeMeters = boat.position.x / 100;
-					let heaveMeters = boat.position.z / 100;
+					let surgeMeters = boat3D.position.x / 100;
+					let heaveMeters = boat3D.position.z / 100;
 
 					// Insert the results in the object @ferrari212
 					let date = new Date(begin).toISOString();
@@ -700,7 +708,7 @@
 						"Value": [
 							surgeMeters.toString(),
 							heaveMeters.toString(),
-							boat.rotation.y.toString()
+							boat3D.rotation.y.toString()
 						]
 					});
 
@@ -758,25 +766,25 @@
 			};
 			// schedule the first one.
 			setTimeout(replayVideo, 0);
-		}
+		};
 
 		function onVideoStopped() {
 			streaming = false;
 			canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
 			startAndStop.innerText = 'Capture';
-		}
+		};
 
 		function onStreamStopped() {
 			streaming = false;
 			canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
 			playStream.innerText = 'Stream';
-		}
+		};
 
 		function onDemoStopped() {
 			streaming = false;
 			canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
 			playDemo.innerText = 'Demo';
-		}
+		};
 
 		utils.loadOpenCv(() => {
 			startAndStop.disabled = false;
@@ -800,9 +808,9 @@
 		// movement plots
 		function feedMovPlot(callback) {
 			var tick = {};
-			tick.plot0 = boat.position.x;
-			tick.plot1 = boat.position.z;
-			//tick.plot2 = boat.rotation.z;
+			tick.plot0 = boat3D.position.x;
+			tick.plot1 = boat3D.position.z;
+			//tick.plot2 = boat3D.rotation.z;
 			callback(JSON.stringify(tick));
 		};
 
@@ -838,10 +846,10 @@
 					values: [0],
 					text: "Heave (cm)"
 				},
-					/* {
-										// 	"values": [0],
-										// 	"text": "Pitch (rad)"
-										// }*/
+				/* {
+					"values": [0],
+					"text": "Pitch (rad)"
+				}*/
 				],
 				refresh: {
 					type: "feed",
