@@ -11,10 +11,10 @@
       }
     }
   },
+  "Environment": {},
   "Behaviour": {
     "MotionMonitoring": "../index.html"
   },
-  "Environment": {},
   "Taxonomies": {
     "VIS": "VIS.json"
   }
