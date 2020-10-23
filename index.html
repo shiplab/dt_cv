@@ -127,6 +127,7 @@
 		var schema, vis, xCenter, zCenter, rotDeg;
 		var renderer, container, scene, camera, controls;
 		var zUpCont, ocean;
+		var loa, draft;
 		var boat3D = new THREE.Group();
 
 		// insert global variable of the exported file @ferrari212
@@ -176,11 +177,20 @@
 		new THREE.FileLoader().load("data/VIS.json", useSchema);
 		function useSchema(contents) {
 			vis = JSON.parse(contents).VIS;
-			// search through asset representation importing glTF files
-			for (let prop in vis) {
-				search3D(vis[prop])
-			}
-			scene.add(boat3D);
+
+			// get boat draft from specification
+			var specPath = "data/" + vis[0].Children[0].Children[0].Path.Asset;
+			new THREE.FileLoader().load(specPath, function (contents) {
+				var spec = JSON.parse(contents);
+				loa = spec.Package.LOA;
+				draft = spec.Package.DesignDraft;
+				// search through asset representation importing glTF files
+				for (let prop in vis) {
+					search3D(vis[prop]);
+				}
+				scene.add(boat3D);
+			});
+
 			// import data channel
 			var channelPath = "data/" + vis[2].Children[0].Children[0].Path.MeasuredStates[0].DataChannel;
 			new THREE.FileLoader().load(channelPath, function (contents) {
@@ -213,14 +223,14 @@
 							loader.load(data3D, function (gltf) {
 								var asset3D = gltf.scene;
 								asset3D.children[0].geometry.rotateX(Math.PI / 2);
-								asset3D.position.x = assetPackage.Topology.Position.x - 65;
+								asset3D.position.x = assetPackage.Topology.Position.x - 1000 * loa / 2;
 								asset3D.position.y = assetPackage.Topology.Position.y;
-								asset3D.position.z = assetPackage.Topology.Position.z - 10;
+								asset3D.position.z = assetPackage.Topology.Position.z - 1000 * draft;
 								boat3D.add(asset3D);
 								// var axisHelper = new THREE.AxisHelper( 5 );
 								// boat3D.add(axisHelper);
 								// this shows an object with gltf content and metadata
-								//console.log(gltf);
+								// console.log(gltf);
 							});
 						}
 					});
@@ -245,9 +255,9 @@
 		// 						var material = new THREE.MeshPhongMaterial({ color: 0x0384fc, specular: 0x111111, shininess: 200 });
 		// 						material.side = 1;
 		// 						var asset3D = new THREE.Mesh(stl, material);
-		// 						asset3D.position.x = assetPackage.Topology.Position.x - 65;
+		// 						asset3D.position.x = assetPackage.Topology.Position.x - 1000 * loa / 2;
 		// 						asset3D.position.y = assetPackage.Topology.Position.y;
-		// 						asset3D.position.z = assetPackage.Topology.Position.z - 10;
+		// 						asset3D.position.z = assetPackage.Topology.Position.z  - 1000 * draft;
 		// 						asset3D.castShadow = true;
 		// 						asset3D.receiveShadow = true;
 		// 						boat3D.add(asset3D);
