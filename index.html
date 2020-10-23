@@ -179,7 +179,7 @@
 			vis = JSON.parse(contents).VIS;
 
 			// get boat draft from specification
-			var specPath = "data/" + vis[0].Children[0].Children[0].Path.Asset;
+			var specPath = "data/" + vis["000"].Children["070"].Children["071"].Path.Asset;
 			new THREE.FileLoader().load(specPath, function (contents) {
 				var spec = JSON.parse(contents);
 				loa = spec.Package.LOA;
@@ -192,7 +192,7 @@
 			});
 
 			// import data channel
-			var channelPath = "data/" + vis[2].Children[0].Children[0].Path.MeasuredStates[0].DataChannel;
+			var channelPath = "data/" + vis["400"].Children["450"].Children["452"].Path.MeasuredStates[0].DataChannel;
 			new THREE.FileLoader().load(channelPath, function (contents) {
 				dataChannels = JSON.parse(contents);
 				// fill threshold object and table
@@ -204,7 +204,7 @@
 				document.getElementById("thresRot").innerHTML = parseInt(threshold.r) + " degrees";
 			});
 			// import time series for demo
-			var seriesPath = "data/" + vis[2].Children[0].Children[0].Path.MeasuredStates[0].TimeSeries;
+			var seriesPath = "data/" + vis["400"].Children["450"].Children["452"].Path.MeasuredStates[0].TimeSeries;
 			new THREE.FileLoader().load(seriesPath, function (contents) {
 				demoData = JSON.parse(contents);
 				readFind = new readingFinder(demoData);
@@ -236,8 +236,8 @@
 					});
 				}
 			} else {
-				for (let i = 0; i < element.Children.length; i++) {
-					search3D(element.Children[i]);
+				for (let prop in element.Children) {
+					search3D(element.Children[prop]);
 				}
 			}
 		}
