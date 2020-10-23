@@ -182,8 +182,8 @@
 			var specPath = "data/" + vis["000"].Children["070"].Children["071"].Path.Asset;
 			new THREE.FileLoader().load(specPath, function (contents) {
 				var spec = JSON.parse(contents);
-				loa = spec.Package.LOA;
-				draft = spec.Package.DesignDraft;
+				loa = spec.Package.MainDimensions.LOA;
+				draft = spec.Package.MainDimensions.DesignDraft;
 				// search through asset representation importing glTF files
 				for (let prop in vis) {
 					search3D(vis[prop]);

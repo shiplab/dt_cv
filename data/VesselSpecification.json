@@ -3,16 +3,26 @@
     "Remarks": "This is an initial draft of what a ship specification template would be.",
     "Author": "Ícaro Fonseca",
     "ShipID": "IM01234567",
-    "LOA": 0.14233,
-    "LWL": 0.14233,
-    "BOA": 0.079209,
-    "Depth": 0.043,
-    "DesignDraft": 0.01,
-    "DesignSpeed": 0.0,
-    "WeightDistribution": {
+    "MainDimensions": {
+      "LOA": 0.14233,
+      "LWL": 0.14233,
+      "BOA": 0.079209,
+      "Depth": 0.043,
+      "DesignDraft": 0.01,
+      "UnitSymbol": "m"
+    },
+    "DesignSpeed": {
+      "Design": 0.0,
+      "UnitSymbol": "kn"
+    },
+    "Weight": {
       "Lightweight": 0,
+      "UnitSymbol": "t"
+    },
+    "CG": {
       "LCG": 0.0,
-      "VCG": 0.0
+      "VCG": 0.0,
+      "UnitSymbol": "m"
     },
     "AssetID": {
       "LocalID": "/dnv_vis/071",
