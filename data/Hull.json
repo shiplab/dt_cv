@@ -5,7 +5,6 @@
     "Topology": {
       "Visualization": {
         "STL": "hull.stl",
-        "glTF": "hull.gltf",
         "GLB": "hull.glb"
       },
       "Position": {

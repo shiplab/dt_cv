@@ -24,6 +24,7 @@
 	<script src="libs/three.js"></script>
 	<script src="libs/GLTFLoader.js"></script>
 	<script src="libs/GLTFExporter.js"></script>
+	<!-- <script src="libs/STLLoader.js"></script> -->
 	<script src="libs/Mirror.js"></script>
 	<script src="libs/WaterShader.js"></script>
 	<script src="libs/OrbitControls.js"></script>
@@ -125,7 +126,8 @@
 		"use strict";
 		var schema, vis, xCenter, zCenter, rotDeg;
 		var renderer, container, scene, camera, controls;
-		var zUpCont, boat3D, ocean;
+		var zUpCont, ocean;
+		var boat3D = new THREE.Group();
 
 		// insert global variable of the exported file @ferrari212
 		var demoObject = {};
@@ -178,6 +180,7 @@
 			for (let prop in vis) {
 				search3D(vis[prop])
 			}
+			scene.add(boat3D);
 			// import data channel
 			var channelPath = "data/" + vis[2].Children[0].Children[0].Path.MeasuredStates[0].DataChannel;
 			new THREE.FileLoader().load(channelPath, function (contents) {
@@ -198,6 +201,7 @@
 			});
 		}
 
+		// GLTF alternative
 		function search3D(element) {
 			if (typeof element.Children === "undefined") {
 				for (let i = 0; i < element.Path.Asset.length; i++) {
@@ -207,19 +211,16 @@
 							let data3D = "data/3D/" + assetPackage.Topology.Visualization.GLB;
 							let loader = new THREE.GLTFLoader();
 							loader.load(data3D, function (gltf) {
-								boat3D = gltf.scene;
-								boat3D.children["0"].geometry.rotateX(Math.PI / 2);
-								boat3D.position.x = assetPackage.Topology.Position.x;
-								boat3D.position.y = assetPackage.Topology.Position.y;
-								boat3D.position.z = assetPackage.Topology.Position.z;
-								scene.add(boat3D);
+								var asset3D = gltf.scene;
+								asset3D.children[0].geometry.rotateX(Math.PI / 2);
+								asset3D.position.x = assetPackage.Topology.Position.x - 65;
+								asset3D.position.y = assetPackage.Topology.Position.y;
+								asset3D.position.z = assetPackage.Topology.Position.z - 10;
+								boat3D.add(asset3D);
 								// var axisHelper = new THREE.AxisHelper( 5 );
 								// boat3D.add(axisHelper);
-								// gltf.animations; // Array<THREE.AnimationClip>
-								// gltf.scene; // THREE.Group
-								// gltf.scenes; // Array<THREE.Group>
-								// gltf.cameras; // Array<THREE.Camera>
-								// gltf.asset; // Object
+								// this shows an object with gltf content and metadata
+								//console.log(gltf);
 							});
 						}
 					});
@@ -230,6 +231,36 @@
 				}
 			}
 		}
+
+		// STL alternative
+		// function search3D(element) {
+		// 	if (typeof element.Children === "undefined") {
+		// 		for (let i = 0; i < element.Path.Asset.length; i++) {
+		// 			new THREE.FileLoader().load("data/" + element.Path.Asset, function (contents) {
+		// 				let assetPackage = JSON.parse(contents).Package;
+		// 				if (typeof assetPackage.Topology !== "undefined") {
+		// 					let data3D = "data/3D/" + assetPackage.Topology.Visualization.STL;
+		// 					let loader = new THREE.STLLoader();
+		// 					loader.load(data3D, function (stl) {
+		// 						var material = new THREE.MeshPhongMaterial({ color: 0x0384fc, specular: 0x111111, shininess: 200 });
+		// 						material.side = 1;
+		// 						var asset3D = new THREE.Mesh(stl, material);
+		// 						asset3D.position.x = assetPackage.Topology.Position.x - 65;
+		// 						asset3D.position.y = assetPackage.Topology.Position.y;
+		// 						asset3D.position.z = assetPackage.Topology.Position.z - 10;
+		// 						asset3D.castShadow = true;
+		// 						asset3D.receiveShadow = true;
+		// 						boat3D.add(asset3D);
+		// 					});
+		// 				}
+		// 			});
+		// 		}
+		// 	} else {
+		// 		for (let i = 0; i < element.Children.length; i++) {
+		// 			search3D(element.Children[i]);
+		// 		}
+		// 	}
+		// }
 
 		// sync visualization with video in demo mode
 		function readingFinder(demoData) {
@@ -278,13 +309,13 @@
 			//Scene setup:
 			scene = new THREE.Scene();
 			let sun = new THREE.DirectionalLight(0xffffff, 2);
-			sun.position.set(-512, 246, 128);
+			sun.position.set(512, -246, 128);
 			scene.add(sun);
 
-			//Ocean size: aquarium is circa 40 cm on its longer dimension and 20 cm on the shorter
-			let length = 20;
-			let width = 40;
-			let oSize = 40;
+			//Ocean size: aquarium is circa 400 mm on its longer dimension and 200 mm on the shorter
+			let length = 200;
+			let width = 400;
+			let oSize = 400;
 			//scene.add(new Skybox(width, length));
 			var aqGeom = new THREE.BoxBufferGeometry(width, length, length);
 			var aqMaterial = new THREE.MeshBasicMaterial({
@@ -304,7 +335,7 @@
 			camera.up.set(0, 1, 0);
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-			camera.position.set(0, 0, 50);
+			camera.position.set(0, 0, 840);
 			controls.target = new THREE.Vector3(0, 0, 0);
 			camera.lookAt(zUpCont.position);
 			//zUpCont.add(camera);
@@ -375,10 +406,10 @@
 			link.download = filename;
 			link.click();
 			// URL.revokeObjectURL( url ); breaks Firefox...
-		}
+		}*/
 
 		// motion tracking could be used to estimate velocity
-		var initX = [1, 0]; // X = [initial position in m, initial velocity in m/s]
+		/*var initX = [1, 0]; // X = [initial position in m, initial velocity in m/s]
 		var tprev = 0;
 		var posX = initX;*/
 
@@ -404,8 +435,8 @@
 
 				var framePos = readFind.findReading(1000 * elapsedDemoTime);
 				checkThreshold(parseFloat(framePos["0"]), parseFloat(framePos["1"]), 180 / Math.PI * parseFloat(framePos["2"]));
-				boat3D.position.x = 100 * framePos["0"];
-				boat3D.position.z = 100 * framePos["1"];
+				boat3D.position.x = 1000 * framePos["0"];
+				boat3D.position.z = 1000 * framePos["1"];
 				boat3D.rotation.y = framePos["2"];
 			}
 			ocean.water.render();
@@ -571,14 +602,14 @@
 					xCenter = (trackBox.center.x /*  + w/2 */) - resolution.w / 2;
 					zCenter = -(trackBox.center.y /*  + h/2 */) + resolution.h / 2;
 					rotDeg = trackBox.angle - 90;
-					boat3D.position.x = xCenter * 100 * distance.w / resolution.w;
-					boat3D.position.z = zCenter * 100 * distance.h / resolution.h;
+					boat3D.position.x = xCenter * 1000 * distance.w / resolution.w;
+					boat3D.position.z = zCenter * 1000 * distance.h / resolution.h;
 					boat3D.rotation.y = Math.PI / 180 * rotDeg;
 
 					checkThreshold(boat3D.position.x, boat3D.position.z, rotDeg);
 
-					let surgeMeters = boat3D.position.x / 100;
-					let heaveMeters = boat3D.position.z / 100;
+					let surgeMeters = boat3D.position.x / 1000;
+					let heaveMeters = boat3D.position.z / 1000;
 
 					// Insert the results in the object @ferrari212
 					let date = new Date(begin).toISOString();
@@ -690,14 +721,14 @@
 					xCenter = (trackBox.center.x /*  + w/2 */) - resolution.w / 2;
 					zCenter = -(trackBox.center.y /*  + h/2 */) + resolution.h / 2;
 					rotDeg = trackBox.angle - 90;
-					boat3D.position.x = xCenter * 100 * distance.w / resolution.w;
-					boat3D.position.z = zCenter * 100 * distance.h / resolution.h;
+					boat3D.position.x = xCenter * 1000 * distance.w / resolution.w;
+					boat3D.position.z = zCenter * 1000 * distance.h / resolution.h;
 					boat3D.rotation.y = Math.PI / 180 * rotDeg;
 
 					checkThreshold(boat3D.position.x, boat3D.position.z, rotDeg);
 
-					let surgeMeters = boat3D.position.x / 100;
-					let heaveMeters = boat3D.position.z / 100;
+					let surgeMeters = boat3D.position.x / 1000;
+					let heaveMeters = boat3D.position.z / 1000;
 
 					// Insert the results in the object @ferrari212
 					let date = new Date(begin).toISOString();
@@ -844,10 +875,10 @@
 					values: [0],
 					text: "Heave (cm)"
 				},
-				/* {
-					"values": [0],
-					"text": "Pitch (rad)"
-				}*/
+					/* {
+						"values": [0],
+						"text": "Pitch (rad)"
+					}*/
 				],
 				refresh: {
 					type: "feed",
