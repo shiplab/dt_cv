@@ -1,0 +1,15 @@
+{
+  "Package": {
+    "Remarks": "Web-application for motion monitoring in 3 DoF with computer vision.",
+    "Path": "../index.html",
+    "BehaviourID": {
+      "LocalID": "/Service_categories/MoTrack",
+      "ShortID": "MotionTrackingApp.json",
+      "NameObject": {
+        "NamingRule": "Service categories",
+        "sc:Category": "Motion response",
+        "sc:Type": "Application"
+      }
+    }
+  }
+}

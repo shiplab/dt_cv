@@ -5,7 +5,7 @@
       "Hull": "Hull.json"
     },
     "MeasuredStates": {
-      "MotionTracking": {
+      "MotionTrackingData": {
         "DataChannel": "MotionTrackingChannel.json",
         "TimeSeries": ["DemoLog.json"]
       }
@@ -13,7 +13,7 @@
   },
   "Environment": {},
   "Behaviour": {
-    "MotionMonitoring": "../index.html"
+    "MotionTrackingApp": "MotionTrackingApp.json"
   },
   "Taxonomies": {
     "VIS": "VIS.json"
