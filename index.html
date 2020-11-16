@@ -280,23 +280,21 @@
 			this.demoDuration = this.finishTime - this.startTime;
 			this.marker = 0;
 			this.completedLoops = 0;
-			this.findReading = function (elapsedDemoTime) {
-				var elapsedLoopTime = elapsedDemoTime - this.completedLoops * this.demoDuration;
-				if (elapsedLoopTime > this.demoDuration) {
+			this.findReading = function (elapsedLoopTime) {
+				var markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].TimeStamp);
+				if (markerTime > elapsedLoopTime) {
 					this.completedLoops++;
-					elapsedLoopTime = elapsedDemoTime - this.completedLoops * this.demoDuration;
 					this.marker = 0;
 				}
-				var markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].TimeStamp);
-				while (markerTime - this.startTime < elapsedLoopTime) {
-					this.marker++;
-					try {
-						// the following command may cause an error if the marker tries to access a reading after the demo running time
-						markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].TimeStamp);
-					} catch (err) {
-						// in such case, step back with the marker
-						this.marker--;
-						return demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].Value;
+				if (this.marker < this.numReadings - 1) {
+					// we are not on the last frame, so we can continue towards the following readings
+					var nextMarkerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker + 1].TimeStamp);
+					while (nextMarkerTime - this.startTime < elapsedLoopTime) {
+						this.marker++;
+						if (this.marker < this.numReadings - 1) {
+							// the new marker is not the last, there is still a next marker
+							nextMarkerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker + 1].TimeStamp);
+						}
 					}
 				}
 				return demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].Value;
@@ -326,7 +324,6 @@
 			let length = 200;
 			let width = 400;
 			let oSize = 400;
-			//scene.add(new Skybox(width, length));
 			var aqGeom = new THREE.BoxBufferGeometry(width, length, length);
 			var aqMaterial = new THREE.MeshBasicMaterial({
 				color: 0xA9CCE3,
@@ -348,8 +345,6 @@
 			camera.position.set(0, 0, 840);
 			controls.target = new THREE.Vector3(0, 0, 0);
 			camera.lookAt(zUpCont.position);
-			//zUpCont.add(camera);
-			//camera.rotation.z = - Math.PI;
 			controls.update();
 
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
@@ -377,7 +372,7 @@
 		// GLTF exporter only for reference
 		/*function exportGLTF(input) {
 			var gltfExporter = new THREE.GLTFExporter();
-
+	
 			var options = {
 				trs: false,
 				onlyVisible: true,
@@ -388,7 +383,7 @@
 				forcePowerOfTwoTextures: false,
 				maxTextureSize: Infinity // to prevent NaN value
 			};
-
+	
 			gltfExporter.parse(input, function (result) {
 				if (result instanceof ArrayBuffer) {
 					saveArrayBuffer(result, 'scene.glb');
@@ -400,17 +395,17 @@
 				}
 			}, options);
 		}
-
+	
 		var link = document.createElement('a');
 		link.style.display = 'none';
 		document.body.appendChild(link); // Firefox workaround, see #6594
-
+	
 		function saveArrayBuffer(buffer, filename) {
 			save(new Blob([buffer], {
 				type: 'application/octet-stream'
 			}), filename);
 		}
-
+	
 		function save(blob, filename) {
 			link.href = URL.createObjectURL(blob);
 			link.download = filename;
@@ -426,7 +421,6 @@
 		controls.update();
 		var clock = new THREE.Clock();
 		var aniMode = "still";
-		var demoStartTime;
 		animate();
 		function animate() {
 			if (aniMode === "still") {
@@ -438,12 +432,9 @@
 				ocean.update(time);
 			} else if (aniMode === "demo") {
 				// animate a scene from stored data
-				var time = clock.getElapsedTime();
-				var elapsedDemoTime = time - demoStartTime;
-
-				ocean.update(elapsedDemoTime);
-
-				var framePos = readFind.findReading(1000 * elapsedDemoTime);
+				var elapsedLoopTime = document.getElementById("videoInput").currentTime;
+				ocean.update(elapsedLoopTime);
+				var framePos = readFind.findReading(1000 * elapsedLoopTime);
 				checkThreshold(parseFloat(framePos["0"]), parseFloat(framePos["1"]), 180 / Math.PI * parseFloat(framePos["2"]));
 				boat3D.position.x = 1000 * framePos["0"];
 				boat3D.position.z = 1000 * framePos["1"];
@@ -767,14 +758,12 @@
 			playDemo.innerText = "Stop";
 			readFind.marker = 0;
 			readFind.completedLoops = 0;
-			demoStartTime = clock.getElapsedTime();
 			aniMode = "demo";
 
 			videoInput.width = videoInput.videoWidth;
 			videoInput.height = videoInput.videoHeight;
 
 			let video = document.getElementById('videoInput');
-			readFind.demoDuration = 1000 * video.duration;
 			let cap = new cv.VideoCapture(video);
 
 			// take first frame of the video
