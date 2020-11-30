@@ -124,7 +124,7 @@
 
 	<script>
 		"use strict";
-		var schema, vis, xCenter, zCenter, rotDeg;
+		var vis, xCenter, zCenter, rotDeg;
 		var renderer, container, scene, camera, controls;
 		var zUpCont, ocean;
 		var loa, draft;
@@ -178,10 +178,10 @@
 		function useSchema(contents) {
 			vis = JSON.parse(contents).VIS;
 
-			// get boat draft from specification
 			var specPath = "data/" + vis["000"].Children["070"].Children["071"].Path.Asset;
 			new THREE.FileLoader().load(specPath, function (contents) {
 				var spec = JSON.parse(contents);
+				// get boat dimensions from specification
 				loa = spec.Package.MainDimensions.LOA;
 				draft = spec.Package.MainDimensions.DesignDraft;
 				// search through asset representation importing glTF files
