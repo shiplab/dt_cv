@@ -70,7 +70,7 @@
 					<button id="playStream" disabled>Stream</button>
 					<button id="playDemo" disabled>Demo</button>
 					<button>
-						<a href="path/to/file.txt" id="download" download="example.json" onclick="downloadFile()"
+						<a href="path/to/file.txt" id="download" download="log.json" onclick="downloadFile()"
 							style="color: inherit;text-decoration: none;">
 							Download Results
 						</a>
@@ -151,15 +151,14 @@
 		var TabularData = demoObject.TimeSeriesData[0].TabularData[0];
 		function downloadFile() {
 			//Get the file contents
-			var txtFile = "test.txt";
-			var file = new File([], txtFile);
+			var file = new File([], "log.json");
 			// Finish boat object
 			TabularData.NumberOfDataSet = TabularData.DataSet.length.toString();
 			var str = JSON.stringify(demoObject);
 			//Save the file contents as a DataURI
-			var dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(str);
+			var dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(str);
 			//Write it as the href for the link
-			var link = document.getElementById('download').href = dataUri;
+			var link = document.getElementById("download").href = dataUri;
 		}
 
 		var resolution = {
@@ -310,7 +309,7 @@
 			renderer.setClearColor("white", 1);
 
 			// get the div that will hold the renderer
-			container = document.getElementById('3d');
+			container = document.getElementById("3d");
 			// add the renderer to the div
 			container.appendChild(renderer.domElement);
 
@@ -386,23 +385,23 @@
 	
 			gltfExporter.parse(input, function (result) {
 				if (result instanceof ArrayBuffer) {
-					saveArrayBuffer(result, 'scene.glb');
+					saveArrayBuffer(result, "scene.glb");
 				} else {
 					var output = JSON.stringify(result, null, 2);
 					save(new Blob([output], {
-						type: 'text/plain'
-					}), 'scene.gltf');
+						type: "text/plain"
+					}), "scene.gltf");
 				}
 			}, options);
 		}
 	
-		var link = document.createElement('a');
-		link.style.display = 'none';
+		var link = document.createElement("a");
+		link.style.display = "none";
 		document.body.appendChild(link); // Firefox workaround, see #6594
 	
 		function saveArrayBuffer(buffer, filename) {
 			save(new Blob([buffer], {
-				type: 'application/octet-stream'
+				type: "application/octet-stream"
 			}), filename);
 		}
 	
@@ -445,19 +444,19 @@
 			renderer.render(scene, camera);
 		}
 
-		let utils = new Utils('errorMessage');
+		let utils = new Utils("errorMessage");
 		let streaming = false;
-		let videoInput = document.getElementById('videoInput');
+		let videoInput = document.getElementById("videoInput");
 		document.getElementById("videoInput").style.display = "none";
-		let startAndStop = document.getElementById('startAndStop');
-		let canvasOutput = document.getElementById('canvasOutput');
-		let canvasContext = canvasOutput.getContext('2d');
+		let startAndStop = document.getElementById("startAndStop");
+		let canvasOutput = document.getElementById("canvasOutput");
+		let canvasContext = canvasOutput.getContext("2d");
 
-		startAndStop.addEventListener('click', () => {
+		startAndStop.addEventListener("click", () => {
 			if (!streaming) {
 				utils.clearError();
 				TabularData.DataSet = [];
-				utils.startCamera('vga', onVideoStarted, 'videoInput');
+				utils.startCamera("vga", onVideoStarted, "videoInput");
 				playStream.disabled = true;
 				playDemo.disabled = true;
 				startGraph();
@@ -471,8 +470,8 @@
 			}
 		});
 
-		let playStream = document.getElementById('playStream');
-		playStream.addEventListener('click', () => {
+		let playStream = document.getElementById("playStream");
+		playStream.addEventListener("click", () => {
 			if (!streaming) {
 				videoInput.src = "http://10.24.89.53:8081";
 				videoInput.crossOrigin = "Anonymous";
@@ -495,8 +494,8 @@
 			}
 		});
 
-		let playDemo = document.getElementById('playDemo');
-		playDemo.addEventListener('click', () => {
+		let playDemo = document.getElementById("playDemo");
+		playDemo.addEventListener("click", () => {
 			if (!streaming) {
 				videoInput.src = "data/demo.mp4";
 				utils.clearError();
@@ -523,7 +522,7 @@
 			videoInput.width = videoInput.videoWidth;
 			videoInput.height = videoInput.videoHeight;
 
-			let video = document.getElementById('videoInput');
+			let video = document.getElementById("videoInput");
 			let cap = new cv.VideoCapture(video);
 
 			// take first frame of the video
@@ -597,7 +596,7 @@
 					cv.line(frame, pts[1], pts[2], [255, 0, 0, 255], 3);
 					cv.line(frame, pts[2], pts[3], [255, 0, 0, 255], 3);
 					cv.line(frame, pts[3], pts[0], [255, 0, 0, 255], 3);
-					cv.imshow('canvasOutput', frame);
+					cv.imshow("canvasOutput", frame);
 
 					// locate object center
 					xCenter = (trackBox.center.x /*  + w/2 */) - resolution.w / 2;
@@ -642,7 +641,7 @@
 			videoInput.width = videoInput.videoWidth;
 			videoInput.height = videoInput.videoHeight;
 
-			let video = document.getElementById('videoInput');
+			let video = document.getElementById("videoInput");
 			let cap = new cv.VideoCapture(video);
 
 			// take first frame of the video
@@ -716,7 +715,7 @@
 					cv.line(frame, pts[1], pts[2], [255, 0, 0, 255], 3);
 					cv.line(frame, pts[2], pts[3], [255, 0, 0, 255], 3);
 					cv.line(frame, pts[3], pts[0], [255, 0, 0, 255], 3);
-					cv.imshow('canvasOutput', frame);
+					cv.imshow("canvasOutput", frame);
 
 					// locate object center
 					xCenter = (trackBox.center.x /*  + w/2 */) - resolution.w / 2;
@@ -763,7 +762,7 @@
 			videoInput.width = videoInput.videoWidth;
 			videoInput.height = videoInput.videoHeight;
 
-			let video = document.getElementById('videoInput');
+			let video = document.getElementById("videoInput");
 			let cap = new cv.VideoCapture(video);
 
 			// take first frame of the video
@@ -799,19 +798,19 @@
 		function onVideoStopped() {
 			streaming = false;
 			canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
-			startAndStop.innerText = 'Capture';
+			startAndStop.innerText = "Capture";
 		};
 
 		function onStreamStopped() {
 			streaming = false;
 			canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
-			playStream.innerText = 'Stream';
+			playStream.innerText = "Stream";
 		};
 
 		function onDemoStopped() {
 			streaming = false;
 			canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
-			playDemo.innerText = 'Demo';
+			playDemo.innerText = "Demo";
 		};
 
 		utils.loadOpenCv(() => {
@@ -843,15 +842,15 @@
 		};
 
 		function clearGraph() {
-			zingchart.exec('plotBoatMov', 'clearfeed')
+			zingchart.exec("plotBoatMov", "clearfeed")
 		};
 
 		function startGraph() {
-			zingchart.exec('plotBoatMov', 'startfeed');
+			zingchart.exec("plotBoatMov", "startfeed");
 		};
 
 		function stopGraph() {
-			zingchart.exec('plotBoatMov', 'stopfeed');
+			zingchart.exec("plotBoatMov", "stopfeed");
 		};
 
 		var movChart = {
