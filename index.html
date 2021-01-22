@@ -66,13 +66,21 @@
 
 			<div>
 				<div class="control">
-					<button id="startAndStop" disabled>Capture</button>
+					<label for="appMode">Choose a digital twin mode:</label>
+					<select name="appMode" id="appMode">
+						<option value="demo">Demo</option>
+						<option value="capture">Capture from webcam</option>
+						<option value="stream">Connect to stream</option>
+					</select>
+					<p></p>
+					<button id="startAndStop" disabled>Start</button>
+					<!-- <button id="startAndStop" disabled>Capture</button>
 					<button id="playStream" disabled>Stream</button>
-					<button id="playDemo" disabled>Demo</button>
+					<button id="playDemo" disabled>Demo</button> -->
 					<button>
 						<a href="path/to/file.txt" id="download" download="log.json" onclick="downloadFile()"
 							style="color: inherit;text-decoration: none;">
-							Download Results
+							Download Log
 						</a>
 					</button>
 				</div>
@@ -454,62 +462,37 @@
 
 		startAndStop.addEventListener("click", () => {
 			if (!streaming) {
-				utils.clearError();
-				TabularData.DataSet = [];
-				utils.startCamera("vga", onVideoStarted, "videoInput");
-				playStream.disabled = true;
-				playDemo.disabled = true;
-				startGraph();
+				if (document.getElementById("appMode").value === "demo") {
+					videoInput.src = "data/demo.mp4";
+					utils.clearError();
+					videoInput.play().then(() => {
+						onDemoStarted();
+					});
+					startGraph();
+				} else if (document.getElementById("appMode").value === "capture") {
+					utils.clearError();
+					TabularData.DataSet = [];
+					utils.startCamera("vga", onVideoStarted, "videoInput");
+					startGraph();
+				} else if (document.getElementById("appMode").value === "stream") {
+					videoInput.src = "http://10.24.89.53:8081";
+					videoInput.crossOrigin = "Anonymous";
+					utils.clearError();
+					TabularData.DataSet = [];
+					videoInput.play().then(() => {
+						onStreamStarted();
+					});
+					startGraph();
+				}
 			} else {
-				utils.stopCamera();
+				if (document.getElementById("appMode").value === "capture") {
+					utils.stopCamera();
+				} else {
+					videoInput.pause();
+					videoInput.currentTime = 0;
+				}
 				onVideoStopped();
 				aniMode = "still";
-				playStream.disabled = false;
-				playDemo.disabled = false;
-				stopGraph();
-			}
-		});
-
-		let playStream = document.getElementById("playStream");
-		playStream.addEventListener("click", () => {
-			if (!streaming) {
-				videoInput.src = "http://10.24.89.53:8081";
-				videoInput.crossOrigin = "Anonymous";
-				utils.clearError();
-				TabularData.DataSet = [];
-				videoInput.play().then(() => {
-					onStreamStarted();
-				});
-				startAndStop.disabled = true;
-				playDemo.disabled = true;
-				startGraph();
-			} else {
-				videoInput.pause();
-				videoInput.currentTime = 0;
-				onStreamStopped();
-				aniMode = "still";
-				startAndStop.disabled = false;
-				playDemo.disabled = false;
-				stopGraph();
-			}
-		});
-
-		let playDemo = document.getElementById("playDemo");
-		playDemo.addEventListener("click", () => {
-			if (!streaming) {
-				videoInput.src = "data/demo.mp4";
-				utils.clearError();
-				videoInput.play().then(() => {
-					onDemoStarted();
-				});
-				startAndStop.disabled = true;
-				startGraph();
-			} else {
-				videoInput.pause();
-				videoInput.currentTime = 0;
-				onDemoStopped();
-				aniMode = "still";
-				startAndStop.disabled = false;
 				stopGraph();
 			}
 		});
@@ -636,7 +619,7 @@
 		function onStreamStarted() {
 			streaming = true;
 			aniMode = "capture";
-			playStream.innerText = "Stop";
+			startAndStop.innerText = "Stop";
 
 			videoInput.width = videoInput.videoWidth;
 			videoInput.height = videoInput.videoHeight;
@@ -754,7 +737,7 @@
 
 		function onDemoStarted() {
 			streaming = true;
-			playDemo.innerText = "Stop";
+			startAndStop.innerText = "Stop";
 			readFind.marker = 0;
 			readFind.completedLoops = 0;
 			aniMode = "demo";
@@ -798,25 +781,11 @@
 		function onVideoStopped() {
 			streaming = false;
 			canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
-			startAndStop.innerText = "Capture";
-		};
-
-		function onStreamStopped() {
-			streaming = false;
-			canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
-			playStream.innerText = "Stream";
-		};
-
-		function onDemoStopped() {
-			streaming = false;
-			canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
-			playDemo.innerText = "Demo";
+			startAndStop.innerText = "Start";
 		};
 
 		utils.loadOpenCv(() => {
 			startAndStop.disabled = false;
-			playStream.disabled = false;
-			playDemo.disabled = false;
 		});
 
 		function checkThreshold(refX, refZ, refRot) {
