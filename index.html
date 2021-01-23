@@ -66,7 +66,7 @@
 
 			<div>
 				<div class="control">
-					<label for="appMode">Choose a digital twin mode:</label>
+					<label for="appMode">Choose an app mode:</label>
 					<select name="appMode" id="appMode">
 						<option value="demo">Demo</option>
 						<option value="capture">Capture from webcam</option>
@@ -74,11 +74,8 @@
 					</select>
 					<p></p>
 					<button id="startAndStop" disabled>Start</button>
-					<!-- <button id="startAndStop" disabled>Capture</button>
-					<button id="playStream" disabled>Stream</button>
-					<button id="playDemo" disabled>Demo</button> -->
 					<button>
-						<a href="path/to/file.txt" id="download" download="log.json" onclick="downloadFile()"
+						<a id="download" download="log.json" onclick="downloadFile()"
 							style="color: inherit;text-decoration: none;">
 							Download Log
 						</a>
@@ -124,10 +121,8 @@
 					<div id="plotBoatMov" style="position:relative; float:left; width:100%; height:150px"></div>
 				</div>
 			</div>
-			<video id="videoInput" width=640 height=480 muted loop></video>
+			<video id="videoInput" src="data/demo.mp4" width=640 height=480 muted loop></video>
 		</div>
-
-	</div>
 	</div>
 
 	<script>
@@ -460,32 +455,40 @@
 		let canvasOutput = document.getElementById("canvasOutput");
 		let canvasContext = canvasOutput.getContext("2d");
 
+		let appMode = document.getElementById("appMode");
+		appMode.addEventListener("change", changeMode);
+		function changeMode() {
+			if (appMode.value === "demo") {
+				videoInput.src = "data/demo.mp4";
+			} else if (appMode.value === "stream") {
+				videoInput.src = "http://10.24.89.53:8081";
+				videoInput.crossOrigin = "Anonymous";
+			}
+		}
+
 		startAndStop.addEventListener("click", () => {
 			if (!streaming) {
-				if (document.getElementById("appMode").value === "demo") {
-					videoInput.src = "data/demo.mp4";
-					utils.clearError();
-					videoInput.play().then(() => {
-						onDemoStarted();
-					});
-					startGraph();
-				} else if (document.getElementById("appMode").value === "capture") {
-					utils.clearError();
-					TabularData.DataSet = [];
-					utils.startCamera("vga", onVideoStarted, "videoInput");
-					startGraph();
-				} else if (document.getElementById("appMode").value === "stream") {
-					videoInput.src = "http://10.24.89.53:8081";
-					videoInput.crossOrigin = "Anonymous";
-					utils.clearError();
-					TabularData.DataSet = [];
-					videoInput.play().then(() => {
-						onStreamStarted();
-					});
-					startGraph();
+				appMode.disabled = true;
+				utils.clearError();
+				TabularData.DataSet = [];
+				switch (appMode.value) {
+					case "demo":
+						videoInput.play().then(() => {
+							onDemoStarted();
+						});
+						break;
+					case "capture":
+						utils.startCamera("vga", onVideoStarted, "videoInput");
+						break;
+					case "stream":
+						videoInput.play().then(() => {
+							onStreamStarted();
+						});
+						break;
 				}
+				startGraph();
 			} else {
-				if (document.getElementById("appMode").value === "capture") {
+				if (appMode.value === "capture") {
 					utils.stopCamera();
 				} else {
 					videoInput.pause();
@@ -494,6 +497,7 @@
 				onVideoStopped();
 				aniMode = "still";
 				stopGraph();
+				appMode.disabled = false;
 			}
 		});
 
