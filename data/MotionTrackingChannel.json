@@ -27,7 +27,7 @@
           }
         },
         "Property": {
-          "DataChannel Type": {
+          "DataChannelType": {
             "Type": "Inst",
             "UpdateCycle": "0.05"
           },
