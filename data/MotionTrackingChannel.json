@@ -108,7 +108,7 @@
           },
           "Unit": {
             "UnitSymbol": "rad",
-            "QuantityName": "Angle"
+            "QuantityName": "Angular displacement"
           },
           "Name": "Ship Pitch Displacement",
           "Remarks": "Update cycle may vary"
