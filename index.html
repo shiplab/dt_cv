@@ -284,7 +284,7 @@
 			this.completedLoops = 0;
 			this.findReading = function (elapsedLoopTime) {
 				var markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].TimeStamp);
-				if (markerTime > elapsedLoopTime) {
+				if (markerTime - this.startTime > elapsedLoopTime) {
 					this.completedLoops++;
 					this.marker = 0;
 				}
