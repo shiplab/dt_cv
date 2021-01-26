@@ -40,7 +40,7 @@
           },
           "Unit": {
             "UnitSymbol": "m",
-            "QuantityName": "Surge Displacement"
+            "QuantityName": "Displacement"
           },
           "Name": "Ship Surge Displacement",
           "Remarks": "Update cycle may vary"
@@ -74,14 +74,14 @@
           },
           "Unit": {
             "UnitSymbol": "m",
-            "QuantityName": "Heave Displacement"
+            "QuantityName": "Displacement"
           },
           "Name": "Ship Heave Displacement",
           "Remarks": "Update cycle may vary"
         }
       }, {
         "DataChannelID": {
-          "LocalID": "/dnv_vis/453+I101/ShipPitch+phi(m)",
+          "LocalID": "/dnv_vis/453+I101/ShipPitch+phi(rad)",
           "ShortID": "RotY",
           "NameObject": {
             "NamingRule": "dnv_vis",
@@ -108,7 +108,7 @@
           },
           "Unit": {
             "UnitSymbol": "rad",
-            "QuantityName": "Pitch Angle"
+            "QuantityName": "Angle"
           },
           "Name": "Ship Pitch Displacement",
           "Remarks": "Update cycle may vary"
