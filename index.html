@@ -198,7 +198,7 @@
 			new THREE.FileLoader().load(channelPath, function (contents) {
 				dataChannels = JSON.parse(contents);
 				// fill threshold object and table
-				threshold.w = dataChannels.Package.DataChannelList.DataChannel["0"].Property.Range.High;
+				threshold.w = dataChannels.Package.DataChannelList.DataChannel[0].Property.Range.High;
 				threshold.h = dataChannels.Package.DataChannelList.DataChannel["1"].Property.Range.High;
 				threshold.r = 180 / Math.PI * dataChannels.Package.DataChannelList.DataChannel["2"].Property.Range.High;
 				document.getElementById("thresHori").innerHTML = threshold.w + " m";
@@ -276,30 +276,30 @@
 
 		// sync visualization with video in demo mode
 		function readingFinder(demoData) {
-			this.numReadings = demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet.length;
-			this.startTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet["0"].TimeStamp);
-			this.finishTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.numReadings - 1].TimeStamp);
+			this.numReadings = demoData.Package.TimeSeriesData[0].TabularData[0].DataSet.length;
+			this.startTime = Date.parse(demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[0].TimeStamp);
+			this.finishTime = Date.parse(demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.numReadings - 1].TimeStamp);
 			this.demoDuration = this.finishTime - this.startTime;
 			this.marker = 0;
 			this.completedLoops = 0;
 			this.findReading = function (elapsedLoopTime) {
-				var markerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].TimeStamp);
+				var markerTime = Date.parse(demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.marker].TimeStamp);
 				if (markerTime - this.startTime > elapsedLoopTime) {
 					this.completedLoops++;
 					this.marker = 0;
 				}
 				if (this.marker < this.numReadings - 1) {
 					// we are not on the last frame, so we can continue towards the following readings
-					var nextMarkerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker + 1].TimeStamp);
+					var nextMarkerTime = Date.parse(demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.marker + 1].TimeStamp);
 					while (nextMarkerTime - this.startTime < elapsedLoopTime) {
 						this.marker++;
 						if (this.marker < this.numReadings - 1) {
 							// the new marker is not the last, there is still a next marker
-							nextMarkerTime = Date.parse(demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker + 1].TimeStamp);
+							nextMarkerTime = Date.parse(demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.marker + 1].TimeStamp);
 						}
 					}
 				}
-				return demoData.Package.TimeSeriesData["0"].TabularData["0"].DataSet[this.marker].Value;
+				return demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.marker].Value;
 			}
 		};
 
@@ -437,10 +437,10 @@
 				var elapsedLoopTime = document.getElementById("videoInput").currentTime;
 				ocean.update(elapsedLoopTime);
 				var framePos = readFind.findReading(1000 * elapsedLoopTime);
-				checkThreshold(parseFloat(framePos["0"]), parseFloat(framePos["1"]), 180 / Math.PI * parseFloat(framePos["2"]));
-				boat3D.position.x = 1000 * framePos["0"];
-				boat3D.position.z = 1000 * framePos["1"];
-				boat3D.rotation.y = framePos["2"];
+				checkThreshold(parseFloat(framePos[0]), parseFloat(framePos[1]), 180 / Math.PI * parseFloat(framePos[2]));
+				boat3D.position.x = 1000 * framePos[0];
+				boat3D.position.z = 1000 * framePos[1];
+				boat3D.rotation.y = framePos[2];
 			}
 			ocean.water.render();
 			requestAnimationFrame(animate);
