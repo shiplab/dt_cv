@@ -41,13 +41,15 @@
 		<div class="container">
 			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
 			<div class="navbar-header">
-				<a class="navbar-brand" target="_blank" href="https://github.com/icarofonseca/dt_tpn">Github page</a>
+				<a class="navbar-brand" target="_blank" href="https://github.com/icarofonseca/dt_cv">Github page</a>
 			</div>
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" target="_blank" href="http://www.shiplab.hials.org/"><img
-							src="images/logo.png" alt="Shiplab logo" style="height: 150%" /> </a>
+					<a class="navbar-brand" target="_blank" href="http://shiplab.hials.org/"><img
+							src="images/logo_shiplab.png" alt="Shiplab logo" style="height: 150%" /> </a>
+					<a class="navbar-brand" target="_blank" href="http://tpn.usp.br/"><img
+							src="images/logo_tpn2.png" alt="TPN logo" style="height: 150%" /> </a>
 				</div>
 			</div>
 		</div>
@@ -78,13 +80,13 @@
 					<li>DP controlling system in MATLAB, connected to the model PSV via radio frequency and to the
 						motion capture system via network.</li>
 				</ul>
-				<p>The <a target="_blank" href="https://icarofonseca.github.io/dt_tpn/streaming_client.html">digital
+				<p>The <a target="_blank" href="https://icarofonseca.github.io/dt_cv/basin_client.html">digital
 						twin interface</a> was developed as a web-application and the related files are stored in a <a
-						target="_blank" href="https://github.com/icarofonseca/dt_tpn/tree/master/data">local folder</a>.
+						target="_blank" href="https://github.com/icarofonseca/dt_cv/tree/master/data">local folder</a>.
 					The interface shows a visualization with ship motions and propulsion system parameters
 					in real-time. It also allows the user to define a setpoint for station keeping with the DP system.
 					Furthermore, a <a target="_blank"
-						href="https://github.com/icarofonseca/dt_tpn/blob/master/snippets/udp2web.py">Python bridge</a>
+						href="https://github.com/icarofonseca/dt_cv/blob/master/snippets/udp2web.py">Python bridge</a>
 					was developed to establish the communication between the measuring systems and the digital twin
 					interface by processing and retransmitting logs.</p>
 
@@ -126,8 +128,7 @@
 				<div class="row">
 					<div class="col-sm-6">
 						<video id="videoInput" width="100%" src="data/basin/demo.mp4" muted loop></video>
-						<pre id="logViewer"
-							style="position: relative; width: 100%; height: 300px"><code></code></pre>
+						<pre id="logViewer" style="position: relative; width: 100%; height: 300px"><code></code></pre>
 					</div>
 					<div class="col-sm-6">
 						<div id="3d" style="width: 100%; height: 455px"></div>
@@ -138,7 +139,9 @@
 
 				<h3>Data log converter</h3>
 				<p>This utility converts the motion tracking logs generated during the experiment to the ISO 19848
-					standard. Upload the TSV file saved by the tracking software (see example <a target="_blank" href="https://raw.githubusercontent.com/icarofonseca/dt_cv/master/data/basin/M510A-IRR-EKFPID-020019_6D.tsv">here</a>) to download the converted log in JSON.
+					standard. Upload the TSV file saved by the tracking software (see example <a target="_blank"
+						href="https://raw.githubusercontent.com/icarofonseca/dt_cv/master/data/basin/M510A-IRR-EKFPID-020019_6D.tsv">here</a>)
+					to download the converted log in JSON.
 				</p>
 
 				<input type="file" id="file-input" className="form-control pb-5" accept=".tsv" />
