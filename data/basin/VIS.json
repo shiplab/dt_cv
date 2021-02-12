@@ -1,0 +1,179 @@
+{
+  "VIS": {
+    "000": {
+      "ID": "000",
+      "CommonName": "Vessel general",
+      "Children": {
+        "070": {
+          "ID": "070",
+          "CommonName": "Technical information",
+          "Children": {
+            "071": {
+              "ID": "071",
+              "CommonName": "Vessel specification",
+              "Path": {
+                "Asset": [
+                  "VesselSpecification.json"
+                ],
+                "MeasuredStates": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "100": {
+      "ID": "100",
+      "CommonName": "Main structure",
+      "Children": {
+        "110": {
+          "ID": "110",
+          "CommonName": "Ship structure",
+          "Children": {
+            "111": {
+              "ID": "111",
+              "CommonName": "Ship hull structure",
+              "Path": {
+                "Asset": [
+                  "Hull.json"
+                ],
+                "MeasuredStates": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "400": {
+      "ID": "400",
+      "CommonName": "Propulsion and steering arrangements",
+      "Children": {
+        "430": {
+          "ID": "430",
+          "CommonName": "Propulsion and steering thruster arrangements",
+          "Children": {
+            "430i": {
+              "ID": "430i",
+              "CommonName": "Propulsion and steering thruster arrangement",
+              "Children": {
+                "433": {
+                  "ID": "433",
+                  "CommonName": "Propulsion thruster arrangement",
+                  "Children": {
+                    "433.1": {
+                      "ID": "433.1",
+                      "CommonName": "Propulsion thruster",
+                      "Component": "[C322] Propulsion thruster, azimuth",
+                      "Path": {
+                        "Asset": [
+                          "AzimuthThrusterPS.json",
+                          "AzimuthThrusterSB.json"
+                        ],
+                        "MeasuredStates": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "440": {
+          "ID": "440",
+          "CommonName": "Manoeuvring thruster arrangements",
+          "Children": {
+            "440i": {
+              "ID": "440i",
+              "CommonName": "Manoeuvring thruster arrangement",
+              "Children": {
+                "443": {
+                  "ID": "443",
+                  "CommonName": "Manoeuvring thruster arrangement",
+                  "Children": {
+                    "443.1": {
+                      "ID": "443.1",
+                      "CommonName": "Manoeuvring thruster",
+                      "Component": "[C323] Manoeuvring thruster, tunnel",
+                      "Path": {
+                        "Asset": [
+                          "TunnelThruster.json"
+                        ],
+                        "MeasuredStates": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "450": {
+          "ID": "450",
+          "CommonName": "Position keeping systems",
+          "Children": {
+            "451": {
+              "ID": "451",
+              "CommonName": "Position keeping control and monitoring systems",
+              "Children": {
+                "451.1": {
+                  "ID": "451.1",
+                  "CommonName": "451.1 Dynamic positioning automatic control systems",
+                  "Children": {
+                    "451.11": {
+                      "ID": "451.11",
+                      "CommonName": "451.11 Dynamic positioning automatic control systems, main",
+                      "Component": "I101 Control and monitoring system",
+                      "Path": {
+                        "Asset": [],
+                        "MeasuredStates": [
+                          {
+                            "DataChannel": "MotionTrackingChannel.json",
+                            "TimeSeries": [
+                              "DemoLog.json"
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "452": {
+              "ID": "452",
+              "CommonName": "Position reference system",
+              "Component": "I101 Control and monitoring system",
+              "Path": {
+                "Asset": [],
+                "MeasuredStates": [
+                  {
+                    "DataChannel": "MotionTrackingChannel.json",
+                    "TimeSeries": [
+                      "DemoLog.json"
+                    ]
+                  }
+                ]
+              }
+            },
+            "453": {
+              "ID": "453",
+              "CommonName": "Vertical reference systems",
+              "Component": "I101 Control and monitoring system",
+              "Path": {
+                "Asset": [],
+                "MeasuredStates": [
+                  {
+                    "DataChannel": "MotionTrackingChannel.json",
+                    "TimeSeries": [
+                      "DemoLog.json"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

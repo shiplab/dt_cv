@@ -1,0 +1,544 @@
+<html>
+
+<head>
+	<title>Digital Twin Interface</title>
+	<script src="3D_engine/three.js"></script>
+	<script src="3D_engine/GLTFLoader.js"></script>
+	<script src="3D_engine/GLTFExporter.js"></script>
+	<script src="3D_engine/STLLoader.js"></script>
+	<script src="3D_engine/Mirror.js"></script>
+	<script src="3D_engine/WaterShader.js"></script>
+	<script src="3D_engine/OrbitControls.js"></script>
+	<script src="3D_engine/dat.gui.min.js"></script>
+	<script src="libs/zingchart.min.js"></script>
+	<script src="3D_engine/skybox_from_examples.js"></script>
+	<script src="3D_engine/Patch_interpolation.js"></script>
+	<script src="3D_engine/Regular_ocean.js"></script>
+	<script src="libs/findClosestPeriod.js"></script>
+</head>
+
+<style>
+	#button {
+		position: fixed;
+		bottom: 16px;
+		right: 16px;
+		padding: 12px;
+		border-radius: 50%;
+		margin-bottom: 0px;
+		background-color: #fff;
+		opacity: 0.9;
+		z-index: 999;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+	}
+
+	#paramList {
+		font-family: Helvetica;
+		font-size: 14
+	}
+
+	h4 {
+		text-align: center
+	}
+
+	@media screen and (min-width:730px) {
+		[id="3D"] {
+			width: 85%;
+		}
+	}
+</style>
+
+<body>
+	<div id="3D" class='orchid grabbable' style="position: absolute; top: 0px; height: 100%; right: 0px;"></div>
+
+	<a id="button" target="_blank" href="https://github.com/icarofonseca/dt_tpn/blob/master/streaming_client.html"
+		title="View source code on GitHub">
+		<img src=".\images\code-24px.svg" />
+	</a>
+
+	<div id="paramList" style="position: absolute; height: 100%; width: 15%">
+		<h4>Motion</h4>
+		<p>Surge: <span id="surge">0.00</span> m.<br>
+			Sway: <span id="sway">0.00</span> m.<br>
+			Heave: <span id="heave">0.00</span> m.<br>
+			Roll: <span id="roll">0.00</span>&deg;.<br>
+			Pitch: <span id="pitch">0.00</span>&deg;.<br>
+			Yaw: <span id="yaw">0.00</span>&deg;.</p>
+		<h4>Dynamic Positioning</h4>
+		<p>Rotation TT: <span id="rpmTT">0.00</span> RPM.<br>
+			Rotation SB: <span id="rpmSB">0.00</span> RPM.<br>
+			Rotation PS: <span id="rpmPS">0.00</span> RPM.<br>
+			Azimuth SB: <span id="azSB">0.00</span>&deg;.<br>
+			Azimuth PS: <span id="azPS">0.00</span>&deg;.</p>
+		<h4>Wave</h4>
+		<p>Height: <span id="height">0.00</span> mm.<br>
+			Period: <span id="period">0.00</span> s.</p>
+
+		<div style="position: absolute; bottom: 10">
+			<a href="http://www.shiplab.hials.org/" target="_blank"><img class="center" src="images/logo_shiplab.png"
+					width="90%"></a>
+			<a href="http://www.tpn.usp.br/" target="_blank"><img class="center" src="images/logo_tpn.png"
+					width="90%"></a>
+		</div>
+	</div>
+
+	<div id="raoDashboard" style="position:fixed; bottom:0; right: 9.5%; float:center; width:66%; height:20%"></div>
+
+	<script>
+		"use strict";
+
+		//Globals
+		var renderer, camera, clock, controls;
+		var scene, zUpCont, playback, ocean;
+		var ws, gui, time, timePrev, dpSetter;
+		var vis, raoSchema, validationPeriod;
+		var ship3D = new THREE.Group();
+
+		var rpmReading = [0, 0, 0];
+		var angleReading = [0, 0, 0];
+		var motionReading = [0, 0, 0, 0, 0, 0];
+
+		// import digital twin JSON schema
+		new THREE.FileLoader().load("data/basin/VIS.json", useSchema);
+		function useSchema(contents) {
+			vis = JSON.parse(contents).VIS;
+			// search through asset representation importing glTF files
+			for (let prop in vis) {
+				search3D(vis[prop]);
+			}
+		}
+
+		// GLTF alternative
+		function search3D(element) {
+			if (typeof element.Children === "undefined") {
+				for (let i = 0; i < element.Path.Asset.length; i++) {
+					new THREE.FileLoader().load("data/basin/" + element.Path.Asset[i], function (contents) {
+						let assetPackage = JSON.parse(contents).Package;
+						if (typeof assetPackage.Topology !== "undefined") {
+							let data3D = "data/basin/3D/" + assetPackage.Topology.Visualization.GLB;
+							let loader = new THREE.GLTFLoader();
+							loader.load(data3D, function (gltf) {
+								var asset3D = gltf.scene.children[0];
+								if (asset3D.__proto__.constructor.name === "Mesh") {
+									asset3D.geometry.rotateX(Math.PI / 2);
+								} else if (asset3D.__proto__.constructor.name === "Object3D") {
+									asset3D.rotation.x = 0;
+								}
+								if (typeof assetPackage.AssetID.NameObject["vis:Instance"] !== "undefined") {
+									asset3D.name += "_" + assetPackage.AssetID.NameObject["vis:Instance"];
+								}
+								asset3D.scale.x = 0.001;
+								asset3D.scale.y = 0.001;
+								asset3D.scale.z = 0.001;
+								asset3D.position.x = assetPackage.Topology.Position.x;
+								asset3D.position.y = assetPackage.Topology.Position.y;
+								asset3D.position.z = assetPackage.Topology.Position.z;
+								ship3D.add(asset3D);
+								// this shows an object with gltf content and metadata
+								// console.log(gltf);
+							});
+						}
+					});
+				}
+			} else {
+				for (let prop in element.Children) {
+					search3D(element.Children[prop]);
+				}
+			}
+		}
+
+		var total = new THREE.Group();
+		var normalizer = new THREE.Group();
+		var fluctCont = new THREE.Group();
+		var cmContainer = new THREE.Group();
+
+		// fetch relevant dimensions from ship specification
+		new THREE.FileLoader().load("data/basin/VesselSpecification.json", useSpec);
+		function useSpec(contents) {
+			let specification = JSON.parse(contents).Package;
+			let CG = specification.CG;
+			cmContainer.position.set(-CG.XCG, -CG.YCG, -CG.ZCG);
+			let draft = specification.MainDimensions.DesignDraft;
+			normalizer.position.z = draft;
+			total.position.z = -draft;
+		}
+
+		(function main() {
+			ws = new WebSocket("ws://127.0.0.1:56780/");
+			ws.onmessage = function (event) {
+				var dataString = event.data.slice(1, event.data.length - 1);
+				var splitString = dataString.split(',');
+				if (splitString.length === 3) {
+					// [height, period, phase]
+					var waveReading = [parseFloat(splitString[0]), parseFloat(splitString[1]), parseFloat(splitString[2])];
+					// modify ocean characteristics
+					ocean.waves["0"].A = waveReading[0] / 2 / 1000;
+					document.getElementById("height").innerHTML = waveReading[0].toFixed(2);
+					ocean.waves["0"].T = waveReading[1];
+					document.getElementById("period").innerHTML = waveReading[1].toFixed(2);
+					ocean.waves["0"].phi = waveReading[2];
+					validationPeriod = findClosestPeriod(raoSchema, ocean.waves["0"].T);
+				} else if (splitString.length > 3) {
+					// [rpm bow tt, az sb, az ps]
+					rpmReading = [parseFloat(splitString[2]), parseFloat(splitString[3]), parseFloat(splitString[4])];
+					document.getElementById("rpmTT").innerHTML = rpmReading[0].toFixed(2);
+					document.getElementById("rpmSB").innerHTML = rpmReading[1].toFixed(2);
+					document.getElementById("rpmPS").innerHTML = rpmReading[2].toFixed(2);
+					// [angle bow tt, az sb, az ps]
+					angleReading = [parseFloat(splitString[5]), parseFloat(splitString[6]), parseFloat(splitString[7])];
+					document.getElementById("azSB").innerHTML = angleReading[1].toFixed(2);
+					document.getElementById("azPS").innerHTML = angleReading[2].toFixed(2);
+					// [surge, sway, heave, roll, pitch, yaw]
+					motionReading = [parseFloat(splitString[8]), parseFloat(splitString[9]), parseFloat(splitString[10]), parseFloat(splitString[11]), parseFloat(splitString[12]), parseFloat(splitString[13])];
+					document.getElementById("surge").innerHTML = motionReading[0].toFixed(2);
+					document.getElementById("sway").innerHTML = motionReading[1].toFixed(2);
+					document.getElementById("heave").innerHTML = motionReading[2].toFixed(2);
+					document.getElementById("roll").innerHTML = (180 / Math.PI * motionReading[3]).toFixed(2);
+					document.getElementById("pitch").innerHTML = (180 / Math.PI * motionReading[4]).toFixed(2);
+					document.getElementById("yaw").innerHTML = (180 / Math.PI * motionReading[5]).toFixed(2);
+				}
+
+				// as an alternative, use packet with fixed size and fill the respective fields as necessary
+				// var propString = event.data.slice(2, event.data.length - 1);
+				// var propSplit = propString.split(';');
+				// var propCounter = parseFloat(propSplit[0]);
+				// console.log(propCounter);
+				// var propReading = [
+				//     parseFloat(propSplit[1]), parseFloat(propSplit[2]), parseFloat(propSplit[3]),
+				//     parseFloat(propSplit[4]), parseFloat(propSplit[5]), parseFloat(propSplit[6]),
+				//     parseFloat(propSplit[7]), parseFloat(propSplit[8]), parseFloat(propSplit[9]),
+				//     parseFloat(propSplit[10]), parseFloat(propSplit[11]), parseFloat(propSplit[12]),
+				// ];
+			};
+
+			//Renderer setup
+			document.body.style.overflow = "hidden";
+			var container = document.getElementById("3D");
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setClearColor(0x99aadd);
+			container.appendChild(renderer.domElement);
+
+			//Scene setup:
+			scene = new THREE.Scene();
+			let sun = new THREE.DirectionalLight(0xffffff, 2);
+			sun.position.set(-512, 246, 128);
+			scene.add(sun);
+
+			//Ocean size
+			let oSize = 14;
+			scene.add(new Skybox(oSize));
+
+			//Use Z up from now on:
+			THREE.Object3D.DefaultUp.set(0, 0, 1);
+			zUpCont = new THREE.Group();
+			zUpCont.rotation.x = -0.5 * Math.PI;
+			scene.add(zUpCont);
+
+			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
+			camera.up.set(0, 1, 0);
+			let onResize = function () {
+				let w = container.clientWidth;
+				let h = container.clientHeight;
+				renderer.setSize(w, h);
+				camera.aspect = w / h;
+				camera.updateProjectionMatrix();
+			};
+			window.addEventListener('resize', onResize, false);
+			onResize();
+			camera.position.set(3, 3, 3);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			controls.target = new THREE.Vector3(0, 0, 0);
+			camera.lookAt(zUpCont.position);
+			controls.update();
+
+			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+
+			ocean = new Ocean({
+				sunDir: sun.position.clone().normalize(),
+				size: oSize,
+				length: oSize,
+				width: oSize,
+				segments: 127
+			});
+			zUpCont.add(ocean);
+
+			cmContainer.add(ship3D);
+			fluctCont.add(cmContainer);
+			normalizer.add(fluctCont);
+			total.add(normalizer);
+			zUpCont.add(total);
+
+			var DPSetter = function () {
+				this.SetPosX = 0;
+				this.SetPosY = 0;
+				this.SetHead = 0;
+				this.SetHeadWAMIT = 0;
+				this.Mode = "";
+			};
+			dpSetter = new DPSetter();
+			var setDP = function () {
+				console.log(String(dpSetter.SetPosX).concat(", ", String(dpSetter.SetPosY), ", ", String(dpSetter.SetHead * Math.PI / 180)))
+				if (dpSetter.SetHead > 0) {
+					dpSetter.SetHeadWAMIT = dpSetter.SetHead;
+				} else {
+					dpSetter.SetHeadWAMIT = 360 + dpSetter.SetHead;
+				}
+				ws.send(String(dpSetter.SetPosX).concat(", ", String(dpSetter.SetPosY), ", ", String(dpSetter.SetHead * Math.PI / 180)));
+			};
+
+			var request = new XMLHttpRequest();
+			request.open("GET", "data/basin/ResponseOperators.json", false);
+			request.send(null);
+			raoSchema = JSON.parse(request.responseText).Package.Results;
+
+			gui = new dat.GUI();
+
+			var setDPControl = gui.addFolder("DP_Controller");
+			setDPControl.add(dpSetter, "SetPosX", -1.0, 1.0).step(0.1).onFinishChange(setDP);
+			setDPControl.add(dpSetter, "SetPosY", -1.0, 1.0).step(0.1).onFinishChange(setDP);
+			setDPControl.add(dpSetter, "SetHead", -180, 180).step(15).onFinishChange(setDP);
+
+			var setOptimum = function () {
+				var raoMin = Infinity;
+				// look for smallest motion on rao records for the chosen mode
+				for (let prop in raoSchema[dpSetter.Mode][validationPeriod]) {
+					var heading = parseFloat(prop);
+					var raoCurr = raoSchema[dpSetter.Mode][validationPeriod][prop].rao;
+					if (raoCurr < raoMin) {
+						raoMin = raoCurr;
+						var headingMin = heading;
+					}
+				}
+				//console.log(period, headingMin, raoMin);
+				if (headingMin < 180) {
+					dpSetter.SetHead = headingMin;
+					dpSetter.SetHeadWAMIT = headingMin;
+				} else {
+					dpSetter.SetHead = headingMin - 360;
+					dpSetter.SetHeadWAMIT = headingMin;
+				}
+				setDP();
+			};
+
+			var optimizeMotion = gui.addFolder("Minimize_Motion");
+			optimizeMotion.add(dpSetter, "Mode", ["surge", "sway", "heave", "roll", "pitch", "yaw"]).onFinishChange(setOptimum);
+
+			// Initial configuration:
+			let w = ocean.addCosineWave({ A: 0, T: 8, theta: 0 });
+			if (w.conf) w.conf.close();
+			clock = new THREE.Clock();
+			timePrev = 0;
+			animate();
+		})();
+
+		function animate() {
+			time = clock.getElapsedTime();
+			var interval = time - timePrev;
+			// surge
+			fluctCont.position.x = motionReading[0];
+			// sway
+			fluctCont.position.y = motionReading[1];
+			// heave
+			fluctCont.position.z = motionReading[2];
+			// roll
+			fluctCont.rotation.x = motionReading[3];
+			// pitch
+			fluctCont.rotation.y = motionReading[4];
+			// yaw
+			fluctCont.rotation.z = motionReading[5];
+			// azimuth angle
+			if (typeof ship3D.getObjectByName("Azimuth_Starboard") !== "undefined") { ship3D.getObjectByName("Azimuth_Starboard").rotation.z = Math.PI / 180 * angleReading[1] };
+			if (typeof ship3D.getObjectByName("Azimuth_Portside") !== "undefined") { ship3D.getObjectByName("Azimuth_Portside").rotation.z = Math.PI / 180 * angleReading[2] };
+			// propeller rpm
+			if (typeof ship3D.getObjectByName("Azimuth_Starboard") !== "undefined") { ship3D.getObjectByName("Azimuth_Starboard").getObjectByName("Propeller").rotation.x += rpmReading[1] * interval / 60 * 2 * Math.PI };
+			if (typeof ship3D.getObjectByName("Azimuth_Portside") !== "undefined") { ship3D.getObjectByName("Azimuth_Portside").getObjectByName("Propeller").rotation.x += rpmReading[2] * interval / 60 * 2 * Math.PI };
+			if (typeof ship3D.getObjectByName("Tunnel_Thruster") !== "undefined") { ship3D.getObjectByName("Tunnel_Thruster").rotation.y += rpmReading[0] * interval / 60 * 2 * Math.PI };
+			timePrev = time;
+			ocean.update(time);
+			ocean.water.render();
+			renderer.render(scene, camera);
+			requestAnimationFrame(animate);
+		}
+
+		// heave plot
+		var feedMovPlot1 = function (callback) {
+			var tick = {};
+			tick.plot0 = 1000 * motionReading[2];
+			if (typeof validationPeriod === "undefined") {
+				validationPeriod = findClosestPeriod(raoSchema, ocean.waves["0"].T);
+			}
+			var movAmp = 1000 * ocean.waves["0"].A * raoSchema["heave"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].rao;
+			var angFreq = 2 * Math.PI / ocean.waves["0"].T;
+			var phase = Math.PI / 180 * ocean.waves["0"].phi + raoSchema["heave"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].phase;
+			tick.plot1 = movAmp * Math.sin(angFreq * time + phase);
+			callback(JSON.stringify(tick));
+		};
+		// pitch plot
+		var feedMovPlot2 = function (callback) {
+			var tick = {};
+			tick.plot0 = 180 / Math.PI * motionReading[4];
+			if (typeof validationPeriod === "undefined") {
+				validationPeriod = findClosestPeriod(raoSchema, ocean.waves["0"].T);
+			}
+			var movAmp = ocean.waves["0"].A * raoSchema["pitch"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].rao * 70;
+			var angFreq = 2 * Math.PI / ocean.waves["0"].T;
+			var phase = Math.PI / 180 * ocean.waves["0"].phi + raoSchema["pitch"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].phase;
+			tick.plot1 = 180 / Math.PI * movAmp * Math.sin(angFreq * time + phase);
+			callback(JSON.stringify(tick));
+		};
+
+		// GLTF exporter only for reference
+		function exportGLTF(input) {
+			var gltfExporter = new THREE.GLTFExporter();
+
+			var options = {
+				trs: false,
+				onlyVisible: true,
+				truncateDrawRange: true,
+				binary: true,
+				embedImages: true,
+				forceIndices: false,
+				forcePowerOfTwoTextures: false,
+				maxTextureSize: Infinity // to prevent NaN value
+			};
+
+			gltfExporter.parse(input, function (result) {
+				if (result instanceof ArrayBuffer) {
+					saveArrayBuffer(result, 'scene.glb');
+				} else {
+					var output = JSON.stringify(result, null, 2);
+					save(new Blob([output], {
+						type: 'text/plain'
+					}), 'scene.gltf');
+				}
+			}, options);
+		}
+
+		var link = document.createElement('a');
+		link.style.display = 'none';
+		document.body.appendChild(link); // Firefox workaround, see #6594
+
+		function saveArrayBuffer(buffer, filename) {
+			save(new Blob([buffer], {
+				type: 'application/octet-stream'
+			}), filename);
+		}
+
+		function save(blob, filename) {
+			link.href = URL.createObjectURL(blob);
+			link.download = filename;
+			link.click();
+			// URL.revokeObjectURL( url ); breaks Firefox...
+		}
+
+		var raoDashboard = {
+			graphset: [
+				{
+					type: "line",
+					height: "100%",
+					width: "50%",
+					x: "0%",
+					y: "0%",
+					plot: {
+						aspect: "spline",
+						marker: { "visible": true },
+					},
+					series: [{
+						values: [0],
+						text: "Empirical (mm)"
+					}, {
+						values: [0],
+						text: "Computational (mm)"
+					}],
+					refresh: {
+						type: "feed",
+						transport: "js",
+						url: "feedMovPlot1()",
+						method: "pull",
+						interval: 50,
+						"adjust-scale": true
+					},
+					title: {
+						text: "Heave Movement",
+						marginBottom: 0,
+						fontFamily: "Helvetica",
+						fontWeight: "none",
+						fontSize: 12
+					},
+					plotarea: {
+						margin: "5% 2.5% 15% 7.5%",
+					},
+					legend: {
+						layout: "float",
+						"background-color": "none",
+						"border-width": 0,
+						"text-align": "middle",
+						offsetY: 12.5,
+						align: "center",
+						item: {
+							"font-size": "10px"
+						}
+					},
+				},
+				{
+					type: "line",
+					height: "100%",
+					width: "50%",
+					x: "50%",
+					y: "0%",
+					plot: {
+						aspect: "spline",
+						marker: { "visible": true },
+					},
+					series: [{
+						values: [0],
+						text: "Empirical (deg)"
+					}, {
+						values: [0],
+						text: "Computational (deg)"
+					}],
+					refresh: {
+						type: "feed",
+						transport: "js",
+						url: "feedMovPlot2()",
+						method: "pull",
+						interval: 50,
+						"adjust-scale": true
+					},
+					title: {
+						text: "Pitch Movement",
+						marginBottom: 0,
+						fontFamily: "Helvetica",
+						fontWeight: "none",
+						fontSize: 12
+					},
+					plotarea: {
+						margin: "5% 2.5% 15% 7.5%",
+					},
+					legend: {
+						layout: "float",
+						"background-color": "none",
+						"border-width": 0,
+						"text-align": "middle",
+						offsetY: 12.5,
+						align: "center",
+						item: {
+							"font-size": "10px"
+						}
+					},
+				},
+			]
+		};
+
+		window.onload = function () {
+			zingchart.render({
+				id: "raoDashboard",
+				height: "100%",
+				width: "100%",
+				data: raoDashboard,
+			});
+		};
+	</script>
+
+</body>
+
+</html>

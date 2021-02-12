@@ -1,0 +1,46 @@
+{
+  "Package": {
+    "Header": {
+      "ShipID": "PSVH",
+      "TimeSpan": {
+        "Start": "2020-01-22T17:48:25.13Z",
+        "End": "2020-01-22T17:48:25.13Z"
+      },
+      "DateCreated": "2020-01-22T17:48:25.13Z",
+      "DateModified": "2020-01-22T17:48:25.13Z",
+      "Author": "HBM system",
+      "SystemConfiguration": [
+        {
+          "ID": "",
+          "TimeStamp": ""
+        }
+      ]
+    },
+    "TimeSeriesData": [
+      {
+        "DataConfigurationReference": {
+          "ID": "",
+          "TimeStamp": ""
+        },
+        "EventData": {
+          "NumberOfDataSet": "1",
+          "DataSet": [
+            {
+              "TimeStamp": "2020-01-22T16:47:17.000Z",
+              "DataChannelID": [
+                "H",
+                "T",
+                "Phase"
+              ],
+              "Value": [
+                "26.73927402496338",
+                "0.97998046875",
+                "0"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

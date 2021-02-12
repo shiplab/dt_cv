@@ -1,0 +1,94 @@
+{
+  "Package": {
+    "Header": {
+      "ShipID": "PSVH",
+      "DataChannelListID": {
+        "ID": "WaveChannel.json",
+        "TimeStamp": ""
+      },
+      "Author": "Ícaro Fonseca",
+      "DateCreated": "",
+      "nr:CustomHeaderElement": "Wave characteristics calculated from water elevation signal"
+    },
+    "DataChannelList": {
+      "DataChannel": [
+        {
+          "DataChannelID": {
+            "LocalID": "/environment/Wave/Height(m)",
+            "ShortID": "WaveH",
+            "NameObject": {
+              "NamingRule": "environment",
+              "env:Element": "Wave",
+              "env:Characteristic": "Height",
+              "env:Quantity": "mm milimeters"
+            }
+          },
+          "Property": {
+            "DataChannelType": {
+              "Type": "Calculated"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "mm",
+              "QuantityName": "Wave Height"
+            },
+            "Name": "Regular Wave Height"
+          }
+        },
+        {
+          "DataChannelID": {
+            "LocalID": "/environment/Wave/Period(s)",
+            "ShortID": "WaveT",
+            "NameObject": {
+              "NamingRule": "environment",
+              "env:Element": "Wave",
+              "env:Characteristic": "Period",
+              "env:Quantity": "s seconds"
+            }
+          },
+          "Property": {
+            "DataChannelType": {
+              "Type": "Calculated"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "s",
+              "QuantityName": "Wave Period"
+            },
+            "Name": "Regular Wave Period"
+          }
+        },
+        {
+          "DataChannelID": {
+            "LocalID": "/environment/Wave/Phase(deg)",
+            "ShortID": "WavePhase",
+            "NameObject": {
+              "NamingRule": "environment",
+              "env:Element": "Wave",
+              "env:Characteristic": "Phase",
+              "env:Quantity": "deg degrees"
+            }
+          },
+          "Property": {
+            "DataChannelType": {
+              "Type": "Calculated"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "deg",
+              "QuantityName": "Wave Phase"
+            },
+            "Name": "Regular Wave Phase",
+            "Remarks": "Identifies if wave is zero up-crossing (phase 0°) or down-crossing (phase 180°) at the instant the values were calculated."
+          }
+        }
+      ]
+    }
+  }
+}

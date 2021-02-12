@@ -1,0 +1,291 @@
+{
+  "Package": {
+    "Header": {
+      "ShipID": "PSVH",
+      "DataChannelListID": {
+        "ID": "MotionTrackingChannel.json",
+        "TimeStamp": "2020-06-08T10:06:39.876Z"
+      },
+      "Author": "Ícaro Fonseca",
+      "DateCreated": "2020-06-07T08:08:00.588Z",
+      "nr:CustomHeaderElement": "Motion tracking in 6 DOF"
+    },
+    "DataChannelList": {
+      "DataChannel": [
+        {
+          "DataChannelID": {
+            "LocalID": "/dnv_vis/451+I101/SetSurge+d(mm)",
+            "ShortID": "SetPosX",
+            "NameObject": {
+              "NamingRule": "dnv_vis",
+              "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
+              "vis:1_FunctionGroup": "450 Position keeping systems",
+              "vis:2_FunctionGroup": "451 Position keeping control and monitoring systems",
+              "vis:3_FunctionGroup": "451.1 Dynamic positioning automatic control systems",
+              "vis:4_FunctionLeaf": "451.11 Dynamic positioning automatic control systems, main",
+              "vis:Component": "I101 Control and monitoring system",
+              "vis:Suffix": "SetSurge",
+              "vis:UoM": "d Distance",
+              "vis:Quantity": "m meter"
+            }
+          },
+          "Property": {
+            "DataChannel Type": {
+              "Type": "SetPoint"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "mm",
+              "QuantityName": "Displacement"
+            },
+            "Name": "DP Surge Setpoint"
+          }
+        },
+        {
+          "DataChannelID": {
+            "LocalID": "/dnv_vis/451+I101/SetSway+d(mm)",
+            "ShortID": "SetPosY",
+            "NameObject": {
+              "NamingRule": "dnv_vis",
+              "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
+              "vis:1_FunctionGroup": "450 Position keeping systems",
+              "vis:2_FunctionGroup": "451 Position keeping control and monitoring systems",
+              "vis:3_FunctionGroup": "451.1 Dynamic positioning automatic control systems",
+              "vis:4_FunctionLeaf": "451.11 Dynamic positioning automatic control systems, main",
+              "vis:Component": "I101 Control and monitoring system",
+              "vis:Suffix": "SetSway",
+              "vis:UoM": "d Distance",
+              "vis:Quantity": "m meter"
+            }
+          },
+          "Property": {
+            "DataChannel Type": {
+              "Type": "SetPoint"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "mm",
+              "QuantityName": "Displacement"
+            },
+            "Name": "DP Sway Setpoint"
+          }
+        },
+        {
+          "DataChannelID": {
+            "LocalID": "/dnv_vis/451+I101/SetYaw+phi(rad)",
+            "ShortID": "SetHead",
+            "NameObject": {
+              "NamingRule": "dnv_vis",
+              "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
+              "vis:1_FunctionGroup": "450 Position keeping systems",
+              "vis:2_FunctionGroup": "451 Position keeping control and monitoring systems",
+              "vis:3_FunctionGroup": "451.1 Dynamic positioning automatic control systems",
+              "vis:4_FunctionLeaf": "451.11 Dynamic positioning automatic control systems, main",
+              "vis:Component": "I101 Control and monitoring system",
+              "vis:Suffix": "SetYaw",
+              "vis:UoM": "phi Angular measure",
+              "vis:Quantity": "rad radians"
+            }
+          },
+          "Property": {
+            "DataChannel Type": {
+              "Type": "SetPoint"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "phi",
+              "QuantityName": "Angular displacement"
+            },
+            "Name": "DP Heading/Yaw Setpoint"
+          }
+        },
+        {
+          "DataChannelID": {
+            "LocalID": "/dnv_vis/452+I101/Surge+d(mm)",
+            "ShortID": "PosX",
+            "NameObject": {
+              "NamingRule": "dnv_vis",
+              "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
+              "vis:1_FunctionGroup": "450 Position keeping systems",
+              "vis:2_FunctionLeaf": "452 Position reference system",
+              "vis:Component": "I101 Control and monitoring system",
+              "vis:Suffix": "Surge",
+              "vis:UoM": "d Distance",
+              "vis:Quantity": "mm milimeters"
+            }
+          },
+          "Property": {
+            "DataChannelType": {
+              "Type": "Inst",
+              "UpdateCycle": "0.01"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "mm",
+              "QuantityName": "Displacement"
+            },
+            "Name": "Ship Surge Displacement"
+          }
+        },
+        {
+          "DataChannelID": {
+            "LocalID": "/dnv_vis/452+I101/Sway+d(mm)",
+            "ShortID": "PosY",
+            "NameObject": {
+              "NamingRule": "dnv_vis",
+              "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
+              "vis:1_FunctionGroup": "450 Position keeping systems",
+              "vis:2_FunctionLeaf": "452 Position reference system",
+              "vis:Component": "I101 Control and monitoring system",
+              "vis:Suffix": "Sway",
+              "vis:UoM": "d Distance",
+              "vis:Quantity": "mm milimeters"
+            }
+          },
+          "Property": {
+            "DataChannelType": {
+              "Type": "Inst",
+              "UpdateCycle": "0.01"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "mm",
+              "QuantityName": "Displacement"
+            },
+            "Name": "Ship Sway Displacement"
+          }
+        },
+        {
+          "DataChannelID": {
+            "LocalID": "/dnv_vis/453+I101/Heave+d(mm)",
+            "ShortID": "PosZ",
+            "NameObject": {
+              "NamingRule": "dnv_vis",
+              "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
+              "vis:1_FunctionGroup": "450 Position keeping systems",
+              "vis:2_FunctionLeaf": "453 Vertical reference system",
+              "vis:Component": "I101 Control and monitoring system",
+              "vis:Suffix": "Heave",
+              "vis:UoM": "d Distance",
+              "vis:Quantity": "mm milimeters"
+            }
+          },
+          "Property": {
+            "DataChannelType": {
+              "Type": "Inst",
+              "UpdateCycle": "0.01"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "mm",
+              "QuantityName": "Displacement"
+            },
+            "Name": "Ship Heave Displacement"
+          }
+        },
+        {
+          "DataChannelID": {
+            "LocalID": "/dnv_vis/453+I101/Roll+phi(deg)",
+            "ShortID": "RotX",
+            "NameObject": {
+              "NamingRule": "dnv_vis",
+              "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
+              "vis:1_FunctionGroup": "450 Position keeping systems",
+              "vis:2_FunctionLeaf": "453 Vertical reference system",
+              "vis:Component": "I101 Control and monitoring system",
+              "vis:Suffix": "Roll",
+              "vis:UoM": "phi Angular measure",
+              "vis:Quantity": "deg degrees"
+            }
+          },
+          "Property": {
+            "DataChannel Type": {
+              "Type": "Inst",
+              "UpdateCycle": "0.01"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "deg",
+              "QuantityName": "Angular displacement"
+            },
+            "Name": "Ship Roll Rotation"
+          }
+        },
+        {
+          "DataChannelID": {
+            "LocalID": "/dnv_vis/453+I101/Pitch+phi(deg)",
+            "ShortID": "RotY",
+            "NameObject": {
+              "NamingRule": "dnv_vis",
+              "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
+              "vis:1_FunctionGroup": "450 Position keeping systems",
+              "vis:2_FunctionLeaf": "453 Vertical reference system",
+              "vis:Component": "I101 Control and monitoring system",
+              "vis:Suffix": "Pitch",
+              "vis:UoM": "phi Angular measure",
+              "vis:Quantity": "deg degrees"
+            }
+          },
+          "Property": {
+            "DataChannel Type": {
+              "Type": "Inst",
+              "UpdateCycle": "0.01"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "deg",
+              "QuantityName": "Angular displacement"
+            },
+            "Name": "Ship Pitch Rotation"
+          }
+        },
+        {
+          "DataChannelID": {
+            "LocalID": "/dnv_vis/453+I101/Yaw+phi(deg)",
+            "ShortID": "RotZ",
+            "NameObject": {
+              "NamingRule": "dnv_vis",
+              "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
+              "vis:1_FunctionGroup": "450 Position keeping systems",
+              "vis:2_FunctionLeaf": "453 Vertical reference system",
+              "vis:Component": "I101 Control and monitoring system",
+              "vis:Suffix": "Yaw",
+              "vis:UoM": "phi Angular measure",
+              "vis:Quantity": "deg degrees"
+            }
+          },
+          "Property": {
+            "DataChannel Type": {
+              "Type": "Inst",
+              "UpdateCycle": "0.01"
+            },
+            "Format": {
+              "Type": "Decimal"
+            },
+            "Unit": {
+              "UnitSymbol": "deg",
+              "QuantityName": "Angular displacement"
+            },
+            "Name": "Ship Yaw Rotation"
+          }
+        }
+      ]
+    }
+  }
+}

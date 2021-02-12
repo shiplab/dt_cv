@@ -1,0 +1,34 @@
+{
+  "Package": {
+    "Remarks": "An initial draft a ship specification standard.",
+    "Author": "Ícaro Fonseca",
+    "ShipID": "PSVH",
+    "MainDimensions": {
+      "LOA": 1.24,
+      "B": 0.3450,
+      "DesignDraft": 0.0820,
+      "UnitSymbol": "m"
+    },
+    "Weight": {
+      "Lightweight": 22.80,
+      "UnitSymbol": "kg"
+    },
+    "CG": {
+      "XCG": 0.0136,
+      "YCG": 0.0000,
+      "ZCG": 0.0826,
+      "UnitSymbol": "m",
+      "Remarks": "Referece from station 5, bottom tangent and central longitudinal plane."
+    },
+    "AssetID": {
+      "LocalID": "/dnv_vis/071",
+      "ShortID": "VesselSpecification.json",
+      "NameObject": {
+        "NamingRule": "dnv_vis",
+        "vis:0_FunctionGroup": "000 Vessel general",
+        "vis:1_FunctionGroup": "070 Technical information",
+        "vis:2_FunctionLeaf": "071 Vessel specification"
+      }
+    }
+  }
+}
