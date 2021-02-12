@@ -12,4 +12,4 @@ The second is a digital twin for monitoring and control of a wave basin experime
 
 ## References and documentation
 * [Read the paper.](https://doi.org/10.7148/2020-0207)
-* [Read the documentation.](https://shiplab.com/icarofonseca/dt_cv/wiki)
+* [Read the documentation.](https://github.com/shiplab/dt_cv/wiki)
