@@ -20,16 +20,16 @@
 	<script src="libs/bootstrap.min.js"></script>
 
 	<!-- Three script -->
-	<script src="libs/three.js"></script>
-	<script src="libs/GLTFLoader.js"></script>
-	<script src="libs/GLTFExporter.js"></script>
-	<!-- <script src="libs/STLLoader.js"></script> -->
-	<script src="libs/Mirror.js"></script>
-	<script src="libs/WaterShader.js"></script>
-	<script src="libs/OrbitControls.js"></script>
+	<script src="3D_engine/three.js"></script>
+	<script src="3D_engine/GLTFLoader.js"></script>
+	<script src="3D_engine/GLTFExporter.js"></script>
+	<!-- <script src="3D_engine/STLLoader.js"></script> -->
+	<script src="3D_engine/Mirror.js"></script>
+	<script src="3D_engine/WaterShader.js"></script>
+	<script src="3D_engine/OrbitControls.js"></script>
+	<script src="3D_engine/Patch_interpolation.js"></script>
+	<script src="3D_engine/Regular_ocean.js"></script>
 	<script src="libs/zingchart.min.js"></script>
-	<script src="snippets/Patch_interpolation.js"></script>
-	<script src="snippets/Regular_ocean.js"></script>
 
 	<!-- OpenCV -->
 	<script src="libs/adapter-5.0.4.js"></script>
@@ -121,7 +121,7 @@
 					<div id="plotBoatMov" style="position:relative; float:left; width:100%; height:150px"></div>
 				</div>
 			</div>
-			<video id="videoInput" src="data/demo.mp4" width=640 height=480 muted loop></video>
+			<video id="videoInput" src="data/aquarium/demo.mp4" width=640 height=480 muted loop></video>
 		</div>
 	</div>
 
@@ -176,11 +176,11 @@
 		// import digital twin JSON schema
 		var dataChannels, demoData, readFind;
 		var threshold = {};
-		new THREE.FileLoader().load("data/VIS.json", useSchema);
+		new THREE.FileLoader().load("data/aquarium/VIS.json", useSchema);
 		function useSchema(contents) {
 			vis = JSON.parse(contents).VIS;
 
-			var specPath = "data/" + vis["000"].Children["070"].Children["071"].Path.Asset;
+			var specPath = "data/aquarium/" + vis["000"].Children["070"].Children["071"].Path.Asset;
 			new THREE.FileLoader().load(specPath, function (contents) {
 				var spec = JSON.parse(contents);
 				// get boat dimensions from specification
@@ -194,7 +194,7 @@
 			});
 
 			// import data channel
-			var channelPath = "data/" + vis["400"].Children["450"].Children["452"].Path.MeasuredStates[0].DataChannel;
+			var channelPath = "data/aquarium/" + vis["400"].Children["450"].Children["452"].Path.MeasuredStates[0].DataChannel;
 			new THREE.FileLoader().load(channelPath, function (contents) {
 				dataChannels = JSON.parse(contents);
 				// fill threshold object and table
@@ -206,7 +206,7 @@
 				document.getElementById("thresRot").innerHTML = parseInt(threshold.r) + " degrees";
 			});
 			// import time series for demo
-			var seriesPath = "data/" + vis["400"].Children["450"].Children["452"].Path.MeasuredStates[0].TimeSeries;
+			var seriesPath = "data/aquarium/" + vis["400"].Children["450"].Children["452"].Path.MeasuredStates[0].TimeSeries;
 			new THREE.FileLoader().load(seriesPath, function (contents) {
 				demoData = JSON.parse(contents);
 				readFind = new readingFinder(demoData);
@@ -217,10 +217,10 @@
 		function search3D(element) {
 			if (typeof element.Children === "undefined") {
 				for (let i = 0; i < element.Path.Asset.length; i++) {
-					new THREE.FileLoader().load("data/" + element.Path.Asset, function (contents) {
+					new THREE.FileLoader().load("data/aquarium/" + element.Path.Asset, function (contents) {
 						let assetPackage = JSON.parse(contents).Package;
 						if (typeof assetPackage.Topology !== "undefined") {
-							let data3D = "data/3D/" + assetPackage.Topology.Visualization.GLB;
+							let data3D = "data/aquarium/3D/" + assetPackage.Topology.Visualization.GLB;
 							let loader = new THREE.GLTFLoader();
 							loader.load(data3D, function (gltf) {
 								var asset3D = gltf.scene;
@@ -248,10 +248,10 @@
 		// function search3D(element) {
 		// 	if (typeof element.Children === "undefined") {
 		// 		for (let i = 0; i < element.Path.Asset.length; i++) {
-		// 			new THREE.FileLoader().load("data/" + element.Path.Asset, function (contents) {
+		// 			new THREE.FileLoader().load("data/aquarium/" + element.Path.Asset, function (contents) {
 		// 				let assetPackage = JSON.parse(contents).Package;
 		// 				if (typeof assetPackage.Topology !== "undefined") {
-		// 					let data3D = "data/3D/" + assetPackage.Topology.Visualization.STL;
+		// 					let data3D = "data/aquarium/3D/" + assetPackage.Topology.Visualization.STL;
 		// 					let loader = new THREE.STLLoader();
 		// 					loader.load(data3D, function (stl) {
 		// 						var material = new THREE.MeshPhongMaterial({ color: 0x0384fc, specular: 0x111111, shininess: 200 });
@@ -459,7 +459,7 @@
 		appMode.addEventListener("change", changeMode);
 		function changeMode() {
 			if (appMode.value === "demo") {
-				videoInput.src = "data/demo.mp4";
+				videoInput.src = "data/aquarium/demo.mp4";
 			} else if (appMode.value === "stream") {
 				videoInput.src = "http://10.24.89.53:8081";
 				videoInput.crossOrigin = "Anonymous";
