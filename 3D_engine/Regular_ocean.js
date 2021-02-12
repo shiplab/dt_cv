@@ -170,6 +170,6 @@ Object.assign(Ocean.prototype, {
 		pos.needsUpdate = true;
 		this.geometry.computeVertexNormals();
 
-		this.water.material.uniforms.time.value = t/2;
+		this.water.material.uniforms.time.value = t/10;
 	}
 });

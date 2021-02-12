@@ -325,7 +325,6 @@
 			//Ocean size: aquarium is circa 400 mm on its longer dimension and 200 mm on the shorter
 			let length = 200;
 			let width = 400;
-			let oSize = 400;
 			var aqGeom = new THREE.BoxBufferGeometry(width, length, length);
 			var aqMaterial = new THREE.MeshBasicMaterial({
 				color: 0xA9CCE3,
@@ -353,7 +352,7 @@
 
 			ocean = new Ocean({
 				sunDir: sun.position.clone().normalize(),
-				size: oSize,
+				size: width,
 				length: length,
 				width: width,
 				segments: 127,
