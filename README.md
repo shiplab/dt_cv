@@ -10,6 +10,6 @@ The second is a digital twin for monitoring and control of a wave basin experime
 * [Experiment replay.](https://shiplab.github.io/dt_cv/basin_demo.html)
 * [Monitoring and control application (works only during experiments).](https://shiplab.github.io/dt_cv/basin_client.html)
 
-## References and documentation
-* [Read the paper.](https://doi.org/10.7148/2020-0207)
+## References and Documentation
+* [Read the research paper.](https://doi.org/10.7148/2020-0207)
 * [Read the documentation.](https://github.com/shiplab/dt_cv/wiki)
