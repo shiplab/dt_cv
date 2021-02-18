@@ -64,7 +64,7 @@
 			<div>
 				<div class="control">
 					<label for="appMode">Choose an app mode:</label>
-					<select name="appMode" id="appMode">
+					<select name="appMode" id="appMode" autocomplete="off">
 						<option value="demo">Demo</option>
 						<option value="capture">Capture from webcam</option>
 						<option value="stream">Connect to stream</option>
@@ -457,7 +457,7 @@
 			if (appMode.value === "demo") {
 				videoInput.src = "data/aquarium/demo.mp4";
 			} else if (appMode.value === "stream") {
-				videoInput.src = "http://10.24.89.39:8081";
+				videoInput.src = "http://10.24.90.120:8081";
 				videoInput.crossOrigin = "Anonymous";
 			}
 		}
