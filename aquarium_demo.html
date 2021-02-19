@@ -115,7 +115,8 @@
 				</div>
 				<div class="col-sm-6">
 					<div id="3d" style="width:100%;height:450px"></div>
-					<div id="plotBoatMov" style="position:relative; float:left; width:100%; height:150px"></div>
+					<div id="plotBoatMov1" style="position:relative; float:left; width:100%; height:150px"></div>
+					<div id="plotBoatMov2" style="position:relative; float:left; width:100%; height:150px"></div>
 				</div>
 			</div>
 			<video id="videoInput" src="data/aquarium/demo.mp4" width=640 height=480 muted loop></video>
@@ -482,7 +483,8 @@
 						});
 						break;
 				}
-				startGraph();
+				startGraph1();
+				startGraph2();
 			} else {
 				if (appMode.value === "capture") {
 					utils.stopCamera();
@@ -492,7 +494,8 @@
 				}
 				onVideoStopped();
 				aniMode = "still";
-				stopGraph();
+				stopGraph1();
+				stopGraph2();
 				appMode.disabled = false;
 			}
 		});
@@ -690,86 +693,143 @@
 			}
 		};
 
-		// movement plots
-		function feedMovPlot(callback) {
+		// surge and heave plots
+		function feedMovPlot1(callback) {
 			var tick = {};
 			tick.plot0 = boat3D.position.x;
 			tick.plot1 = boat3D.position.z;
-			//tick.plot2 = boat3D.rotation.z;
 			callback(JSON.stringify(tick));
 		};
 
-		function clearGraph() {
-			zingchart.exec("plotBoatMov", "clearfeed")
+		function feedMovPlot2(callback) {
+			var tick = {};
+			tick.plot0 = 180 / Math.PI * boat3D.rotation.y;
+			callback(JSON.stringify(tick));
 		};
 
-		function startGraph() {
-			zingchart.exec("plotBoatMov", "startfeed");
+		function clearGraph1() {
+			zingchart.exec("plotBoatMov1", "clearfeed")
+		};
+		function startGraph1() {
+			zingchart.exec("plotBoatMov1", "startfeed");
+		};
+		function stopGraph1() {
+			zingchart.exec("plotBoatMov1", "stopfeed");
 		};
 
-		function stopGraph() {
-			zingchart.exec("plotBoatMov", "stopfeed");
+		function clearGraph2() {
+			zingchart.exec("plotBoatMov2", "clearfeed")
+		};
+		function startGraph2() {
+			zingchart.exec("plotBoatMov2", "startfeed");
+		};
+		function stopGraph2() {
+			zingchart.exec("plotBoatMov2", "stopfeed");
 		};
 
-		var movChart = {
-			graphset: [{
-				type: "line",
-				height: "100%",
-				width: "100%",
-				x: "0%",
-				y: "0%",
-				plot: {
-					aspect: "spline",
-					marker: {
-						visible: true
-					},
+		var movChart1 = {
+			type: "line",
+			height: "100%",
+			width: "100%",
+			x: "0%",
+			y: "0%",
+			plot: {
+				aspect: "spline",
+				marker: {
+					visible: true
 				},
-				series: [{
-					values: [0],
-					text: "Surge (cm)"
-				}, {
-					values: [0],
-					text: "Heave (cm)"
-				},
-					/* {
-						"values": [0],
-						"text": "Pitch (rad)"
-					}*/
-				],
-				refresh: {
-					type: "feed",
-					transport: "js",
-					url: "feedMovPlot()",
-					method: "pull",
-					interval: 50,
-					"adjust-scale": true
-				},
-				plotarea: {
-					margin: "5% 5% 20% 5%",
-				},
-				legend: {
-					layout: "float",
-					"background-color": "none",
-					"border-width": 0,
-					"text-align": "middle",
-					offsetY: 0,
-					align: "center",
-					item: {
-						"font-size": "10px"
-					}
+			},
+			series: [{
+				values: [0],
+				text: "Surge (cm)"
+			}, {
+				values: [0],
+				text: "Heave (cm)"
+			}],
+			refresh: {
+				type: "feed",
+				transport: "js",
+				url: "feedMovPlot1()",
+				method: "pull",
+				interval: 50,
+				"adjust-scale": true
+			},
+			plotarea: {
+				margin: "5% 5% 20% 5%",
+			},
+			legend: {
+				layout: "float",
+				"background-color": "none",
+				"border-width": 0,
+				"text-align": "middle",
+				offsetY: 0,
+				align: "center",
+				item: {
+					"font-size": "10px"
 				}
-			}]
+			}
+		};
+
+		var movChart2 = {
+			type: "line",
+			height: "100%",
+			width: "100%",
+			x: "0%",
+			y: "0%",
+			plot: {
+				aspect: "spline",
+				marker: {
+					visible: true
+				},
+			},
+			series: [{
+				"values": [0],
+				"text": "Pitch (deg)"
+			}],
+			refresh: {
+				type: "feed",
+				transport: "js",
+				url: "feedMovPlot2()",
+				method: "pull",
+				interval: 50,
+				"adjust-scale": true
+			},
+			plotarea: {
+				margin: "5% 5% 20% 5%",
+			},
+			legend: {
+				layout: "float",
+				"background-color": "none",
+				"border-width": 0,
+				"text-align": "middle",
+				offsetY: 0,
+				align: "center",
+				item: {
+					"font-size": "10px"
+				}
+			}
 		};
 
 		window.onload = function () {
 			zingchart.render({
-				id: "plotBoatMov",
+				id: "plotBoatMov1",
 				height: "100%",
 				width: "100%",
-				data: movChart,
+				data: movChart1,
 				events: {
 					load: function (p) {
-						stopGraph()
+						stopGraph1()
+					}
+				}
+			});
+			zingchart.render({
+				id: "plotBoatMov2",
+				height: "100%",
+				width: "100%",
+				data: movChart2,
+				events: {
+					load: function (p) {
+						stopGraph2();
 					}
 				}
 			});
