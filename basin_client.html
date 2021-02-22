@@ -370,7 +370,7 @@
 			if (typeof validationPeriod === "undefined") {
 				validationPeriod = findClosestPeriod(raoSchema, ocean.waves["0"].T);
 			}
-			var movAmp = 1000 * ocean.waves["0"].A * raoSchema["heave"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].rao;
+			var movAmp = ocean.waves["0"].A * raoSchema["heave"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].rao;
 			var angFreq = 2 * Math.PI / ocean.waves["0"].T;
 			var phase = Math.PI / 180 * ocean.waves["0"].phi + raoSchema["heave"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].phase;
 			tick.plot1 = movAmp * Math.sin(angFreq * time + phase);
@@ -383,7 +383,7 @@
 			if (typeof validationPeriod === "undefined") {
 				validationPeriod = findClosestPeriod(raoSchema, ocean.waves["0"].T);
 			}
-			var movAmp = ocean.waves["0"].A * raoSchema["pitch"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].rao * 70;
+			var movAmp = ocean.waves["0"].A/1000 * raoSchema["pitch"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].rao * 70;
 			var angFreq = 2 * Math.PI / ocean.waves["0"].T;
 			var phase = Math.PI / 180 * ocean.waves["0"].phi + raoSchema["pitch"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].phase;
 			tick.plot1 = 180 / Math.PI * movAmp * Math.sin(angFreq * time + phase);
