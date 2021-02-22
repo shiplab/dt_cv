@@ -65,7 +65,7 @@ Object.assign(DirectionalCosine.prototype, {
 	//Updates the wave length to the "natural" state (dispersion relation for deep waters)
 	updateWavelength: function() {
 		let g = 9.81;
-		this.L = g * this.T * this.T / (2 * Math.PI);
+		this.L = 1000 * g * this.T * this.T / (2 * Math.PI);
 		if (this.conf) this.conf.updateDisplay(); //TEST
 	},
 	calculate: function(x, y, t) {
@@ -170,6 +170,6 @@ Object.assign(Ocean.prototype, {
 		pos.needsUpdate = true;
 		this.geometry.computeVertexNormals();
 
-		this.water.material.uniforms.time.value = t/10;
+		this.water.material.uniforms.time.value = t;
 	}
 });

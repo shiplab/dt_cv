@@ -233,9 +233,6 @@
 								if (typeof assetPackage.AssetID.NameObject["vis:Instance"] !== "undefined") {
 									asset3D.name += "_" + assetPackage.AssetID.NameObject["vis:Instance"];
 								}
-								asset3D.scale.x = 0.001;
-								asset3D.scale.y = 0.001;
-								asset3D.scale.z = 0.001;
 								asset3D.position.x = assetPackage.Topology.Position.x;
 								asset3D.position.y = assetPackage.Topology.Position.y;
 								asset3D.position.z = assetPackage.Topology.Position.z;
@@ -263,10 +260,10 @@
 		function useSpec(contents) {
 			let specification = JSON.parse(contents).Package;
 			let CG = specification.CG;
-			cmContainer.position.set(-CG.XCG, -CG.YCG, -CG.ZCG);
-			let draft = specification.MainDimensions.DesignDraft;
-			normalizer.position.z = draft;
-			total.position.z = -draft;
+			cmContainer.position.set(-1000 * CG.XCG, -1000 * CG.YCG, -1000 * CG.ZCG);
+			let draft = 1000 * specification.MainDimensions.DesignDraft;
+			normalizer.position.z = 1000 * draft;
+			total.position.z = -1000 * draft;
 		}
 
 		// read file from user
@@ -381,7 +378,7 @@
 		var wavePath = "data/basin/WaveLog.json";
 		new THREE.FileLoader().load(wavePath, function (contents) {
 			waveChar = JSON.parse(contents).Package.TimeSeriesData[0].EventData.DataSet[0].Value;
-			ocean.waves[0].A = waveChar[0] / 2 / 1000;
+			ocean.waves[0].A = waveChar[0] / 2;
 			ocean.waves[0].T = waveChar[1];
 			ocean.waves[0].phi = waveChar[2];
 			logViewer.append("Loaded wave data:\n  Height: " + parseFloat(waveChar[0]).toFixed(2) + " mm \n  Period: " + parseFloat(waveChar[1]).toFixed(2) + " s \n");
@@ -442,7 +439,7 @@
 			scene.add(sun);
 
 			//Ocean size
-			let oSize = 14;
+			let oSize = 14000;
 			scene.add(new Skybox(oSize));
 
 			//Use Z up from now on:
@@ -456,7 +453,7 @@
 			camera.up.set(0, 1, 0);
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-			camera.position.set(2.92, 1.08, 4.12);
+			camera.position.set(5563, 1546, 5874);
 			controls.target = new THREE.Vector3(0, 0, 0);
 			controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
 			camera.lookAt(zUpCont.position);
@@ -502,11 +499,11 @@
 				let coord = readFind.findTabular(playTime);
 				readFind.findEvent(playTime);
 				// surge
-				fluctCont.position.x = coord[0] / 1000;
+				fluctCont.position.x = coord[0];
 				// sway
-				fluctCont.position.y = coord[1] / 1000;
+				fluctCont.position.y = coord[1];
 				// heave
-				fluctCont.position.z = coord[2] / 1000;
+				fluctCont.position.z = coord[2];
 				// roll
 				fluctCont.rotation.x = coord[3] * Math.PI / 180;
 				// pitch

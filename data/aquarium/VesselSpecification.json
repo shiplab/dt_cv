@@ -20,8 +20,9 @@
       "UnitSymbol": "t"
     },
     "CG": {
-      "LCG": 0.0,
-      "VCG": 0.0,
+      "XCG": 0.0,
+      "YCG": 0.0,
+      "ZCG": 0.0,
       "UnitSymbol": "m"
     },
     "AssetID": {

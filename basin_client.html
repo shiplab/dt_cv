@@ -133,9 +133,6 @@
 								if (typeof assetPackage.AssetID.NameObject["vis:Instance"] !== "undefined") {
 									asset3D.name += "_" + assetPackage.AssetID.NameObject["vis:Instance"];
 								}
-								asset3D.scale.x = 0.001;
-								asset3D.scale.y = 0.001;
-								asset3D.scale.z = 0.001;
 								asset3D.position.x = assetPackage.Topology.Position.x;
 								asset3D.position.y = assetPackage.Topology.Position.y;
 								asset3D.position.z = assetPackage.Topology.Position.z;
@@ -163,10 +160,10 @@
 		function useSpec(contents) {
 			let specification = JSON.parse(contents).Package;
 			let CG = specification.CG;
-			cmContainer.position.set(-CG.XCG, -CG.YCG, -CG.ZCG);
-			let draft = specification.MainDimensions.DesignDraft;
-			normalizer.position.z = draft;
-			total.position.z = -draft;
+			cmContainer.position.set(- 1000 * CG.XCG, - 1000 * CG.YCG, - 1000 * CG.ZCG);
+			let draft = 1000 * specification.MainDimensions.DesignDraft;
+			normalizer.position.z = 1000 * draft;
+			total.position.z = -1000 * draft;
 		}
 
 		(function main() {
@@ -178,7 +175,7 @@
 					// [height, period, phase]
 					var waveReading = [parseFloat(splitString[0]), parseFloat(splitString[1]), parseFloat(splitString[2])];
 					// modify ocean characteristics
-					ocean.waves["0"].A = waveReading[0] / 2 / 1000;
+					ocean.waves["0"].A = waveReading[0] / 2;
 					document.getElementById("height").innerHTML = waveReading[0].toFixed(2);
 					ocean.waves["0"].T = waveReading[1];
 					document.getElementById("period").innerHTML = waveReading[1].toFixed(2);
@@ -227,11 +224,11 @@
 			//Scene setup:
 			scene = new THREE.Scene();
 			let sun = new THREE.DirectionalLight(0xffffff, 2);
-			sun.position.set(-512, 246, 128);
+			sun.position.set(512, -246, 128);
 			scene.add(sun);
 
 			//Ocean size
-			let oSize = 14;
+			let oSize = 14000;
 			scene.add(new Skybox(oSize));
 
 			//Use Z up from now on:
@@ -251,7 +248,7 @@
 			};
 			window.addEventListener('resize', onResize, false);
 			onResize();
-			camera.position.set(3, 3, 3);
+			camera.position.set(5563, 1546, 5874);
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
 			controls.target = new THREE.Vector3(0, 0, 0);
 			camera.lookAt(zUpCont.position);
@@ -341,17 +338,17 @@
 			time = clock.getElapsedTime();
 			var interval = time - timePrev;
 			// surge
-			fluctCont.position.x = motionReading[0];
+			fluctCont.position.x = motionReading[0] * 1000;
 			// sway
-			fluctCont.position.y = motionReading[1];
+			fluctCont.position.y = motionReading[1] * 1000;
 			// heave
-			fluctCont.position.z = motionReading[2];
+			fluctCont.position.z = motionReading[2] * 1000;
 			// roll
-			fluctCont.rotation.x = motionReading[3];
+			fluctCont.rotation.x = motionReading[3] * 1000;
 			// pitch
-			fluctCont.rotation.y = motionReading[4];
+			fluctCont.rotation.y = motionReading[4] * 1000;
 			// yaw
-			fluctCont.rotation.z = motionReading[5];
+			fluctCont.rotation.z = motionReading[5] * 1000;
 			// azimuth angle
 			if (typeof ship3D.getObjectByName("Azimuth_Starboard") !== "undefined") { ship3D.getObjectByName("Azimuth_Starboard").rotation.z = Math.PI / 180 * angleReading[1] };
 			if (typeof ship3D.getObjectByName("Azimuth_Portside") !== "undefined") { ship3D.getObjectByName("Azimuth_Portside").rotation.z = Math.PI / 180 * angleReading[2] };
