@@ -49,8 +49,8 @@
 				<div class="navbar-header">
 					<a class="navbar-brand" target="_blank" href="http://shiplab.hials.org/"><img
 							src="images/logo_shiplab.png" alt="Shiplab logo" style="height: 150%" /> </a>
-					<a class="navbar-brand" target="_blank" href="http://tpn.usp.br/"><img
-							src="images/logo_tpn2.png" alt="TPN logo" style="height: 150%" /> </a>
+					<a class="navbar-brand" target="_blank" href="http://tpn.usp.br/"><img src="images/logo_tpn2.png"
+							alt="TPN logo" style="height: 150%" /> </a>
 				</div>
 			</div>
 		</div>
@@ -62,9 +62,11 @@
 		<div class="row">
 			<div class="col-md-12 text-center">
 				<h2>Experiment with a Digital Twin of a Ship Scale Model</h2>
-				<p>This page presents some experiments performed with a digital twin of ship scale model at <a target="_blank" href="http://tpn.usp.br/">TPN-USP</a> as of January 2020.</p>
-					<p>Developed by Ícaro A. Fonseca, Henrique M. Gaspar, Pedro C. de Mello and Humberto A. U. Sasaki. <!-- <a target="_blank"
-						href="">Read the paper.</a></p> -->
+				<p>This page presents some experiments performed with a digital twin of ship scale model at <a
+						target="_blank" href="http://tpn.usp.br/">TPN-USP</a> as of January 2020.</p>
+				<p>Developed by Ícaro A. Fonseca, Henrique M. Gaspar, Pedro C. de Mello and Humberto A. U. Sasaki.
+					<!-- <a target="_blank" href="">Read the paper.</a> -->
+				</p>
 			</div>
 
 			<div>
@@ -592,7 +594,7 @@
 		var feedMovPlot2 = function (callback) {
 			var tick1 = {};
 			tick1.plot0 = 180 / Math.PI * fluctCont.rotation.y;
-			var movAmp = ocean.waves[0].A/1000 * raoSchema["pitch"][validationPeriod.toString()][validationHeading.toString()].rao * 70;
+			var movAmp = ocean.waves[0].A / 1000 * raoSchema["pitch"][validationPeriod.toString()][validationHeading.toString()].rao * 70;
 			var angFreq = 2 * Math.PI / ocean.waves[0].T;
 			var phase = Math.PI / 180 * ocean.waves[0].phi + raoSchema["pitch"][validationPeriod.toString()][validationHeading.toString()].phase;
 			tick1.plot1 = 180 / Math.PI * movAmp * Math.sin(angFreq * document.getElementById("videoInput").currentTime + phase);
