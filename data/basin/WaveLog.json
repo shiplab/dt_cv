@@ -3,8 +3,8 @@
     "Header": {
       "ShipID": "PSVH",
       "TimeSpan": {
-        "Start": "2020-01-22T17:48:25.13Z",
-        "End": "2020-01-22T17:48:25.13Z"
+        "Start": "2020-01-22T16:47:17.000Z",
+        "End": "2020-01-22T16:50:59.440Z"
       },
       "DateCreated": "2020-01-22T17:48:25.13Z",
       "DateModified": "2020-01-22T17:48:25.13Z",
@@ -27,6 +27,19 @@
           "DataSet": [
             {
               "TimeStamp": "2020-01-22T16:47:17.000Z",
+              "DataChannelID": [
+                "H",
+                "T",
+                "Phase"
+              ],
+              "Value": [
+                "0",
+                "1",
+                "0"
+              ]
+            },
+            {
+              "TimeStamp": "2020-01-22T16:47:32.000Z",
               "DataChannelID": [
                 "H",
                 "T",

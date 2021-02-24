@@ -64,7 +64,8 @@
 				<h2>Experiment with a Digital Twin of a Ship Scale Model</h2>
 				<p>This page presents some experiments performed with a digital twin of ship scale model at <a
 						target="_blank" href="http://tpn.usp.br/">TPN-USP</a> as of January 2020.</p>
-				<p>Developed by Ícaro A. Fonseca, Henrique M. Gaspar, Pedro C. de Mello and Humberto A. U. Sasaki.
+				<p>Developed by Ícaro A. Fonseca, Henrique M. Gaspar, Pedro C. de Mello, Humberto A. U. Sasaki and
+					Felipe F. de Oliveira.
 					<!-- <a target="_blank" href="">Read the paper.</a> -->
 				</p>
 			</div>
@@ -367,27 +368,25 @@
 		};
 		document.getElementById("file-input").addEventListener("change", readSingleFile, false);
 
-		// import DP log
-		var dpLog, readFind;
-		var dpLogPath = "data/basin/MotionTrackingLog.json";
-		new THREE.FileLoader().load(dpLogPath, function (contents) {
-			dpLog = JSON.parse(contents);
-			readFind = new readingFinder(dpLog);
+		// import DP and wave logs for demo
+		let logPromises = [];
+		let dpPromise = new Promise(resolve => {
+			let reader = new THREE.FileLoader().load("data/basin/MotionTrackingLog.json", (contents) => resolve(JSON.parse(contents)));
+		});
+		logPromises.push(dpPromise);
+
+		let wavePromise = new Promise(resolve => {
+			let reader = new THREE.FileLoader().load("data/basin/WaveLog.json", (contents) => resolve(JSON.parse(contents)));
+		});
+		logPromises.push(wavePromise);
+
+		let readFind;
+		Promise.all(logPromises).then(fileContents => {
+			readFind = new readingFinder(fileContents[0], fileContents[1]);
 		});
 
-		// import wave data series for demos
-		var waveChar, raoSchema;
-		var wavePath = "data/basin/WaveLog.json";
-		new THREE.FileLoader().load(wavePath, function (contents) {
-			waveChar = JSON.parse(contents).Package.TimeSeriesData[0].EventData.DataSet[0].Value;
-			ocean.waves[0].A = waveChar[0] / 2;
-			ocean.waves[0].T = waveChar[1];
-			ocean.waves[0].phi = waveChar[2];
-			logViewer.append("Loaded wave data:\n  Height: " + parseFloat(waveChar[0]).toFixed(2) + " mm \n  Period: " + parseFloat(waveChar[1]).toFixed(2) + " s \n");
-		});
-
-		var raoPath = "data/basin/ResponseOperators.json";
-		new THREE.FileLoader().load(raoPath, function (contents) {
+		var raoSchema;
+		new THREE.FileLoader().load("data/basin/ResponseOperators.json", function (contents) {
 			raoSchema = JSON.parse(contents).Package.Results;
 		});
 
@@ -398,15 +397,13 @@
 			if (playDemo.innerText === "Play Demo") {
 				playDemo.innerText = "Stop";
 				logViewer.append("Start reading experiment data...\n");
-				validationPeriod = findClosestPeriod(raoSchema, ocean.waves[0].T);
-				validationHeading = 0;
 				videoInput.play();
 				clock.start();
 				clearGraph1();
 				clearGraph2();
 				startGraph1();
 				startGraph2();
-				logViewer.append(dpLog.Package.TimeSeriesData[0].TabularData[0].DataSet[0].TimeStamp + ": motion measurements started.\n");
+				logViewer.append(readFind.dpData.Package.TimeSeriesData[0].TabularData[0].DataSet[0].TimeStamp + ": motion measurements started.\n");
 			} else if (playDemo.innerText === "Stop") {
 				playDemo.innerText = "Play Demo";
 				videoInput.pause();
@@ -416,7 +413,8 @@
 				stopGraph2();
 				ocean.update(0);
 				readFind.markerTab = 0;
-				readFind.markerEve = 0;
+				readFind.markerSet = 0;
+				readFind.markerWav = 0;
 				logViewer.append("Stopped reading experiment data.\n");
 			}
 		});
@@ -498,8 +496,9 @@
 			if (playDemo.innerText === "Stop") {
 				// animate a scene from captured video
 				let playTime = 1000 * document.getElementById("videoInput").currentTime;
-				let coord = readFind.findTabular(playTime);
-				readFind.findEvent(playTime);
+				readFind.findSetpoint(playTime);
+				readFind.findWave(playTime);
+				let coord = readFind.findPosition(playTime);
 				// surge
 				fluctCont.position.x = coord[0];
 				// sway
@@ -528,53 +527,73 @@
 		};
 
 		// sync visualization with video in demo mode
-		function readingFinder(demoData) {
-			this.startTime = Date.parse(demoData.Package.Header.TimeSpan.Start);
-			this.finishTime = Date.parse(demoData.Package.Header.TimeSpan.End);
-			this.numTabular = demoData.Package.TimeSeriesData[0].TabularData[0].DataSet.length;
-			this.numEvent = demoData.Package.TimeSeriesData[0].EventData.DataSet.length;
+		function readingFinder(dPData, waveData) {
+			this.dpData = dPData;
+			this.waveData = waveData;
+			this.startTime = Date.parse(dPData.Package.Header.TimeSpan.Start);
+			this.finishTime = Date.parse(dPData.Package.Header.TimeSpan.End);
+			this.numTabular = dPData.Package.TimeSeriesData[0].TabularData[0].DataSet.length;
+			this.numEvent = dPData.Package.TimeSeriesData[0].EventData.DataSet.length;
+			this.numWaves = waveData.Package.TimeSeriesData[0].EventData.DataSet.length;
 			this.demoDuration = this.finishTime - this.startTime;
 			this.markerTab = 0;
-			this.markerEve = 0;
+			this.markerSet = 0;
+			this.markerWav = 0;
 			this.completedLoops = 0;
-			// tabular data should be in sync with the video loops. The event data is sparse, only a few occurrences are usually available
-			this.findTabular = function (elapsedLoopTime) {
-				var markerTime = Date.parse(demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.markerTab].TimeStamp);
+			// Tabular data (positions) should be in sync with the video loops
+			this.findPosition = function (elapsedLoopTime) {
+				var markerTime = Date.parse(dPData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.markerTab].TimeStamp);
 				if (markerTime - this.startTime > elapsedLoopTime) {
 					this.completedLoops++;
 					if (this.completedLoops === 1) {
-						logViewer.append(demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.markerTab].TimeStamp + ": last video frame.\n");
+						logViewer.append(dPData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.markerTab].TimeStamp + ": last video frame.\n");
 					}
 					this.markerTab = 0;
-					this.markerEve = 0;
+					this.markerSet = 0;
+					this.markerWav = 0;
 					logViewer.append("Restarting demo...\n");
 				}
 				if (this.markerTab < this.numTabular - 1) {
 					// we are not on the last frame, so we can continue towards the following readings
-					var nextMarkerTime = Date.parse(demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.markerTab + 1].TimeStamp);
+					var nextMarkerTime = Date.parse(dPData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.markerTab + 1].TimeStamp);
 					while (nextMarkerTime - this.startTime < elapsedLoopTime) {
 						this.markerTab++;
 						if (this.markerTab < this.numTabular - 1) {
 							// the new marker is not the last, there is still a next marker
-							nextMarkerTime = Date.parse(demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.markerTab + 1].TimeStamp);
+							nextMarkerTime = Date.parse(dPData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.markerTab + 1].TimeStamp);
 						}
 					}
 				}
-				return demoData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.markerTab].Value;
+				return dPData.Package.TimeSeriesData[0].TabularData[0].DataSet[this.markerTab].Value;
 			};
-			this.findEvent = function (elapsedLoopTime) {
-				if (typeof demoData.Package.TimeSeriesData[0].EventData.DataSet[this.markerEve] !== "undefined") {
-					var event = demoData.Package.TimeSeriesData[0].EventData.DataSet[this.markerEve];
-					var markerTime = Date.parse(event.TimeStamp);
+			// Event data (setpoint and wave characteristics) is sparse and only a few occurrences are usually available
+			this.findSetpoint = function (elapsedLoopTime) {
+				if (typeof dPData.Package.TimeSeriesData[0].EventData.DataSet[this.markerSet] !== "undefined") {
+					var setpoint = dPData.Package.TimeSeriesData[0].EventData.DataSet[this.markerSet];
+					var markerTime = Date.parse(setpoint.TimeStamp);
 					if (elapsedLoopTime > markerTime - this.startTime) {
-						let setHeading = Math.round(parseFloat(event.Value[2]) * 180 / Math.PI);
-						logViewer.append(event.TimeStamp + ": setpoint to x = " + parseFloat(event.Value[0]).toFixed(2) + " m, y = " + parseFloat(event.Value[1]).toFixed(2) + " m, heading = " + setHeading + "°.\n");
+						let setHeading = Math.round(parseFloat(setpoint.Value[2]) * 180 / Math.PI);
+						logViewer.append(setpoint.TimeStamp + ": setpoint to x = " + parseFloat(setpoint.Value[0]).toFixed(2) + " m, y = " + parseFloat(setpoint.Value[1]).toFixed(2) + " m, heading = " + setHeading + "°.\n");
 						if (setHeading > 0) {
 							validationHeading = setHeading;
 						} else {
 							validationHeading = 360 + setHeading;
 						}
-						this.markerEve++;
+						this.markerSet++;
+					}
+				}
+			};
+			this.findWave = function (elapsedLoopTime) {
+				if (typeof waveData.Package.TimeSeriesData[0].EventData.DataSet[this.markerWav] !== "undefined") {
+					var waveChar = waveData.Package.TimeSeriesData[0].EventData.DataSet[this.markerWav];
+					var markerTime = Date.parse(waveChar.TimeStamp);
+					if (elapsedLoopTime > markerTime - this.startTime) {
+						ocean.waves[0].A = waveChar.Value[0] / 2;
+						ocean.waves[0].T = waveChar.Value[1];
+						ocean.waves[0].phi = waveChar.Value[2];
+						validationPeriod = findClosestPeriod(raoSchema, ocean.waves[0].T);
+						logViewer.append(waveChar.TimeStamp + ": identified a wave with height = " + parseFloat(waveChar.Value[0]).toFixed(2) + " mm, period = " + parseFloat(waveChar.Value[1]).toFixed(2) + " s.\n");
+						this.markerWav++;
 					}
 				}
 			};
