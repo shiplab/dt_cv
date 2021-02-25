@@ -99,6 +99,7 @@
 		var ws, gui, time, timePrev, dpSetter;
 		var vis, raoSchema, validationPeriod;
 		var ship3D = new THREE.Group();
+		var modelScale = 70;
 
 		var rpmReading = [0, 0, 0];
 		var angleReading = [0, 0, 0];
@@ -383,7 +384,7 @@
 			if (typeof validationPeriod === "undefined") {
 				validationPeriod = findClosestPeriod(raoSchema, ocean.waves["0"].T);
 			}
-			var movAmp = ocean.waves["0"].A / 1000 * raoSchema["pitch"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].rao * 70;
+			var movAmp = ocean.waves["0"].A / 1000 * raoSchema["pitch"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].rao * modelScale;
 			var angFreq = 2 * Math.PI / ocean.waves["0"].T;
 			var phase = Math.PI / 180 * ocean.waves["0"].phi + raoSchema["pitch"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].phase;
 			tick.plot1 = 180 / Math.PI * movAmp * Math.sin(angFreq * time + phase);
