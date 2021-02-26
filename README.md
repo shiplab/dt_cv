@@ -1,5 +1,5 @@
 # dt_cv
-This repo contains two standard-based examples of digital twins.
+This repo contains two simple digital twins of model ships. The apps showcase a preliminary approach to standardization of digital twin data in the maritime domain.
 
 ## Toy Boat
 The first is an application for live monitoring of a toy boat's motion in 3 degrees of freedom.

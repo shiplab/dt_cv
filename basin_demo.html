@@ -74,9 +74,7 @@
 				<h3>Architecture</h3>
 				<p>The conception of the digital twin system followed a bottom-up approach: several subsystems already
 					in use on the TPN workflow were aggreagated into an overarching digital twin with a web-based
-					interface. To a certain extent, the individual characteristics of such components dictated the
-					choices of communication protocols adopted for the digital twin. During the time of the experiment,
-					the measuring and control system included:</p>
+					interface. The measuring and control system included:</p>
 				<ul>
 					<li>Water elevation measuring system: a commercial system measuring the elevation of a sensing probe
 						floating on the tank nearby the model.</li>
@@ -85,46 +83,27 @@
 					<li>DP controlling system in MATLAB, connected to the model PSV via radio frequency and to the
 						motion capture system via network.</li>
 				</ul>
-				<p>The <a target="_blank" href="https://shiplab.github.io/dt_cv/basin_client.html">digital
-						twin interface</a> was developed as a web-application and the related files are stored in a <a
-						target="_blank" href="https://github.com/shiplab/dt_cv/tree/master/data">local folder</a>.
-					The interface shows a visualization with ship motions and propulsion system parameters
-					in real-time. It also allows the user to define a setpoint for station keeping with the DP system.
-					Furthermore, a <a target="_blank"
-						href="https://github.com/shiplab/dt_cv/blob/master/snippets/udp2web.py">Python bridge</a>
-					was developed to establish the communication between the measuring systems and the digital twin
-					interface by processing and retransmitting logs.</p>
 
 				<h3>Simplifications</h3>
-				<p>A few simplifications were taken during the development of the digital twin, as can be observed on
-					the excerpts below. The wave condition was regular and taken always from the same known direction,
-					which avoided the necessity to identidy the direction with the digital twin during the experiment.
-					The wave characteristics are obtained by reading through the water elevation log. When the algorithm
-					identifies a zero-crossing on the signal, it fetches the last peak and valley to estimate the phase,
-					period and height for the latest wave cycle. Finally, the azimuth angles of both stern thrusters are
-					locked by default for simplification of an over actuated control problem.
+				<p>A few simplifications were taken during the development of the digital twin. The wave condition was
+					regular and taken always from the same known direction, which avoided the necessity to identify the
+					direction with the digital twin during the experiment. The wave characteristics are obtained by
+					reading through the water elevation log. When the algorithm identifies a zero-crossing on the
+					signal, it fetches the last peak and valley to estimate the phase, period and height for the latest
+					wave cycle. During experiments, the azimuth angles of both stern thrusters are locked by default for
+					simplification of an over actuated control problem.
 				</p>
 
 				<h3 id="appTitle">Experiment replay</h3>
-				<div id="descrip">
-					<p>The 3D visualization of the digital twin is used to monitor and control the PSV. This interface
-						proved very useful by allowing debugging and testing of the experimental setup. For example, it
-						helped to identify if the model was drifting towards an undesired position out of the field of
-						view of the motion tracking system and thus risking getting out of control by breaking the DP
-						feedback loop. The situations could then be quickly addressed from the digital twin interface
-						itself.
-					</p>
+				<div>
 					<p>The 2D plots are used for validation by comparing the motion measured during the experiment and
 						the results calculated with a boundary element method software. In general, the plots show a
 						good agreement and provide an interface for quick assessment of discrepancies between the
-						measured and expected movement responses.
-					</p>
-					<p>Though not illustrated in the demo below, the digital twin app can be used to perform some basic
-						optimization of the motion response. The user selects a decoupled motion mode they desire to
-						minimize and the application maneuvers the ship towards the heading which will minimize that
-						motion mode based on the stored BEM results. In the future the optimization could be improved to
-						minimize the coupled motions on a given position of the ship, for example, the point where a
-						crane is being operated.
+						measured and expected movement responses. When the experiment defines a new DP setpoint, the
+						validation plots immediately to fetch the RAOs corresponding to the new heading values, leading
+						to some momentary disgreements between computational and experimental values. The two plots tend
+						to converge as the PSV maneuvers towards the new setpoint. While the propulsion rotation was
+						measured and visualized during experiments, it is not displayed on the visualization below.
 					</p>
 				</div>
 
@@ -142,7 +121,7 @@
 					</div>
 				</div>
 
-				<h3>Data log converter</h3>
+				<h3>Position log converter</h3>
 				<p>This utility converts the motion tracking logs generated during the experiment to the ISO 19848
 					standard. Upload the TSV file saved by the tracking software (see example <a target="_blank"
 						href="https://raw.githubusercontent.com/shiplab/dt_cv/master/data/basin/raw/M510A-IRR-EKFPID-020019_6D.tsv">here</a>)
@@ -656,7 +635,7 @@
 			series: [
 				{
 					values: [0],
-					text: "Empirical (mm)"
+					text: "Experimental (mm)"
 				},
 				{
 					values: [0],
@@ -709,7 +688,7 @@
 			series: [
 				{
 					values: [0],
-					text: "Empirical (deg)"
+					text: "Experimental (deg)"
 				},
 				{
 					values: [0],
