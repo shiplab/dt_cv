@@ -131,7 +131,7 @@
 		var vis, xCenter, zCenter, rotDeg;
 		var renderer, container, scene, camera, controls;
 		var zUpCont, ocean;
-		var loa, draft;
+		var cg, draft;
 		var boat3D = new THREE.Group();
 
 		// insert global variable of the exported file @ferrari212
@@ -185,7 +185,7 @@
 			new THREE.FileLoader().load(specPath, function (contents) {
 				var spec = JSON.parse(contents);
 				// get boat dimensions from specification
-				loa = spec.Package.MainDimensions.LOA;
+				cg = spec.Package.CG.XCG;
 				draft = spec.Package.MainDimensions.DesignDraft;
 				// search through asset representation importing glTF files
 				for (let prop in vis) {
@@ -226,7 +226,7 @@
 							loader.load(data3D, function (gltf) {
 								var asset3D = gltf.scene;
 								asset3D.children[0].geometry.rotateX(Math.PI / 2);
-								asset3D.position.x = assetPackage.Topology.Position.x - 1000 * loa / 2;
+								asset3D.position.x = assetPackage.Topology.Position.x - 1000 * cg / 2;
 								asset3D.position.y = assetPackage.Topology.Position.y;
 								asset3D.position.z = assetPackage.Topology.Position.z - 1000 * draft;
 								boat3D.add(asset3D);

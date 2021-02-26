@@ -4,8 +4,8 @@
     "Author": "Felipe Ferrari",
     "Topology": {
       "Visualization": {
-        "STL": "hull.stl",
-        "GLB": "hull.glb"
+        "STL": "Hull.stl",
+        "GLB": "Hull.glb"
       },
       "Position": {
         "x": 0,

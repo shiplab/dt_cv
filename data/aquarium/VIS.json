@@ -56,7 +56,7 @@
                 "Asset": [],
                 "MeasuredStates": [{
                   "DataChannel": "MotionTrackingChannel.json",
-                  "TimeSeries": ["DemoLog.json"]
+                  "TimeSeries": ["MotionTrackingLog.json"]
                 }]
               }
             },
@@ -68,7 +68,7 @@
                 "Asset": [],
                 "MeasuredStates": [{
                   "DataChannel": "MotionTrackingChannel.json",
-                  "TimeSeries": ["DemoLog.json"]
+                  "TimeSeries": ["MotionTrackingLog.json"]
                 }]
               }
             }
