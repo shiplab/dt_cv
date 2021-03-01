@@ -1,12 +1,12 @@
 {
   "Package": {
-    "Remarks": "Web-application for rewinding an already performed wave basin experiment based on stored states.",
-    "Path": "../replay_app.html",
+    "Remarks": "Web-application for rewinding a previous wave basin experiment based on stored states.",
+    "Path": "../../replay_app.html",
     "BehaviourID": {
-      "LocalID": "/simulation_categories/OpRep",
+      "LocalID": "/simulation_domain/ReplayOperation",
       "ShortID": "ReplayApp.json",
       "NameObject": {
-        "NamingRule": "Simulation categories",
+        "NamingRule": "Simulation domain",
         "sc:Category": "Maneuvering",
         "sc:Type": "Application"
       }

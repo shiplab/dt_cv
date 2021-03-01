@@ -1,0 +1,31 @@
+{
+  "Asset": {
+    "Representation": {
+      "VesselSpecification": "VesselSpecification.json",
+      "Hull": "Hull.json",
+      "AzimuthThrusterPS": "AzimuthThrusterPS.json",
+      "AzimuthThrusterSB": "AzimuthThrusterSB.json",
+      "TunnelThruster": "TunnelThruster.json"
+    },
+    "MeasuredStates": {
+      "MotionTrackingData": {
+        "DataChannel": "MotionTrackingChannel.json",
+        "TimeSeries": ["MotionTrackingLog.json"]
+      }
+    }
+  },
+  "Environment": {
+    "WaveData": {
+      "DataChannel": "WaveChannel.json",
+      "TimeSeries": ["WaveLog.json"]
+    }
+  },
+  "Behaviour": {
+    "ResponseOperators": "ResponseOperators.json",
+    "ControlApp": "ControlApp.json",
+    "ReplayApp": "ReplayApp.json"
+  },
+  "Taxonomies": {
+    "VIS": "VIS.json"
+  }
+}

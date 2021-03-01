@@ -28,9 +28,9 @@
             {
               "TimeStamp": "2020-01-22T16:47:17.000Z",
               "DataChannelID": [
-                "H",
-                "T",
-                "Phase"
+                "WaveH",
+                "WaveT",
+                "WavePhase"
               ],
               "Value": [
                 "0",

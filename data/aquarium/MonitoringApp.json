@@ -1,12 +1,12 @@
 {
   "Package": {
     "Remarks": "Web-application for motion monitoring in 3 DoF with computer vision.",
-    "Path": "../index.html",
+    "Path": "../../aquarium_demo.html",
     "BehaviourID": {
-      "LocalID": "/Service_categories/MoTrack",
-      "ShortID": "MotionTrackingApp.json",
+      "LocalID": "/simulation_domain/MonitorOperation",
+      "ShortID": "MonitoringApp.json",
       "NameObject": {
-        "NamingRule": "Service categories",
+        "NamingRule": "Simulation domain",
         "sc:Category": "Motion response",
         "sc:Type": "Application"
       }

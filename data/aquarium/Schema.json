@@ -1,19 +1,19 @@
 {
   "Asset": {
     "Representation": {
-      "ShipSpecification": "VesselSpecification.json",
+      "VesselSpecification": "VesselSpecification.json",
       "Hull": "Hull.json"
     },
     "MeasuredStates": {
       "MotionTrackingData": {
         "DataChannel": "MotionTrackingChannel.json",
-        "TimeSeries": ["DemoLog.json"]
+        "TimeSeries": ["MotionTrackingLog.json"]
       }
     }
   },
   "Environment": {},
   "Behaviour": {
-    "MotionTrackingApp": "MotionTrackingApp.json"
+    "MotionTrackingApp": "MonitoringApp.json"
   },
   "Taxonomies": {
     "VIS": "VIS.json"

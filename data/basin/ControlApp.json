@@ -1,12 +1,12 @@
 {
   "Package": {
-    "Remarks": "Web-application for monitoring and control of the dynamic positioning of the PSV model in waves during an experiment.",
-    "Path": "../basin_client.html",
+    "Remarks": "Web-application for monitor and control of the dynamic positioning of the PSV model in waves during an experiment.",
+    "Path": "../../basin_client.html",
     "BehaviourID": {
-      "LocalID": "/simulation_categories/OpCo",
+      "LocalID": "/simulation_domain/MonitorOperation",
       "ShortID": "ControlApp.json",
       "NameObject": {
-        "NamingRule": "Simulation categories",
+        "NamingRule": "Simulation domain",
         "sc:Category": "Maneuvering",
         "sc:Type": "Application"
       }
