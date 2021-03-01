@@ -17,7 +17,7 @@
             "LocalID": "/environment/Wave/Height(m)",
             "ShortID": "WaveH",
             "NameObject": {
-              "NamingRule": "environment",
+              "NamingRule": "Environment",
               "env:Element": "Wave",
               "env:Characteristic": "Height",
               "env:Quantity": "mm milimeters"
