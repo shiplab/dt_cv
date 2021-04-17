@@ -77,7 +77,7 @@
 		<p>Height: <span id="height">0.00</span> mm.<br>
 			Period: <span id="period">0.00</span> s.</p>
 
-		<div style="position: absolute; bottom: 10">
+		<div style="position: absolute; bottom: 10; font-size: 11">
 			<p>Developed by:<br>&emsp;Ícaro A. Fonseca<br>&emsp;Henrique M. Gaspar<br>&emsp;Pedro C. de
 				Mello<br>&emsp;Humberto A. U. Sasaki</p>
 			<!-- <p><a target="_blank" href="">Read the paper.</a></p> -->
@@ -367,27 +367,27 @@
 		// heave plot
 		var feedMovPlot1 = function (callback) {
 			var tick = {};
-			tick.plot0 = 1000 * motionReading[2];
+			tick.plot0 = +(1000 * motionReading[2]).toFixed(2);
 			if (typeof validationPeriod === "undefined") {
 				validationPeriod = findClosestPeriod(raoSchema, ocean.waves["0"].T);
 			}
 			var movAmp = ocean.waves["0"].A * raoSchema["heave"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].rao;
 			var angFreq = 2 * Math.PI / ocean.waves["0"].T;
 			var phase = Math.PI / 180 * ocean.waves["0"].phi + raoSchema["heave"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].phase;
-			tick.plot1 = movAmp * Math.sin(angFreq * time + phase);
+			tick.plot1 = +(movAmp * Math.sin(angFreq * time + phase)).toFixed(2);
 			callback(JSON.stringify(tick));
 		};
 		// pitch plot
 		var feedMovPlot2 = function (callback) {
 			var tick = {};
-			tick.plot0 = 180 / Math.PI * motionReading[4];
+			tick.plot0 = +(180 / Math.PI * motionReading[4]).toFixed(2);
 			if (typeof validationPeriod === "undefined") {
 				validationPeriod = findClosestPeriod(raoSchema, ocean.waves["0"].T);
 			}
 			var movAmp = ocean.waves["0"].A / 1000 * raoSchema["pitch"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].rao * modelScale;
 			var angFreq = 2 * Math.PI / ocean.waves["0"].T;
 			var phase = Math.PI / 180 * ocean.waves["0"].phi + raoSchema["pitch"][validationPeriod.toString()][dpSetter.SetHeadWAMIT].phase;
-			tick.plot1 = 180 / Math.PI * movAmp * Math.sin(angFreq * time + phase);
+			tick.plot1 = +(180 / Math.PI * movAmp * Math.sin(angFreq * time + phase)).toFixed(2);
 			callback(JSON.stringify(tick));
 		};
 

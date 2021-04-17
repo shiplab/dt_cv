@@ -582,21 +582,21 @@
 		// heave plot
 		var feedMovPlot1 = function (callback) {
 			var tick0 = {};
-			tick0.plot0 = parseFloat(fluctCont.position.z);
+			tick0.plot0 = +parseFloat(fluctCont.position.z).toFixed(2);
 			var movAmp = ocean.waves[0].A * raoSchema["heave"][validationPeriod.toString()][validationHeading.toString()].rao;
 			var angFreq = 2 * Math.PI / ocean.waves[0].T;
 			var phase = Math.PI / 180 * ocean.waves[0].phi + raoSchema["heave"][validationPeriod.toString()][validationHeading.toString()].phase;
-			tick0.plot1 = movAmp * Math.sin(angFreq * document.getElementById("videoInput").currentTime + phase);
+			tick0.plot1 = +(movAmp * Math.sin(angFreq * document.getElementById("videoInput").currentTime + phase)).toFixed(2);
 			callback(JSON.stringify(tick0));
 		};
 		// pitch plot
 		var feedMovPlot2 = function (callback) {
 			var tick1 = {};
-			tick1.plot0 = 180 / Math.PI * fluctCont.rotation.y;
+			tick1.plot0 = +(180 / Math.PI * fluctCont.rotation.y).toFixed(2);
 			var movAmp = ocean.waves[0].A / 1000 * raoSchema["pitch"][validationPeriod.toString()][validationHeading.toString()].rao * modelScale;
 			var angFreq = 2 * Math.PI / ocean.waves[0].T;
 			var phase = Math.PI / 180 * ocean.waves[0].phi + raoSchema["pitch"][validationPeriod.toString()][validationHeading.toString()].phase;
-			tick1.plot1 = 180 / Math.PI * movAmp * Math.sin(angFreq * document.getElementById("videoInput").currentTime + phase);
+			tick1.plot1 = +(180 / Math.PI * movAmp * Math.sin(angFreq * document.getElementById("videoInput").currentTime + phase)).toFixed(2);
 			callback(JSON.stringify(tick1));
 		};
 

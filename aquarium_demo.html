@@ -98,13 +98,13 @@
 						<tr>
 							<td>Horizontal</td>
 							<td id="resHori">640 px</td>
-							<td id="distHori">0.291 m</td>
+							<td id="distHori">291 mm<m/td>
 							<td id="thresHori"></td>
 						</tr>
 						<tr>
 							<td>Vertical</td>
 							<td id="resVert">480 px</td>
-							<td id="distVert">0.218 m</td>
+							<td id="distVert">218 mm</td>
 							<td id="thresVert"></td>
 						</tr>
 						<tr>
@@ -199,11 +199,11 @@
 			new THREE.FileLoader().load(channelPath, function (contents) {
 				dataChannels = JSON.parse(contents);
 				// fill threshold object and table
-				threshold.w = dataChannels.Package.DataChannelList.DataChannel[0].Property.Range.High;
-				threshold.h = dataChannels.Package.DataChannelList.DataChannel["1"].Property.Range.High;
+				threshold.w = 1000 * dataChannels.Package.DataChannelList.DataChannel[0].Property.Range.High;
+				threshold.h = 1000 * dataChannels.Package.DataChannelList.DataChannel[1].Property.Range.High;
 				threshold.r = 180 / Math.PI * dataChannels.Package.DataChannelList.DataChannel["2"].Property.Range.High;
-				document.getElementById("thresHori").innerHTML = threshold.w + " m";
-				document.getElementById("thresVert").innerHTML = threshold.h + " m";
+				document.getElementById("thresHori").innerHTML = threshold.w + " mm";
+				document.getElementById("thresVert").innerHTML = threshold.h + " mm";
 				document.getElementById("thresRot").innerHTML = parseInt(threshold.r) + " degrees";
 			});
 			// import time series for demo
@@ -437,10 +437,10 @@
 				var elapsedLoopTime = document.getElementById("videoInput").currentTime;
 				ocean.update(elapsedLoopTime);
 				var framePos = readFind.findReading(1000 * elapsedLoopTime);
-				checkThreshold(parseFloat(framePos[0]), parseFloat(framePos[1]), 180 / Math.PI * parseFloat(framePos[2]));
 				boat3D.position.x = 1000 * framePos[0];
 				boat3D.position.z = 1000 * framePos[1];
 				boat3D.rotation.y = framePos[2];
+				checkThreshold(boat3D.position.x, boat3D.position.z, 180 / Math.PI * parseFloat(boat3D.rotation.y));
 			}
 			ocean.water.render();
 			requestAnimationFrame(animate);
@@ -591,8 +591,8 @@
 					xCenter = (trackBox.center.x /*  + w/2 */) - resolution.w / 2;
 					zCenter = -(trackBox.center.y /*  + h/2 */) + resolution.h / 2;
 					rotDeg = trackBox.angle - 90;
-					boat3D.position.x = xCenter * 1000 * distance.w / resolution.w;
-					boat3D.position.z = zCenter * 1000 * distance.h / resolution.h;
+					boat3D.position.x = xCenter * distance.w / resolution.w;
+					boat3D.position.z = zCenter * distance.h / resolution.h;
 					boat3D.rotation.y = Math.PI / 180 * rotDeg;
 
 					checkThreshold(boat3D.position.x, boat3D.position.z, rotDeg);
@@ -686,10 +686,10 @@
 		function checkThreshold(refX, refZ, refRot) {
 			document.getElementById("warning").innerHTML = "";
 			if (refX < -threshold.w || threshold.w < refX) {
-				document.getElementById("warning").innerHTML += "Surge position is " + refX.toFixed(2) + " cm.<br>";
+				document.getElementById("warning").innerHTML += "Surge position is " + refX.toFixed(2) + " mm.<br>";
 			}
 			if (refZ < -threshold.h || threshold.h < refZ) {
-				document.getElementById("warning").innerHTML += "Heave position is " + refZ.toFixed(2) + " cm.<br>";
+				document.getElementById("warning").innerHTML += "Heave position is " + refZ.toFixed(2) + " mm.<br>";
 			}
 			if (refRot < -threshold.r || threshold.r < refRot) {
 				document.getElementById("warning").innerHTML += "Pitch rotation is " + refRot.toFixed(2) + " degrees.<br>";
@@ -699,14 +699,14 @@
 		// surge and heave plots
 		function feedMovPlot1(callback) {
 			var tick = {};
-			tick.plot0 = boat3D.position.x;
-			tick.plot1 = boat3D.position.z;
+			tick.plot0 = +boat3D.position.x.toFixed(2);
+			tick.plot1 = +boat3D.position.z.toFixed(2);
 			callback(JSON.stringify(tick));
 		};
 
 		function feedMovPlot2(callback) {
 			var tick = {};
-			tick.plot0 = 180 / Math.PI * boat3D.rotation.y;
+			tick.plot0 = +(180 / Math.PI * boat3D.rotation.y).toFixed(2);
 			callback(JSON.stringify(tick));
 		};
 
@@ -744,10 +744,10 @@
 			},
 			series: [{
 				values: [0],
-				text: "Surge (cm)"
+				text: "Surge (mm)"
 			}, {
 				values: [0],
-				text: "Heave (cm)"
+				text: "Heave (mm)"
 			}],
 			refresh: {
 				type: "feed",
