@@ -11,5 +11,16 @@ The second is a digital twin for monitoring and control of a wave basin experime
 * [Monitoring and control application (works only during experiments).](https://shiplab.github.io/dt_cv/basin_client.html)
 
 ## References and Documentation
-* [Read the research paper.](https://doi.org/10.7148/2020-0207)
 * [Read the documentation.](https://github.com/shiplab/dt_cv/wiki)
+* [Read the research paper.](https://doi.org/10.7148/2020-0207) Reference:
+```
+@InProceedings{Fonseca2020,
+  author    = {Icaro A. Fonseca and Henrique M. Gaspar},
+  booktitle = {{ECMS} 2020 Proceedings edited by Mike Steglich, Christian Mueller, Gaby Neumann, Mathias Walther},
+  title     = {Fundamentals Of Digital Twins Applied To A Plastic Toy Boat And A Ship Scale Model},
+  year      = {2020},
+  month     = {jun},
+  publisher = {{ECMS}},
+  doi       = {10.7148/2020-0207},
+}
+```
