@@ -344,11 +344,11 @@
 			// heave
 			fluctCont.position.z = motionReading[2] * 1000;
 			// roll
-			fluctCont.rotation.x = motionReading[3] * 1000;
+			fluctCont.rotation.x = motionReading[3];
 			// pitch
-			fluctCont.rotation.y = motionReading[4] * 1000;
+			fluctCont.rotation.y = motionReading[4];
 			// yaw
-			fluctCont.rotation.z = motionReading[5] * 1000;
+			fluctCont.rotation.z = motionReading[5];
 			// azimuth angle
 			if (typeof ship3D.getObjectByName("Azimuth_Starboard") !== "undefined") { ship3D.getObjectByName("Azimuth_Starboard").rotation.z = Math.PI / 180 * angleReading[1] };
 			if (typeof ship3D.getObjectByName("Azimuth_Portside") !== "undefined") { ship3D.getObjectByName("Azimuth_Portside").rotation.z = Math.PI / 180 * angleReading[2] };
