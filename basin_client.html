@@ -35,11 +35,6 @@
 		box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 	}
 
-	#paramList {
-		font-family: Helvetica;
-		font-size: 14
-	}
-
 	h4 {
 		text-align: center
 	}
@@ -59,25 +54,27 @@
 		<img src=".\images\code-24px.svg" />
 	</a>
 
-	<div id="paramList" style="position: absolute; height: 100%; width: 15%">
-		<h4>Motion</h4>
-		<p>Surge: <span id="surge">0.00</span> m.<br>
-			Sway: <span id="sway">0.00</span> m.<br>
-			Heave: <span id="heave">0.00</span> m.<br>
-			Roll: <span id="roll">0.00</span>&deg;.<br>
-			Pitch: <span id="pitch">0.00</span>&deg;.<br>
-			Yaw: <span id="yaw">0.00</span>&deg;.</p>
-		<h4>Dynamic Positioning</h4>
-		<p>Rotation TT: <span id="rpmTT">0.00</span> RPM.<br>
-			Rotation SB: <span id="rpmSB">0.00</span> RPM.<br>
-			Rotation PS: <span id="rpmPS">0.00</span> RPM.<br>
-			Azimuth SB: <span id="azSB">0.00</span>&deg;.<br>
-			Azimuth PS: <span id="azPS">0.00</span>&deg;.</p>
-		<h4>Wave</h4>
-		<p>Height: <span id="height">0.00</span> mm.<br>
-			Period: <span id="period">0.00</span> s.</p>
+	<div style="font-family: Helvetica; position: absolute; height: 100%; width: 15%; top: 0px; left: 0px;">
+		<div id="paramList" style="padding: 10px; font-size: 14">
+			<h4>Motion</h4>
+			<p>Surge: <span id="surge">0.00</span> m.<br>
+				Sway: <span id="sway">0.00</span> m.<br>
+				Heave: <span id="heave">0.00</span> m.<br>
+				Roll: <span id="roll">0.00</span>&deg;.<br>
+				Pitch: <span id="pitch">0.00</span>&deg;.<br>
+				Yaw: <span id="yaw">0.00</span>&deg;.</p>
+			<h4>Dynamic Positioning</h4>
+			<p>Rotation TT: <span id="rpmTT">0.00</span> RPM.<br>
+				Rotation SB: <span id="rpmSB">0.00</span> RPM.<br>
+				Rotation PS: <span id="rpmPS">0.00</span> RPM.<br>
+				Azimuth SB: <span id="azSB">0.00</span>&deg;.<br>
+				Azimuth PS: <span id="azPS">0.00</span>&deg;.</p>
+			<h4>Wave</h4>
+			<p>Height: <span id="height">0.00</span> mm.<br>
+				Period: <span id="period">0.00</span> s.</p>
+		</div>
 
-		<div style="position: absolute; bottom: 10; font-size: 11">
+		<div style="position: absolute; bottom: 0; font-size: 10; padding: 10px; left: 0px;">
 			<p>Developed by Ícaro A. Fonseca, Henrique M. Gaspar, Pedro C. de Mello and Humberto A. U. Sasaki.</p>
 			<!-- <p><a target="_blank" href="">Read the paper.</a></p> -->
 			<a href="http://www.shiplab.hials.org/" target="_blank"><img class="center" src="images/logo_shiplab.png"
