@@ -19,9 +19,7 @@
       "ShortID": "Hull.json",
       "NameObject": {
         "NamingRule": "dnv_vis",
-        "vis:0_FunctionGroup": "100 Main structure",
-        "vis:1_FunctionGroup": "110 Ship structure",
-        "vis:2_FunctionComposition": "111 Ship hull structure"
+        "vis:FunctionComposition": "111 Ship hull structure"
       }
     }
   }

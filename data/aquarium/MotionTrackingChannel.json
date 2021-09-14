@@ -17,9 +17,7 @@
           "ShortID": "PosX",
           "NameObject": {
             "NamingRule": "dnv_vis",
-            "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
-            "vis:1_FunctionGroup": "450 Position keeping systems",
-            "vis:2_FunctionLeaf": "452 Position reference system",
+            "vis:FunctionLeaf": "452 Position reference system",
             "vis:Component": "I101 Control and monitoring system",
             "vis:Suffix": "ShipSurge",
             "vis:UoM": "d Distance",
@@ -51,9 +49,7 @@
           "ShortID": "PosZ",
           "NameObject": {
             "NamingRule": "dnv_vis",
-            "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
-            "vis:1_FunctionGroup": "450 Position keeping systems",
-            "vis:2_FunctionLeaf": "453 Vertical reference system",
+            "vis:FunctionLeaf": "453 Vertical reference system",
             "vis:Component": "I101 Control and monitoring system",
             "vis:Suffix": "ShipHeave",
             "vis:UoM": "d Distance",
@@ -85,9 +81,7 @@
           "ShortID": "RotY",
           "NameObject": {
             "NamingRule": "dnv_vis",
-            "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
-            "vis:1_FunctionGroup": "450 Position keeping systems",
-            "vis:2_FunctionLeaf": "453 Vertical reference system",
+            "vis:FunctionLeaf": "453 Vertical reference system",
             "vis:Component": "I101 Control and monitoring system",
             "vis:Suffix": "ShipPitch",
             "vis:UoM": "phi Angular measure",

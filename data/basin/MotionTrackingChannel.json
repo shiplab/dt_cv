@@ -18,11 +18,7 @@
             "ShortID": "SetPosX",
             "NameObject": {
               "NamingRule": "dnv_vis",
-              "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
-              "vis:1_FunctionGroup": "450 Position keeping systems",
-              "vis:2_FunctionGroup": "451 Position keeping control and monitoring systems",
-              "vis:3_FunctionGroup": "451.1 Dynamic positioning automatic control systems",
-              "vis:4_FunctionLeaf": "451.11 Dynamic positioning automatic control systems, main",
+              "vis:FunctionLeaf": "451.11 Dynamic positioning automatic control systems, main",
               "vis:Component": "I101 Control and monitoring system",
               "vis:Suffix": "SetSurge",
               "vis:UoM": "d Distance",

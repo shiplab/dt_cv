@@ -19,11 +19,7 @@
       "ShortID": "TunnelThruster.json",
       "NameObject": {
         "NamingRule": "dnv_vis",
-        "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
-        "vis:1_FunctionGroup": "440 Manoeuvring thruster arrangements",
-        "vis:2_FunctionComposition": "440i Manoeuvring thruster arrangement",
-        "vis:3_FunctionComposition": "443 Manoeuvring thruster arrangement",
-        "vis:4_FunctionLeaf": "443.1 Manoeuvring thruster",
+        "vis:FunctionLeaf": "443.1 Manoeuvring thruster",
         "vis:Component": "[C323] Manoeuvring thruster, tunnel"
       }
     }

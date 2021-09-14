@@ -18,12 +18,7 @@
       "ShortID": "AzimuthThrusterSB.json",
       "NameObject": {
         "NamingRule": "dnv_vis",
-        "vis:0_FunctionGroup": "400 Propulsion and steering arrangements",
-        "vis:1_FunctionGroup": "430 Propulsion and steering thruster arrangements",
-        "vis:2_FunctionComposition": "430i Propulsion and steering thruster arrangement",
-        "vis:3_FunctionComposition": "433 Propulsion thruster arrangement",
-        "vis:4_FunctionLeaf": "433.1 Propulsion thruster, starboard",
-        "vis:Instance": "Starboard",
+        "vis:FunctionLeaf": "433.1 Propulsion thruster, starboard",
         "vis:Component": "[C322] Propulsion thruster, azimuth"
       }
     }
