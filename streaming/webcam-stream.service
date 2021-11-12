@@ -1,0 +1,12 @@
+[Unit]
+Description=Stream Webcam over 8080
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/cvlc -vvv v4l2:///dev/video0 --sout-keep --sout-all --sout "#transcode{vcodec=theo,vb=800,scale=Auto,acodec=none,scodec=none}:http{mux=ogg,dst=:8080/}"
+Restart=on-failure
+User=pi
+
+[Install]
+WantedBy=multi-user.target
